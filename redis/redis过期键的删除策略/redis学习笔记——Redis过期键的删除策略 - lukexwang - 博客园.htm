@@ -1,0 +1,449 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0048)https://www.cnblogs.com/lukexwang/p/4694094.html -->
+<!DOCTYPE html><HTML lang="zh-cn"><HEAD><META content="IE=9.0000" 
+http-equiv="X-UA-Compatible">
+
+<META charset="utf-8">
+<META name="viewport" content="width=device-width, initial-scale=1">
+<META name="referrer" content="origin"><TITLE>redis学习笔记——Redis过期键的删除策略 - 
+lukexwang - 博客园</TITLE>
+<META content="Redis过期键的删除策略对于过期键一般有三种删除策略定时删除：在设置键的过期时间的同时，创建一个定时器(timer)，让定时器在键的过期时间来临时，立即执行对键的删除操作；惰性删除：放任键过期不管，" 
+property="og:description"><LINK rel="stylesheet" type="text/css" href="redis学习笔记——Redis过期键的删除策略%20-%20lukexwang%20-%20博客园_files/blog-common.css">
+<LINK id="MainCss" rel="stylesheet" type="text/css" href="redis学习笔记——Redis过期键的删除策略%20-%20lukexwang%20-%20博客园_files/bundle-gray.css">
+<LINK id="mobile-style" rel="stylesheet" type="text/css" href="redis学习笔记——Redis过期键的删除策略%20-%20lukexwang%20-%20博客园_files/bundle-gray-mobile.css" 
+media="only screen and (max-width: 767px)"><LINK title="RSS" rel="alternate" 
+type="application/rss+xml" href="https://www.cnblogs.com/lukexwang/rss"><LINK 
+title="RSD" rel="EditURI" type="application/rsd+xml" href="https://www.cnblogs.com/lukexwang/rsd.xml">
+<LINK rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://www.cnblogs.com/lukexwang/wlwmanifest.xml">
+<SCRIPT src="redis学习笔记——Redis过期键的删除策略%20-%20lukexwang%20-%20博客园_files/jquery-2.2.0.min.js"></SCRIPT>
+
+<SCRIPT>var currentBlogId=232441;var currentBlogApp='lukexwang',cb_enable_mathjax=false;var isLogined=false;</SCRIPT>
+
+<SCRIPT type="text/javascript" src="redis学习笔记——Redis过期键的删除策略%20-%20lukexwang%20-%20博客园_files/blog-common.js"></SCRIPT>
+
+<META name="GENERATOR" content="MSHTML 9.00.8112.16553"></HEAD>
+<BODY><A name="top"></A><!--done-->
+<DIV id="banner">
+<DIV id="bnr_pic"><!--done-->
+<DIV class="header">
+<DIV class="headerText"><A id="Header1_HeaderTitle" class="headermaintitle" 
+href="https://www.cnblogs.com/lukexwang/">lukexwang</A><BR></DIV>
+<DIV class="headerDis"></DIV></DIV></DIV></DIV>
+<DIV id="main"><!-- left starts -->
+<DIV id="left">
+<DIV id="left_border">
+<DIV id="mystats"><BR>
+<DIV id="blog_stats"><!--done-->
+<DIV class="blogStats">随笔- 37&nbsp;文章- 1&nbsp;评论- 4&nbsp;</DIV></DIV></DIV>
+<DIV id="mylinks"><!--done--><A id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</A>&nbsp;&nbsp;<A 
+id="blog_nav_myhome" class="menu" 
+href="https://www.cnblogs.com/lukexwang/">首页</A>&nbsp;&nbsp;<A id="blog_nav_newpost" 
+class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1" 
+rel="nofollow">新随笔</A>&nbsp;&nbsp;<A id="MyLinks1_NewArticleLink" class="menu" 
+href="https://www.cnblogs.com/EnterMyBlog.aspx?NewArticle=1">新文章</A>&nbsp;&nbsp;<A 
+accessKey="9" id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/lukexwang" 
+rel="nofollow">联系</A>&nbsp;&nbsp;<A id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/" 
+rel="nofollow">管理</A>&nbsp;&nbsp;<A id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/lukexwang/rss">订阅</A>&nbsp;<A 
+id="blog_nav_rss_image" href="https://www.cnblogs.com/lukexwang/rss"><IMG alt="订阅" 
+src="redis学习笔记——Redis过期键的删除策略%20-%20lukexwang%20-%20博客园_files/xml.gif"></A></DIV>
+<DIV id="topics">
+<DIV id="post_detail"><!--done-->
+<DIV class="post">
+<DIV class="postTitle"><A id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/lukexwang/p/4694094.html">redis学习笔记——Redis过期键的删除策略</A></DIV>
+<DIV id="cnblogs_post_body" class="blogpost-body">
+<H2 class="p0">Redis过期键的删除策略</H2>
+<P>对于过期键一般有三种删除策略</P>
+<UL>
+  <LI>定时删除：在设置键的过期时间的同时，创建一个定时器(timer)，让定时器在键的过期时间来临时，立即执行对键的删除操作；</LI>
+  <LI>惰性删除：放任键过期不管，但是每次从键空间中获取键时，都检查取得的键是否过期，如果过期的话，就删除该键；如果没有过期，那就返回该键；</LI>
+  <LI>定期删除：每隔一段时间，程序就对数据库进行一次检查，删除里面的过期键。至于删除多少过期键，以及要检查多少个数据库，则由算法决定。</LI></UL>
+<P>下面我们来看看三种策略的优缺比较：</P>
+<UL>
+  <LI>定时删除策略对内存是最友好的：通过使用定时器，定时删除策略可以保证过期键会尽可能快地被删除，并释放过期键所占用的内存；但另一方面，定时删除策略的缺点是，他对CPU是最不友好的：在过期键比较多的情况下，删除过期键这一行为可能会占用相当一部分CPU时间，在内存不紧张但是CPU时间非常紧张的情况下，将CPU时间用在删除和当前任务无关的过期键上，无疑会对服务器的响应时间和吞吐量造成影响；</LI>
+  <LI>惰性删除策略对CPU时间来说是最友好的：程序只会在取出键时才对键进行过期检查，这可以保证删除过期键的操作只会在非做不可的情况下进行；惰性删除策略的缺点是，它对内存是最不友好的：如果一个键已经过期，而这个键又仍然保留在数据库中，那么只要这个过期键不被删除，它所占用的内存就不会释放；</LI>
+  <LI>定时删除占用太多CPU时间，影响服务器的响应时间和吞吐量；惰性删除浪费太多内存，有内存泄漏的危险。定期删除策略是前两种策略的一种整合和折中：
+  <UL>
+    <LI>定期删除策略每隔一段时间执行一次删除过期键操作，并通过<STRONG>限制删除操作执行的时长和频率</STRONG>来减少删除操作对CPU时间的影响；</LI>
+    <LI>通过定期删除过期键，定期删除策略有效地减少了因为过期键而带来的内存浪费；</LI>
+    <LI>定期删除策略的难点是确定删除操作执行的时长和频率。</LI></UL></LI></UL>
+<P style="text-align: left;">Redis的过期键删除策略：Redis服务器实际使用的是惰性删除和定期删除两种策略。</P>
+<P style="text-align: left;">下面我们就结合源码进行分析：</P>
+<H3 style="text-align: left;">惰性删除策略的实现</H3>
+<P>过期键的惰性删除策略由<STRONG>db.c/expireIfNeeded</STRONG>函数实现，所有读写数据库的Redis命令在执行之前都会调用expireIfNeeded函数对输入键进行检查：</P>
+<P>下面结合代码，用伪代码简要描述：<SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);">&nbsp;* 
+检查 key 是否已经过期，如果是的话，将它从数据库中删除。</SPAN><EM id="__mceDel"><SPAN style="color: rgb(0, 128, 0);">&nbsp;*</SPAN></EM><EM 
+style='line-height: 1.5; font-family: "Courier New"; font-size: 12px; background-color: rgb(245, 245, 245);' 
+id="__mceDel"><EM id="__mceDel"><EM id="__mceDel"><EM id="__mceDel"><SPAN style="color: rgb(0, 128, 0);">&nbsp;* 
+返回 0 表示键没有过期时间，或者键未过期。</SPAN></EM></EM></EM></EM><EM style='line-height: 1.5; font-family: "Courier New"; font-size: 12px; background-color: rgb(245, 245, 245);' 
+id="__mceDel"><EM id="__mceDel"><EM id="__mceDel"><EM id="__mceDel"><EM id="__mceDel"><SPAN 
+style="color: rgb(0, 128, 0);">&nbsp;*</SPAN></EM></EM></EM></EM></EM></P>
+<P>&nbsp;</P>
+<DIV class="cnblogs_code"><PRE> * 返回 <SPAN style="color: rgb(128, 0, 128);">1</SPAN><SPAN style="color: rgb(0, 0, 0);"> 表示键已经因为过期而被删除了。
+ </SPAN>*/
+<SPAN style="color: rgb(0, 0, 255);">int</SPAN> expireIfNeeded(redisDb *db, robj *<SPAN style="color: rgb(0, 0, 0);">key) {
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> getExpire（db,key）函数取出键key的过期时间，如果key没有设置过期时间那么返回-1</SPAN>
+    mstime_t when =<SPAN style="color: rgb(0, 0, 0);"> getExpire(db,key);
+    mstime_t now;
+
+    </SPAN><SPAN style="color: rgb(0, 0, 255);">if</SPAN> (when &lt; <SPAN style="color: rgb(128, 0, 128);">0</SPAN>) <SPAN style="color: rgb(0, 0, 255);">return</SPAN> <SPAN style="color: rgb(128, 0, 128);">0</SPAN>; <SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> No expire for this key  key没有设置过期时间</SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+    <SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> Don't expire anything while loading. It will be done later. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+    <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 如果服务器正在进行载入，那么过会儿再执行</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">if</SPAN> (server.loading) <SPAN style="color: rgb(0, 0, 255);">return</SPAN> <SPAN style="color: rgb(128, 0, 128);">0</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> If we are in the context of a Lua script, we claim that time is
+     * blocked to when the Lua script started. This way a key can expire
+     * only the first time it is accessed and not in the middle of the
+     * script execution, making propagation to slaves / AOF consistent.
+     * See issue #1525 on Github for more information. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+　　　<SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(255, 0, 255);">如果我们是正在执行lua脚本，那么必须先将脚本进行阻塞。lua部分知识还没学，所以这里并不是很懂为什么？？？？</SPAN>
+    now = server.lua_caller ?<SPAN style="color: rgb(0, 0, 0);"> server.lua_time_start : mstime();
+
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> If we are running in the context of a slave, return ASAP:
+     * the slave key expiration is controlled by the master that will
+     * send us synthesized DEL operations for expired keys.
+     *
+     * Still we try to return the right information to the caller, 
+     * that is, 0 if we think the key should be still valid, 1 if
+     * we think the key is expired at this time. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+    <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 附属节点并不主动删除 key，它只返回一个逻辑上正确的返回值
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 真正的删除操作要等待主节点发来删除命令时才执行，从而保证数据的同步
+　　</SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">这部分知识可以查看redis的主从同步</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">if</SPAN> (server.masterhost != NULL) <SPAN style="color: rgb(0, 0, 255);">return</SPAN> now &gt;<SPAN style="color: rgb(0, 0, 0);"> when;
+
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 运行到这里，表示键带有过期时间，并且服务器为主节点</SPAN>
+
+    <SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> Return when this key has not expired </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+    <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 如果未过期，返回 0</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">if</SPAN> (now &lt;= when) <SPAN style="color: rgb(0, 0, 255);">return</SPAN> <SPAN style="color: rgb(128, 0, 128);">0</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> 已过期的键的数量 </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN><SPAN style="color: rgb(0, 0, 0);">
+    server.stat_expiredkeys</SPAN>++<SPAN style="color: rgb(0, 0, 0);">;
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 向 AOF 文件和附属节点传播过期信息.当key过期时，DEL 操作也会传递给所有的AOF文件和附属节点</SPAN>
+<SPAN style="color: rgb(0, 0, 0);">    propagateExpire(db,key);
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 发送事件通知,关于redis的键事件通知和键空间通知，可以查询资料后面学习硬挨也会讲到</SPAN>
+<SPAN style="color: rgb(0, 0, 0);">    notifyKeyspaceEvent(REDIS_NOTIFY_EXPIRED,
+        </SPAN><SPAN style="color: rgb(128, 0, 0);">"</SPAN><SPAN style="color: rgb(128, 0, 0);">expired</SPAN><SPAN style="color: rgb(128, 0, 0);">"</SPAN>,key,db-&gt;<SPAN style="color: rgb(0, 0, 0);">id);
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 调用dbDelete(db,keu)将过期键从数据库中删除</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">return</SPAN><SPAN style="color: rgb(0, 0, 0);"> dbDelete(db,key);
+}</SPAN></PRE>
+</DIV>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P><SPAN style="color: rgb(0, 0, 0);"><STRONG>流程图：</STRONG></SPAN></P>
+<P><EM style='line-height: 1.5; font-family: "Courier New"; font-size: 12px; background-color: rgb(245, 245, 245);'><EM><EM><EM><EM><SPAN 
+style="color: rgb(0, 128, 0);"><IMG alt="" src="redis学习笔记——Redis过期键的删除策略%20-%20lukexwang%20-%20博客园_files/011351184072462.png"></SPAN></EM></EM></EM></EM></EM></P>
+<P>&nbsp;</P>
+<H3>&nbsp;定期删除策略的实现</H3>
+<P>过期键的定期删除策略由<STRONG>redis.c/activeExpireCycle</STRONG>函数实现，每当Redis的服务器周期性操作<STRONG>redis.c/serverCron</STRONG>函数执行时，activeExpireCycle函数就会被调用，它在规定的时间内，分多次遍历服务器中的各个数据库，从数据库的expires字典中随机检查一部分键的过期时间，并删除其中的过期键。</P>
+<P>&nbsp;源码分析如下：</P>
+<DIV class="cnblogs_code"><PRE><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> Try to expire a few timed out keys. The algorithm used is adaptive and
+ * will use few CPU cycles if there are few expiring keys, otherwise
+ * it will get more aggressive to avoid that too much memory is used by
+ * keys that can be removed from the keyspace.
+ *
+ * 函数尝试删除数据库中已经过期的键。
+ * 当带有过期时间的键比较少时，函数运行得比较保守，
+ * 如果带有过期时间的键比较多，那么函数会以更积极的方式来删除过期键，
+ * 从而可能地释放被过期键占用的内存。
+ *
+ * No more than REDIS_DBCRON_DBS_PER_CALL databases are tested at every
+ * iteration.
+ *
+ * 每次循环中被测试的数据库数目不会超过 REDIS_DBCRON_DBS_PER_CALL 。
+ *
+ * This kind of call is used when Redis detects that timelimit_exit is
+ * true, so there is more work to do, and we do it more incrementally from
+ * the beforeSleep() function of the event loop.
+ *
+ * 如果 timelimit_exit 为真，那么说明还有更多删除工作要做，（在我看来timelimit_exit如果为真的话那表示上一次删除过期键时是因为删除时间过长超时了才退出的，所以这次将删除方法更加积极）
+ * 那么在 beforeSleep() 函数调用时，程序会再次执行这个函数。
+ *
+ * Expire cycle type:
+ *
+ * 过期循环的类型：
+ *
+ * If type is ACTIVE_EXPIRE_CYCLE_FAST the function will try to run a
+ * "fast" expire cycle that takes no longer than EXPIRE_FAST_CYCLE_DURATION
+ * microseconds, and is not repeated again before the same amount of time.
+ *
+ * 如果循环的类型为 ACTIVE_EXPIRE_CYCLE_FAST ，
+ * 那么函数会以“快速过期”模式执行，
+ * 执行的时间不会长过 EXPIRE_FAST_CYCLE_DURATION 毫秒，
+ * 并且在 EXPIRE_FAST_CYCLE_DURATION 毫秒之内不会再重新执行。
+ *
+ * If type is ACTIVE_EXPIRE_CYCLE_SLOW, that normal expire cycle is
+ * executed, where the time limit is a percentage of the REDIS_HZ period
+ * as specified by the REDIS_EXPIRELOOKUPS_TIME_PERC define. 
+ *
+ * 如果循环的类型为 ACTIVE_EXPIRE_CYCLE_SLOW ，
+ * 那么函数会以“正常过期”模式执行，
+ * 函数的执行时限为 REDIS_HS 常量的一个百分比，
+ * 这个百分比由 REDIS_EXPIRELOOKUPS_TIME_PERC 定义。
+ </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+
+<SPAN style="color: rgb(0, 0, 255);">void</SPAN> activeExpireCycle(<SPAN style="color: rgb(0, 0, 255);">int</SPAN><SPAN style="color: rgb(0, 0, 0);"> type) {
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> This function has some global state in order to continue the work
+     * incrementally across calls. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+    <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 共享变量，用来累积函数连续执行时的数据</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">static</SPAN> unsigned <SPAN style="color: rgb(0, 0, 255);">int</SPAN> current_db = <SPAN style="color: rgb(128, 0, 128);">0</SPAN>; <SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> Last DB tested. 正在测试的数据库</SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">static</SPAN> <SPAN style="color: rgb(0, 0, 255);">int</SPAN> timelimit_exit = <SPAN style="color: rgb(128, 0, 128);">0</SPAN>;      <SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> Time limit hit in previous call 上一次执行是否时间超时的提示 </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">static</SPAN> <SPAN style="color: rgb(0, 0, 255);">long</SPAN> <SPAN style="color: rgb(0, 0, 255);">long</SPAN> last_fast_cycle = <SPAN style="color: rgb(128, 0, 128);">0</SPAN>; <SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> When last fast cycle ran. 上次快速模式执行的时间</SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN><SPAN style="color: rgb(0, 0, 0);">
+
+    unsigned </SPAN><SPAN style="color: rgb(0, 0, 255);">int</SPAN> j, iteration = <SPAN style="color: rgb(128, 0, 128);">0</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 默认每次处理的数据库数量</SPAN>
+    unsigned <SPAN style="color: rgb(0, 0, 255);">int</SPAN> dbs_per_call = REDIS_DBCRON_DBS_PER_CALL; <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">默认REDIS_DBCRON_DBS_PER_CALL=16
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 函数开始的时间</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">long</SPAN> <SPAN style="color: rgb(0, 0, 255);">long</SPAN> start =<SPAN style="color: rgb(0, 0, 0);"> ustime(), timelimit;
+
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 快速模式</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">if</SPAN> (type ==<SPAN style="color: rgb(0, 0, 0);"> ACTIVE_EXPIRE_CYCLE_FAST) {
+        </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> Don't start a fast cycle if the previous cycle did not exited
+         * for time limt. Also don't repeat a fast cycle for the same period
+         * as the fast cycle total duration itself. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+        <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 如果上次函数没有触发 timelimit_exit ，那么不执行处理</SPAN>
+        <SPAN style="color: rgb(0, 0, 255);">if</SPAN> (!timelimit_exit) <SPAN style="color: rgb(0, 0, 255);">return</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+        </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 如果距离上次执行未够一定时间，那么不执行处理</SPAN>
+        <SPAN style="color: rgb(0, 0, 255);">if</SPAN> (start &lt; last_fast_cycle + ACTIVE_EXPIRE_CYCLE_FAST_DURATION*<SPAN style="color: rgb(128, 0, 128);">2</SPAN>) <SPAN style="color: rgb(0, 0, 255);">return</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+        </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 运行到这里，说明执行快速处理，记录当前时间</SPAN>
+        last_fast_cycle =<SPAN style="color: rgb(0, 0, 0);"> start;
+    }
+
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> We usually should test REDIS_DBCRON_DBS_PER_CALL per iteration, with
+     * two exceptions:
+     *
+     * 一般情况下，每次迭代（也就是每次调用这个函数）函数只处理 REDIS_DBCRON_DBS_PER_CALL 个数据库，
+     * 除非：
+     *
+     * 1) Don't test more DBs than we have.
+     *    当前数据库的数量小于 REDIS_DBCRON_DBS_PER_CALL
+     * 2) If last time we hit the time limit, we want to scan all DBs
+     * in this iteration, as there is work to do in some DB and we don't want
+     * expired keys to use memory for too much time. 
+     *     如果上次处理遇到了时间上限，那么这次需要对所有数据库进行扫描，
+     *     这可以避免过多的过期键占用空间
+     </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">if</SPAN> (dbs_per_call &gt; server.dbnum || timelimit_exit)<SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">以服务器的数据库数量为准</SPAN>
+        dbs_per_call =<SPAN style="color: rgb(0, 0, 0);"> server.dbnum;
+
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> We can use at max ACTIVE_EXPIRE_CYCLE_SLOW_TIME_PERC percentage of CPU time
+     * per iteration. Since this function gets called with a frequency of
+     * server.hz times per second, the following is the max amount of
+     * microseconds we can spend in this function. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+    <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 函数处理的微秒时间上限
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> ACTIVE_EXPIRE_CYCLE_SLOW_TIME_PERC 默认为 25 ，也即是 25 % 的 CPU 时间</SPAN>
+    timelimit = <SPAN style="color: rgb(128, 0, 128);">1000000</SPAN>*ACTIVE_EXPIRE_CYCLE_SLOW_TIME_PERC/server.hz/<SPAN style="color: rgb(128, 0, 128);">100</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+    timelimit_exit </SPAN>= <SPAN style="color: rgb(128, 0, 128);">0</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+    </SPAN><SPAN style="color: rgb(0, 0, 255);">if</SPAN> (timelimit &lt;= <SPAN style="color: rgb(128, 0, 128);">0</SPAN>) timelimit = <SPAN style="color: rgb(128, 0, 128);">1</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 如果是运行在快速模式之下
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 那么最多只能运行 FAST_DURATION 微秒 
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 默认值为 1000 （微秒）</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">if</SPAN> (type ==<SPAN style="color: rgb(0, 0, 0);"> ACTIVE_EXPIRE_CYCLE_FAST)
+        timelimit </SPAN>= ACTIVE_EXPIRE_CYCLE_FAST_DURATION; <SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> in microseconds. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+
+    <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 遍历数据库</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">for</SPAN> (j = <SPAN style="color: rgb(128, 0, 128);">0</SPAN>; j &lt; dbs_per_call; j++<SPAN style="color: rgb(0, 0, 0);">) {
+        </SPAN><SPAN style="color: rgb(0, 0, 255);">int</SPAN><SPAN style="color: rgb(0, 0, 0);"> expired;
+        </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 指向要处理的数据库</SPAN>
+        redisDb *db = server.db+(current_db %<SPAN style="color: rgb(0, 0, 0);"> server.dbnum);
+
+        </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> Increment the DB now so we are sure if we run out of time
+         * in the current DB we'll restart from the next. This allows to
+         * distribute the time evenly across DBs. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+        <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 为 currrnt_DB 计数器加一，如果进入 do 循环之后因为超时而跳出
+        </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 那么下次会直接从下个 currrnt_DB 开始处理。这样使得分配在每个数据库上处理时间比较平均</SPAN>
+        current_db++<SPAN style="color: rgb(0, 0, 0);">;
+
+        </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> Continue to expire if at the end of the cycle more than 25%
+         * of the keys were expired. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+        <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">如果每次循环清理的过期键是过期键的25%以上，那么就继续清理</SPAN>
+        <SPAN style="color: rgb(0, 0, 255);">do</SPAN><SPAN style="color: rgb(0, 0, 0);"> {
+            unsigned </SPAN><SPAN style="color: rgb(0, 0, 255);">long</SPAN><SPAN style="color: rgb(0, 0, 0);"> num, slots;
+            </SPAN><SPAN style="color: rgb(0, 0, 255);">long</SPAN> <SPAN style="color: rgb(0, 0, 255);">long</SPAN><SPAN style="color: rgb(0, 0, 0);"> now, ttl_sum;
+            </SPAN><SPAN style="color: rgb(0, 0, 255);">int</SPAN><SPAN style="color: rgb(0, 0, 0);"> ttl_samples;
+
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> If there is nothing to expire try next DB ASAP. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+            <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 获取数据库中带过期时间的键的数量
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 如果该数量为 0 ，直接跳过这个数据库</SPAN>
+            <SPAN style="color: rgb(0, 0, 255);">if</SPAN> ((num = dictSize(db-&gt;expires)) == <SPAN style="color: rgb(128, 0, 128);">0</SPAN><SPAN style="color: rgb(0, 0, 0);">) {
+                db</SPAN>-&gt;avg_ttl = <SPAN style="color: rgb(128, 0, 128);">0</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+                </SPAN><SPAN style="color: rgb(0, 0, 255);">break</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+            }
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 获取数据库中键值对的数量</SPAN>
+            slots = dictSlots(db-&gt;<SPAN style="color: rgb(0, 0, 0);">expires);
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 当前时间</SPAN>
+            now =<SPAN style="color: rgb(0, 0, 0);"> mstime();
+
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> When there are less than 1% filled slots getting random
+             * keys is expensive, so stop here waiting for better times...
+             * The dictionary will be resized asap. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+            <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 这个数据库的使用率低于 1% ，扫描起来太费力了（大部分都会 MISS）
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 跳过，等待字典收缩程序运行</SPAN>
+            <SPAN style="color: rgb(0, 0, 255);">if</SPAN> (num &amp;&amp; slots &gt; DICT_HT_INITIAL_SIZE &amp;&amp;<SPAN style="color: rgb(0, 0, 0);">
+                (num</SPAN>*<SPAN style="color: rgb(128, 0, 128);">100</SPAN>/slots &lt; <SPAN style="color: rgb(128, 0, 128);">1</SPAN>)) <SPAN style="color: rgb(0, 0, 255);">break</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> The main collection cycle. Sample random keys among keys
+             * with an expire set, checking for expired ones. 
+             *
+             * 样本计数器
+             </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+            <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 已处理过期键计数器</SPAN>
+            expired = <SPAN style="color: rgb(128, 0, 128);">0</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 键的总 TTL 计数器</SPAN>
+            ttl_sum = <SPAN style="color: rgb(128, 0, 128);">0</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 总共处理的键计数器</SPAN>
+            ttl_samples = <SPAN style="color: rgb(128, 0, 128);">0</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 每次最多只能检查 LOOKUPS_PER_LOOP 个键,默认是20</SPAN>
+            <SPAN style="color: rgb(0, 0, 255);">if</SPAN> (num &gt;<SPAN style="color: rgb(0, 0, 0);"> ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP)
+                num </SPAN>=<SPAN style="color: rgb(0, 0, 0);"> ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP;
+
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 开始遍历数据库</SPAN>
+            <SPAN style="color: rgb(0, 0, 255);">while</SPAN> (num--<SPAN style="color: rgb(0, 0, 0);">) {
+                dictEntry </SPAN>*<SPAN style="color: rgb(0, 0, 0);">de;
+                </SPAN><SPAN style="color: rgb(0, 0, 255);">long</SPAN> <SPAN style="color: rgb(0, 0, 255);">long</SPAN><SPAN style="color: rgb(0, 0, 0);"> ttl;
+
+                </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 从 expires 中随机取出一个带过期时间的键</SPAN>
+                <SPAN style="color: rgb(0, 0, 255);">if</SPAN> ((de = dictGetRandomKey(db-&gt;expires)) == NULL) <SPAN style="color: rgb(0, 0, 255);">break</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+                </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 计算 TTL</SPAN>
+                ttl = dictGetSignedIntegerVal(de)-<SPAN style="color: rgb(0, 0, 0);">now;
+                </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 如果键已经过期，那么删除它，并将 expired 计数器增一</SPAN>
+                <SPAN style="color: rgb(0, 0, 255);">if</SPAN> (activeExpireCycleTryExpire(db,de,now)) expired++<SPAN style="color: rgb(0, 0, 0);">;
+                </SPAN><SPAN style="color: rgb(0, 0, 255);">if</SPAN> (ttl &lt; <SPAN style="color: rgb(128, 0, 128);">0</SPAN>) ttl = <SPAN style="color: rgb(128, 0, 128);">0</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+                </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 累积键的 TTL</SPAN>
+                ttl_sum +=<SPAN style="color: rgb(0, 0, 0);"> ttl;
+                </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 累积处理键的个数</SPAN>
+                ttl_samples++<SPAN style="color: rgb(0, 0, 0);">;
+            }
+
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> Update the average TTL stats for this database. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+            <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 为这个数据库更新平均 TTL 统计数据</SPAN>
+            <SPAN style="color: rgb(0, 0, 255);">if</SPAN><SPAN style="color: rgb(0, 0, 0);"> (ttl_samples) {
+                </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 计算当前平均值</SPAN>
+                <SPAN style="color: rgb(0, 0, 255);">long</SPAN> <SPAN style="color: rgb(0, 0, 255);">long</SPAN> avg_ttl = ttl_sum/<SPAN style="color: rgb(0, 0, 0);">ttl_samples;
+                
+                </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 如果这是第一次设置数据库平均 TTL ，那么进行初始化</SPAN>
+                <SPAN style="color: rgb(0, 0, 255);">if</SPAN> (db-&gt;avg_ttl == <SPAN style="color: rgb(128, 0, 128);">0</SPAN>) db-&gt;avg_ttl =<SPAN style="color: rgb(0, 0, 0);"> avg_ttl;
+                </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> Smooth the value averaging with the previous one. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+                <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 否则取数据库的上次平均 TTL 和今次平均 TTL 的平均值</SPAN>
+                db-&gt;avg_ttl = (db-&gt;avg_ttl+avg_ttl)/<SPAN style="color: rgb(128, 0, 128);">2</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+            }
+
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> We can't block forever here even if there are many keys to
+             * expire. So after a given amount of milliseconds return to the
+             * caller waiting for the other active expire cycle. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+            <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 如果过期键太多的话，我们不能用太长时间处理，所以这个函数执行一定时间之后就要返回，等待下一次循环
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 更新遍历次数</SPAN>
+            iteration++<SPAN style="color: rgb(0, 0, 0);">;
+
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 每遍历 16 次执行一次</SPAN>
+            <SPAN style="color: rgb(0, 0, 255);">if</SPAN> ((iteration &amp; <SPAN style="color: rgb(128, 0, 128);">0xf</SPAN>) == <SPAN style="color: rgb(128, 0, 128);">0</SPAN> &amp;&amp; <SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> check once every 16 iterations. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN><SPAN style="color: rgb(0, 0, 0);">
+                (ustime()</SPAN>-start) &gt;<SPAN style="color: rgb(0, 0, 0);"> timelimit)
+            {
+                </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 如果遍历次数正好是 16 的倍数
+                </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 并且遍历的时间超过了 timelimit，超时了
+                </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 那么将timelimit_exit赋值为1，下一个if返回吧</SPAN>
+                timelimit_exit = <SPAN style="color: rgb(128, 0, 128);">1</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+            }
+
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 已经超时了，返回</SPAN>
+            <SPAN style="color: rgb(0, 0, 255);">if</SPAN> (timelimit_exit) <SPAN style="color: rgb(0, 0, 255);">return</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">/*</SPAN><SPAN style="color: rgb(0, 128, 0);"> We don't repeat the cycle if there are less than 25% of keys
+             * found expired in the current DB. </SPAN><SPAN style="color: rgb(0, 128, 0);">*/</SPAN>
+            <SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);"> 如果删除的过期键少于当前数据库中过期键数量的 25 %，那么不再遍历。当然如果超过了25%,那说明过期键还很多，继续清理</SPAN>
+        } <SPAN style="color: rgb(0, 0, 255);">while</SPAN> (expired &gt; ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP/<SPAN style="color: rgb(128, 0, 128);">4</SPAN><SPAN style="color: rgb(0, 0, 0);">);
+    }
+}</SPAN></PRE>
+</DIV>
+<P>&nbsp;</P>
+<P>上面代码注释比较详细，所以这里就不给流程图了。</P>
+<P>&nbsp;</P></DIV>
+<DIV id="MySignature"></DIV>
+<DIV class="clear"></DIV>
+<DIV id="blog_post_info_block">
+<DIV id="BlogPostCategory"></DIV>
+<DIV id="EntryTag"></DIV>
+<DIV id="blog_post_info"></DIV>
+<DIV class="clear"></DIV>
+<DIV id="post_next_prev"></DIV></DIV>
+<DIV class="postDesc"><IMG align="absmiddle" src="redis学习笔记——Redis过期键的删除策略%20-%20lukexwang%20-%20博客园_files/speech.gif">&nbsp;posted 
+on <SPAN id="post-date">2015-08-01 14:50</SPAN> <A href="https://www.cnblogs.com/lukexwang/">lukexwang</A> 
+阅读(<SPAN id="post_view_count">...</SPAN>) 评论(<SPAN 
+id="post_comment_count">...</SPAN>)  <A href="https://i.cnblogs.com/EditPosts.aspx?postid=4694094" 
+rel="nofollow">编辑</A> <A onclick="AddToWz(4694094);return false;" href="https://www.cnblogs.com/lukexwang/p/4694094.html#">收藏</A></DIV>
+</DIV>
+<SCRIPT type="text/javascript">var allowComments=true,cb_blogId=232441,cb_entryId=4694094,cb_blogApp=currentBlogApp,cb_blogUserGuid='e9608d8c-0df4-e411-b908-9dcfd8948a71',cb_entryCreatedDate='2015/8/1 14:50:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</SCRIPT>
+</DIV><A name="!comments"></A>
+<DIV id="blog-comments-placeholder"></DIV>
+<SCRIPT type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</SCRIPT>
+
+<DIV id="comment_form" class="commentform"><A name="commentform"></A>
+<DIV id="divCommentShow"></DIV>
+<DIV id="comment_nav"><SPAN id="span_refresh_tips"></SPAN><A id="lnk_RefreshComments" 
+onclick="return RefreshCommentList();" href="javascript:void(0);" clientidmode="Static" 
+runat="server">刷新评论</A><A onclick="return RefreshPage();" href="https://www.cnblogs.com/lukexwang/p/4694094.html#">刷新页面</A><A 
+href="https://www.cnblogs.com/lukexwang/p/4694094.html#top">返回顶部</A></DIV>
+<DIV id="comment_form_container"></DIV>
+<DIV id="ad_text_under_commentbox" class="ad_text_commentbox"></DIV>
+<DIV id="ad_t2"></DIV>
+<DIV id="opt_under_post"></DIV>
+<SCRIPT src="redis学习笔记——Redis过期键的删除策略%20-%20lukexwang%20-%20博客园_files/gpt.js" async="async"></SCRIPT>
+
+<SCRIPT>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</SCRIPT>
+
+<SCRIPT>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</SCRIPT>
+
+<DIV id="cnblogs_c1" class="c_ad_block">
+<DIV style="width: 300px; height: 250px;" id="div-gpt-ad-1546353474406-0"></DIV>
+</DIV>
+<DIV id="under_post_news"></DIV>
+<DIV id="cnblogs_c2" class="c_ad_block">
+<DIV style="width: 468px; height: 60px;" id="div-gpt-ad-1539008685004-0"></DIV>
+</DIV>
+<DIV id="under_post_kb"></DIV>
+<DIV id="HistoryToday" class="c_ad_block"></DIV>
+<SCRIPT type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</SCRIPT>
+</DIV></DIV></DIV></DIV><!-- left ends --><!-- right starts -->
+<DIV id="right"><!-- 右侧工具部分 -->
+<DIV id="right_content"><!--done-->
+<H1 style="padding-top: 14px; padding-left: 42px;" class="listtitle">公告</H1>
+<DIV class="newsItem">
+<DIV id="blog-news"></DIV>
+<SCRIPT type="text/javascript">loadBlogNews();</SCRIPT>
+</DIV>
+<DIV id="calendar">
+<DIV style="display: none;" id="blog-calendar"></DIV>
+<SCRIPT type="text/javascript">loadBlogDefaultCalendar();</SCRIPT>
+</DIV>
+<DIV id="leftcontentcontainer">
+<DIV id="blog-sidecolumn"></DIV>
+<SCRIPT type="text/javascript">loadBlogSideColumn();</SCRIPT>
+</DIV></DIV><!-- //右侧工具部分 --></DIV><!-- right ends -->
+<DIV class="clear"></DIV></DIV>
+<DIV id="footer"><!--done-->Copyright ©2019 lukexwang</DIV></BODY></HTML>

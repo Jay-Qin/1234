@@ -1,0 +1,1120 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0042)https://moon-walker.iteye.com/blog/2406636 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><HTML 
+dir="ltr" xml:lang="zh-CN" xmlns="http://www.w3.org/1999/xhtml"><HEAD>
+<META content="text/html; charset=UTF-8" http-equiv="Content-Type"><TITLE>    
+java显式锁之--ReentrantLock - 天星博客 - ITeye博客  </TITLE>
+<META name="description" content="  前言  &nbsp;  采用synchronized进行加锁，是由jvm内部实现的 称为：内置锁。从java1.5开始，jdk api引入了新锁API 他们都继承自Lock，称为：显式锁，比如今天的主题ReentrantLock。之所以称做显式锁，主要有两点原因：">
+<META name="keywords" content="java ReentrantLock, 中断锁, 延迟锁, 轮询锁, 重入锁 java显式锁之--ReentrantLock"><LINK 
+rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"><LINK title="ITeye" 
+rel="search" type="application/opensearchdescription+xml" href="/open_search.xml"><LINK 
+title="天星博客" rel="alternate" type="application/rss+xml" href="/rss"><LINK rel="stylesheet" 
+type="text/css" href="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/blog.css" 
+media="screen"><LINK rel="stylesheet" type="text/css" href="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/blue.css" 
+media="screen">
+<SCRIPT type="text/javascript" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/application.js"></SCRIPT>
+
+<SCRIPT>
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?e19a8b00cf63f716d774540875007664";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</SCRIPT>
+
+<STYLE>
+/* 折叠效果 */
+.hide-main-content{
+    position: relative;
+}
+.hide-article-box {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    bottom: -1px;
+    width: 100%;
+    padding-top: 160px;
+    background-image: -webkit-gradient(linear,left top, left bottom,from(rgba(255,255,255,0)),color-stop(70%, #fff));
+    background-image: linear-gradient(-180deg,rgba(255,255,255,0) 0%,#fff 70%);
+}
+.hide-article-box #btn-readmore{
+    color: #ca0c16;
+    border: 1px solid #ca0c16;
+    margin: 10px auto;
+    padding: 0 8px;
+    display: block;
+    font-size: 14px;
+    border-radius: 4px;
+    text-align: center;
+    background-color: transparent;
+    height: 34px;
+    width: 74px;
+    line-height: 32px;
+    min-width: 72px;
+    cursor: pointer;
+}
+.hide-article-box #btn-readmore:hover{
+    background: #ca0c16;
+    color:#fff;
+    text-decoration: none;
+}
+</STYLE>
+<!-- 因INS广告原因 需要提前引入jquery -->
+<SCRIPT type="text/javascript" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/jquery-1.11.1.min.js"></SCRIPT>
+
+<SCRIPT type="text/javascript">var jQuery = jQuery.noConflict();// 解决jq与prototype.js命名空间冲突的问题</SCRIPT>
+
+<SCRIPT type="text/javascript" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/fixed-sidebar.js"></SCRIPT>
+<LINK rel="stylesheet" type="text/css" href="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/SyntaxHighlighter.css" 
+media="screen">
+<SCRIPT type="text/javascript" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/shCoreCommon.js"></SCRIPT>
+
+<SCRIPT type="text/javascript" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/hotkey.js"></SCRIPT>
+
+<SCRIPT type="text/javascript" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/code_favorites.js"></SCRIPT>
+
+<SCRIPT type="text/javascript" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/weiboshare.js"></SCRIPT>
+<!-- 请置于所有广告位代码之前 -->
+<SCRIPT src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/ds.js"></SCRIPT>
+<LINK href="http://moon-walker.iteye.com/blog/2406636" ref="canonical">
+<SCRIPT src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/c.js"></SCRIPT>
+
+<SCRIPT src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/recommend.js"></SCRIPT>
+
+<META name="GENERATOR" content="MSHTML 9.00.8112.16553"></HEAD>
+<BODY>
+<DIV id="header">
+<DIV id="blog_site_nav"><A class="homepage" 
+href="https://www.iteye.com/">首页</A><A 
+href="https://www.iteye.com/news">资讯</A><A href="https://www.iteye.com/magazines">精华</A><A 
+href="https://www.iteye.com/forums">论坛</A><A 
+href="https://www.iteye.com/ask">问答</A><A 
+href="https://www.iteye.com/blogs">博客</A><A href="https://www.iteye.com/blogs/subjects">专栏</A><A 
+href="https://www.iteye.com/groups">群组</A><!--  <a href="#" onclick="return false;" id="msna"><u>更多</u> <small>▼</small></a>--><!--  <div class="quick_menu" style="display:none;">--><!--    <a target="_blank" href="https://job.iteye.com/iteye">知识库</a>--><!--    <a href="https:///search">搜索</a>--><!--  </div>-->
+</DIV>
+<DIV id="user_nav"><A class="welcome" title="登录" href="https://moon-walker.iteye.com/login">您还未登录 
+!</A><A href="https://moon-walker.iteye.com/login">登录</A><!--<a href="/signup" class="nobg">注册</a>--><!--<a href="https://passport.csdn.net/account/mobileregister?from=https://www.iteye.com">注册</a>--></DIV></DIV>
+<DIV id="page"><!--    <div id="branding" class="clearfix">--><!--      <div id="blog_name">--><!--        <h1><a href="/">--><!--            </a></h1>--><!--      </div>--><!--      <div id='fd'></div>--><!--      <div id="blog_navbar">--><!--        <ul>--><!--        </ul>--><!--        <div class="search">--><!--          <form action="/blog/search" method="get">--><!--            <input class="search_text" id="query" name="query" style="margin-left: 10px;width: 110px;" type="text"--><!--              value="" />--><!--            <input class="submit_search" type="submit" value="" />--><!--          </form>--><!--        </div>--><!--        <div id="fd"></div>--><!--      </div>--><!--    </div>-->` 
+   
+<DIV id="content" class="clearfix">
+<DIV id="local">
+<DIV class="local_top"></DIV>
+<DIV id="blog_owner">
+<DIV id="blog_owner_logo"><A href="https://moon-walker.iteye.com/"><IMG class="logo" 
+title="moon_walker的博客: 天星博客" alt="moon_walker的博客" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/dc720dce-63b4-3bbc-9fde-a5282a819ea0.png" 
+width="1"></A></DIV>
+<DIV id="blog_owner_name">moon_walker</DIV></DIV>
+<DIV id="blog_actions">
+<UL>
+  <LI>浏览:              110887 次</LI>
+  <LI>性别:              <IMG title="男" alt="Icon_minigender_1" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/icon_minigender_1.gif"></LI>
+  <LI>来自:              成都            </LI>
+  <LI><IMG src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/offline.gif"></LI></UL></DIV>
+<DIV id="user_visits" class="clearfix">
+<H5>最近访客 <SPAN 
+style="padding-left: 30px; font-size: 12px; font-weight: normal;"><A href="https://moon-walker.iteye.com/blog/user_visits">更多访客&gt;&gt;</A></SPAN></H5>
+<DIV class="user_visit">
+<DIV class="logo"><A href="https://1275061063-qq-com.iteye.com/" 
+target="_blank"><IMG class="logo" title="一梦天涯的博客: " alt="一梦天涯的博客" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/user-logo-thumb.gif" 
+width="48"></A></DIV>
+<DIV class="left"><A title="一梦天涯" href="https://1275061063-qq-com.iteye.com/" 
+target="_blank">一梦天涯</A></DIV></DIV>
+<DIV class="user_visit">
+<DIV class="logo"><A href="https://cpaz-stido.iteye.com/" target="_blank"><IMG 
+class="logo" title="cpaz_stido的博客: " alt="cpaz_stido的博客" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/user-logo-thumb.gif" 
+width="48"></A></DIV>
+<DIV class="left"><A title="cpaz_stido" href="https://cpaz-stido.iteye.com/" 
+target="_blank">cpaz_stido</A></DIV></DIV>
+<DIV class="user_visit">
+<DIV class="logo"><A href="https://873747962.iteye.com/" target="_blank"><IMG 
+class="logo" title="一个灰熊的博客: " alt="一个灰熊的博客" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/user-logo-thumb.gif" 
+width="48"></A></DIV>
+<DIV class="left"><A title="一个灰熊" href="https://873747962.iteye.com/" target="_blank">一个灰熊</A></DIV></DIV>
+<DIV class="user_visit">
+<DIV class="logo"><A href="https://liuminghan0617.iteye.com/" 
+target="_blank"><IMG class="logo" title="liuminghan0617的博客: " alt="liuminghan0617的博客" 
+src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/user-logo-thumb.gif" 
+width="48"></A></DIV>
+<DIV class="left"><A title="liuminghan0617" href="https://liuminghan0617.iteye.com/" 
+target="_blank">liuminghan0617</A></DIV></DIV></DIV>
+<DIV id="user_title_list" class="clearfix">
+<H5>博主相关</H5>
+<LI><A href="https://moon-walker.iteye.com/">博客</A></LI>
+<LI><A href="https://moon-walker.iteye.com/weibo">微博</A></LI>
+<LI><A href="https://moon-walker.iteye.com/album">相册</A></LI>
+<LI><A href="https://moon-walker.iteye.com/link">收藏</A></LI>
+<LI><A href="https://moon-walker.iteye.com/blog/guest_book">留言</A></LI>
+<LI><A href="https://moon-walker.iteye.com/blog/profile">关于我</A></LI></DIV>
+<DIV id="blog_menu">
+<H5>文章分类</H5>
+<UL>
+  <LI><A href="https://moon-walker.iteye.com/">全部博客 (93)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/365157">架构 (6)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/368541">架构 openresty lua 
+  (1)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/372188">jvm (3)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/372439">java基础 
+  (17)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/372401">没事儿的时候翻来看看 
+  (0)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/368563">java学习笔记 
+  (1)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/368883">大数据 hadoop 
+  (2)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/373119">mysql (2)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/373256">java国际化 
+  (6)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/373523">spring 
+(7)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/374343">大数据 (4)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/374436">netty (2)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/374856">spring boot 
+  (1)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/375098">设计模式 (12)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/375260">每周总结 (1)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/376215">常见的攻击防御 
+  (1)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/376219">redis (4)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/376935">多线程 (16)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/377976">OSGI (7)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/378312">计算机基础 (1)</A></LI>
+  <LI><A href="https://moon-walker.iteye.com/category/382196">jdk1.8 
+(0)</A></LI></UL></DIV>
+<DIV id="month_blogs">
+<H5>社区版块</H5>
+<UL>
+  <LI><A href="https://moon-walker.iteye.com/blog/news">我的资讯</A> (              
+  0)</LI>
+  <LI><A href="https://moon-walker.iteye.com/blog/post">我的论坛</A> (              
+  0)            </LI>
+  <LI><A href="https://moon-walker.iteye.com/blog/answered_problems">我的问答</A> (  
+              0)</LI></UL></DIV>
+<DIV id="month_blogs">
+<H5>存档分类</H5>
+<UL>
+  <LI><A href="https://moon-walker.iteye.com/blog/monthblog/2018-12">2018-12</A> 
+               (              1)</LI>
+  <LI><A href="https://moon-walker.iteye.com/blog/monthblog/2018-03">2018-03</A> 
+               (              1)</LI>
+  <LI><A href="https://moon-walker.iteye.com/blog/monthblog/2018-02">2018-02</A> 
+               (              3)</LI>
+  <LI><A 
+  href="https://moon-walker.iteye.com/blog/monthblog_more">更多存档...</A></LI></UL></DIV>
+<DIV id="guest_books">
+<H5>最新评论</H5>
+<UL>
+  <LI><A title="bart233" href="https://bart233.iteye.com/" 
+  target="_blank">bart233</A>：              &nbsp;&nbsp;&nbsp;<BR><A href="https://moon-walker.iteye.com/blog/2374195#bc2402655">java 
+  Cloneable—从原型模式说起</A></LI>
+  <LI><A title="bart233" href="https://bart233.iteye.com/" 
+  target="_blank">bart233</A>：              引用<BR><A href="https://moon-walker.iteye.com/blog/2374195#bc2402654">java 
+  Cloneable—从原型模式说起</A></LI>
+  <LI><A title="moon_walker" href="https://moon-walker.iteye.com/" target="_blank">moon_walker</A>： 
+               果粒儿我是 写道“切面方法里只能接收到方法的入参，也就是你这里 ...<BR><A href="https://moon-walker.iteye.com/blog/2385138#bc2402387">一种基于kafka+storm实现的日志记录方法</A></LI>
+  <LI><A title="果粒儿我是" href="https://201608280324.iteye.com/" 
+  target="_blank">果粒儿我是</A>：              “切面方法里只能接收到方法的入参，也就是你这里的UserDTO 
+  ...<BR><A 
+  href="https://moon-walker.iteye.com/blog/2385138#bc2402382">一种基于kafka+storm实现的日志记录方法</A></LI>
+  <LI><A title="果粒儿我是" href="https://201608280324.iteye.com/" 
+  target="_blank">果粒儿我是</A>：              moon_walker 写道创建基类也有侵入性，感觉可以把方法 
+  ...<BR><A 
+  href="https://moon-walker.iteye.com/blog/2385138#bc2402381">一种基于kafka+storm实现的日志记录方法</A></LI></UL></DIV>
+<DIV class="local_bottom"></DIV>
+<DIV id="nav_show_top_stop">
+<DIV><!-- 广告位：PC端-iteye博客详情页左侧Button1-200*200 --><!-- Ads ID 423 --></DIV>
+<DIV><!-- 广告位：PC端-iteye博客详情页左侧Button2-200*200 --><!-- Ads ID 424 --></DIV></DIV></DIV>
+<DIV id="main">
+<DIV style="display: none;" class="h-entry"><A class="p-author" href="https://moon-walker.iteye.com/" 
+target="_blank">moon_walker</A></DIV>
+<DIV class="blog_main">
+<SCRIPT type="application/ld+json">
+    {
+        "@context": "https://zhanzhang.baidu.com/contexts/cambrian.jsonld",
+        "@id": "http://moon-walker.iteye.com/blog/2406636",
+        "title": "java显式锁之--ReentrantLock",
+        "images": [],
+        "description": "",
+        "pubDate": "2018-01-04T15:10:38"
+    }
+  </SCRIPT>
+
+<DIV class="blog_title">
+<H3><A 
+href="https://moon-walker.iteye.com/blog/2406636">java显式锁之--ReentrantLock</A><EM 
+class="actions"></EM></H3>
+<UL class="blog_categories"><STRONG>博客分类：</STRONG> 
+  <LI><A href="https://moon-walker.iteye.com/category/376935">多线程</A></LI> </UL>
+<DIV class="news_tag"><A href="http://www.iteye.com/blogs/tag/java%20ReentrantLock">java 
+ReentrantLock</A><A href="http://www.iteye.com/blogs/tag/%E4%B8%AD%E6%96%AD%E9%94%81">中断锁</A><A 
+href="http://www.iteye.com/blogs/tag/%E5%BB%B6%E8%BF%9F%E9%94%81">延迟锁</A><A 
+href="http://www.iteye.com/blogs/tag/%E8%BD%AE%E8%AF%A2%E9%94%81">轮询锁</A><A 
+href="http://www.iteye.com/blogs/tag/%E9%87%8D%E5%85%A5%E9%94%81">重入锁</A>&nbsp;</DIV></DIV>
+<DIV id="blog_content" class="hide-main-content">
+<DIV class="hide-article-box text-center"><A id="btn-readmore" 
+class="btn">阅读更多</A></DIV>
+<DIV style="font-size: 14px;" class="iteye-blog-content-contain">
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'><SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'><STRONG>前言</STRONG></SPAN></SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>采用<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>synchronized</SPAN>进行加锁，是由<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>jvm</SPAN>内部实现的 
+称为：内置锁。从<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>java1.5</SPAN>开始，<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>jdk 
+api</SPAN>引入了新锁<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>API 
+</SPAN>他们都继承自<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>Lock</SPAN>，称为：显式锁，比如今天的主题<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>。之所以称做显式锁，主要有两点原因：<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>1</SPAN>、相对于内置锁是有<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>jvm</SPAN>内部实现的，显式锁是在使用<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>java 
+api</SPAN>实现的，确切的说是基于<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>AQS</SPAN>实现的（对<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>AQS</SPAN>的理解可以点击<A 
+href="https://moon-walker.iteye.com/blog/2406446" target="_blank">这里</A>）；<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>2</SPAN>、使用<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>Lock</SPAN>加锁，需要显式的加锁以及释放锁，相对于内置锁使用<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>synchronized</SPAN>而言，要麻烦些。下面来看看<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>的基本用法：</SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P><PRE class="java" name="code">public class ReentrantLockTest {
+ 
+    public static void main(String[] args) {
+        ReentrantLock lock = new ReentrantLock();
+        lock.lock();
+        try{
+            //业务方法
+        }catch (Exception e){
+            //业务异常
+        }finally {
+            lock.unlock();
+        }
+    }
+}</PRE>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>从表面上看，使用显式锁比使用内置锁更繁琐，需要手动调用<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>lock</SPAN>加锁和<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>unlock</SPAN>解锁，如果忘记<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>unlock 
+</SPAN>就会导致其他线程永远无法获取到锁的严重错误。既然为何还要新增显式锁呢？</SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>简单的讲，显式锁的内置锁的补充：显式锁<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>Lock</SPAN>提供了中断锁、定时锁、可轮询等实现，这些都是内置锁<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>synchronized</SPAN>不具备的；显式锁可以指定为公平锁或非公平锁，而内置锁<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>synchronized</SPAN>锁是非公平的。使用<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>synchronized</SPAN>加锁，有些情况下很容易导致死锁，在这种情况下改用显式锁定时功能 
+在一段时间没有获取到锁，就放弃获取锁 就可以避免死锁。</SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>另外与内置锁还有一个明显不同的地方是，内置锁可以用在方法上，而显式锁只能用在代码块上，也就是说强制使用更细粒度的加锁。</SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>可以说内置锁和显式锁是互补关系：显式锁不能用在方法上，而且容易忘记释放锁；内置锁不可中断，有些情况下容易产生死锁，另外内置锁无法实现公平锁。根据这些差异在自己的实际业务场景中选择性使用即可，需要说明下的是显式锁的性能比内置锁性能稍微好些。</SPAN></P>
+<P class="MsoNormal">&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>理论总结到处结束，下面开始以<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>锁分析下显式锁的实现原理。主要包括：排它锁、公平锁、非公平锁、中断锁、延迟锁、轮询锁、重入锁的实现原理。</SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 20px;'><STRONG><SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif;'><SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif;'>ReentrantLock</SPAN>实现原理</SPAN></STRONG></SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P class="MsoNormal"><STRONG><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>对<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>AQS</SPAN>的实现</SPAN></STRONG></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>首先需要说明的<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>与内置锁一样都是排它锁，从名字上开是与内置锁一样是可重入的。<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>与前两篇文章中讲的<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>Semaphore</SPAN>和<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>CountDownLatch</SPAN>一样都是基于<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>AQS</SPAN>实现的，只是<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>Semaphore</SPAN>和<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>CountDownLatch</SPAN>都是共享锁的实现方法，而<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>是排它锁实现，也就是说<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>的内部类在实现<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>AQS</SPAN>时是对<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>tryAcquire</SPAN>、<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>tryRelease</SPAN>这两个方法进行扩展的。首先来看内部类<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>Sync</SPAN>对<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>AQS</SPAN>的实现<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>(Sync</SPAN>还有两个子类，分别对应公平和非公平锁实现<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>)</SPAN>：</SPAN></P><PRE class="java" name="code">abstract static class Sync extends AbstractQueuedSynchronizer {
+    private static final long serialVersionUID = -5179523762034025860L;
+ 
+    //交给公平和非公平的子类去实现
+    abstract void lock();
+ 
+    //非公平的排它尝试获取锁实现
+    final boolean nonfairTryAcquire(int acquires) {
+        final Thread current = Thread.currentThread();
+        int c = getState();
+        //如果AQS的state为0说明获得锁，并且对state加1，其他线程获取锁时被阻塞
+        if (c == 0) {
+            if (compareAndSetState(0, acquires)) {
+                setExclusiveOwnerThread(current);
+                return true;
+            }
+        }
+       
+        //判断线程是不是重新获取锁，如果是 无需排队，对AQS的state+1处理，这就是重入锁的实现
+        else if (current == getExclusiveOwnerThread()) {
+            int nextc = c + acquires;
+            if (nextc &lt; 0) // overflow
+                throw new Error("Maximum lock count exceeded");
+            setState(nextc);
+            return true;
+        }
+        return false;//都不满足获取锁失败，进入AQS队列阻塞
+    }
+ 
+    //公平的排它尝试释放锁实现
+    protected final boolean tryRelease(int releases) {
+        int c = getState() - releases;//对应重入锁而言，在释放锁时对AQS的state字段减1
+        if (Thread.currentThread() != getExclusiveOwnerThread())
+            throw new IllegalMonitorStateException();
+        boolean free = false;
+        if (c == 0) {//如果AQS的状态字段已变为0，说明该锁被释放
+            free = true;
+            setExclusiveOwnerThread(null);
+        }
+        setState(c);
+        return free;
+    }
+ 
+    //判断是否是当前线程持有锁
+    protected final boolean isHeldExclusively() {
+        // While we must in general read state before owner,
+        // we don't need to do so to check if current thread is owner
+        return getExclusiveOwnerThread() == Thread.currentThread();
+    }
+ 
+    //获取条件队列
+    final ConditionObject newCondition() {
+        return new ConditionObject();
+    }
+ 
+    // Methods relayed from outer class
+ 
+    final Thread getOwner() {
+        return getState() == 0 ? null : getExclusiveOwnerThread();
+    }
+ 
+    final int getHoldCount() {
+        return isHeldExclusively() ? getState() : 0;
+    }
+ 
+    final boolean isLocked() {
+        return getState() != 0;
+    }
+ 
+    /**
+     * 说明ReentrantLock是可序列化的
+     */
+    private void readObject(java.io.ObjectInputStream s)
+            throws java.io.IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        setState(0); // reset to unlocked state
+    }
+}</PRE>
+<P class="MsoNormal">&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'><STRONG>非公平锁</STRONG></SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>非公平锁实现：</SPAN></P><PRE class="java" name="code">static final class NonfairSync extends Sync {
+    private static final long serialVersionUID = 7316153563782823691L;
+ 
+    /**
+     * Performs lock.  Try immediate barge, backing up to normal
+     * acquire on failure.
+     */
+    final void lock() {
+        //判断当前state是否为0，如果为0直接通过cas修改状态，并获取锁
+        if (compareAndSetState(0, 1))
+            setExclusiveOwnerThread(Thread.currentThread());
+        else
+            acquire(1);//否则进行排队
+    }
+ 
+    //调用父类的的非公平尝试获取锁
+    protected final boolean tryAcquire(int acquires) {
+        return nonfairTryAcquire(acquires);
+    }
+}</PRE>
+<P class="MsoNormal">&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>非公平锁的实现很简单，在<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>lock</SPAN>获取锁时首先判断判断当前锁是否可以用（<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>AQS</SPAN>的<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>state</SPAN>状态值是否为<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>0</SPAN>），如果是 
+直接“插队”获取锁，否则进入排队队列，并阻塞当前线程。</SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'><STRONG>公平锁</STRONG></SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>公平锁实现：</SPAN></P><PRE class="java" name="code">static final class FairSync extends Sync {
+    private static final long serialVersionUID = -3000897897090466540L;
+ 
+    final void lock() {
+        acquire(1);//获取公平，每次都需要进入队列排队
+    }
+ 
+    /**
+     * 公平锁实现 尝试获取实现方法，
+     * Fair version of tryAcquire.  Don't grant access unless
+     * recursive call or no waiters or is first.
+     */
+    protected final boolean tryAcquire(int acquires) {
+        final Thread current = Thread.currentThread();
+        int c = getState();
+        if (c == 0) {
+            //AQS队列为空，或者当前线程是头节点 即可获的锁
+            if (!hasQueuedPredecessors() &amp;&amp;
+                    compareAndSetState(0, acquires)) {
+                setExclusiveOwnerThread(current);
+                return true;
+            }
+        }
+        //重入锁实现
+        else if (current == getExclusiveOwnerThread()) {
+            int nextc = c + acquires;
+            if (nextc &lt; 0)
+                throw new Error("Maximum lock count exceeded");
+            setState(nextc);
+            return true;
+        }
+        return false;
+    }
+}</PRE>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>公平锁的实现，跟<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>Semaphore</SPAN>一样在<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>tryAcquire</SPAN>方法实现中通过<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>hasQueuedPredecessors</SPAN>方法判断当前线程是否是<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>AQS</SPAN>队列中的头结点或者<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>AQS</SPAN>队列为空，并且当前锁状态可用 
+可以直接获取锁，否则需要排队。</SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'><STRONG>重入锁</STRONG></SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>不论是公平锁还是非公平锁的实现中，在<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>tryAcquire</SPAN>方法中判断如果锁已经被占用，都会判断是否是当前线程占用，如果是 
+可以再次获取锁（无需排队），并对<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>AQS</SPAN>的<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>state</SPAN>字段加<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>1</SPAN>；在释放锁时每次都减<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>1</SPAN>，直到为<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>0</SPAN>时，其他线程在可用。顺便提一下内置锁<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>synchronized</SPAN>也是可以重入的。</SPAN></P><PRE class="java" name="code">//重入锁实现
+        else if (current == getExclusiveOwnerThread()) {
+            int nextc = c + acquires;
+            if (nextc &lt; 0)
+                throw new Error("Maximum lock count exceeded");
+            setState(nextc);
+            return true;
+        }
+ </PRE>
+<P class="MsoNormal">&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'><STRONG>排它锁</STRONG></SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>从两个<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>tryAcquire</SPAN>的实现可以看出<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>的排它锁实现，根本上是通过<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>AQS</SPAN>的<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>state</SPAN>字段保证的，每次获取锁时都是首先判断<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>state</SPAN>是否为<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>0</SPAN>，并且只有<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>1</SPAN>个线程能获取到锁。这个特性与内置锁<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>synchronized</SPAN>相同。</SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>关于<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>对<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>AQS</SPAN>的三个内部类实现分析完毕，接下来看下<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>的核心方法，实现都很简单基本都是直接调用<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>FairSync</SPAN>或者<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>NonfairSync</SPAN>对<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>AQS</SPAN>的实现。比如<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>lock</SPAN>和<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>unlock</SPAN>方法：</SPAN></P><PRE class="java" name="code">public void lock() {
+        sync.lock();
+    }
+ 
+    public void unlock() {
+        sync.release(1);
+    }
+ </PRE>
+<P class="MsoNormal">&nbsp;</P>
+<P class="MsoNormal"><STRONG><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>延迟锁</SPAN></STRONG></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>延迟锁，指的是在指定时间内没有获取到锁，就取消阻塞并返回获取锁失败，由调用线程自己决定后续操作，比如放弃操作或者创建轮询获取锁。</SPAN></P><PRE class="java" name="code">public boolean tryLock(long timeout, TimeUnit unit)
+            throws InterruptedException {
+        //调用AQS带延时功能获取方法
+        return sync.tryAcquireNanos(1, unit.toNanos(timeout));
+}</PRE>
+<P class="MsoNormal">&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'><STRONG>中断锁</STRONG></SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'><SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>tryLock(long 
+timeout, TimeUnit unit)</SPAN>这个方法会抛出<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>InterruptedException</SPAN>异常，可以用于实现中断锁，即等待的时间还未到，可以直接调用<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>interrupt</SPAN>方法以中断获取锁。另外<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>还有一个方法可以实现中断锁，即：<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>lockInterruptibly</SPAN>方法</SPAN></P><PRE class="java" name="code">public void lockInterruptibly() throws InterruptedException {
+        //直接调用AQS的可中断获取方法
+        sync.acquireInterruptibly(1);
+    }</PRE>
+<P class="MsoNormal">&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>通过调用该方法获取锁跟<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>lock</SPAN>方法一样，如果获取不到会阻塞，不同的是使用这个方法获取锁是可以在外部中断的，但<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>lock</SPAN>方法不行。使用灵活使用可中断锁，可以防止死锁。</SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'><SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>Ps</SPAN>：中断锁是对获取锁的中断，注意与线程被中断的区别（虽然本质上都是中断线程）。不管是使用显式锁还是内置锁的线程阻塞都是可以被中断的，而中断锁是指线程在获取锁的过程中被阻塞 
+可以中断现在继续排队获取锁的过程。中断锁：是中断获取锁排队阻塞，可以使用<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>的<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>tryLock(long 
+timeout, TimeUnit unit)</SPAN>、<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>lockInterruptibly()</SPAN>这两个方法实现，而使用内置锁<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>synchronized 
+</SPAN>如果线程已经在排队获取锁是无法被中断的；中断线程：是中断线程执行业务方法过程中的阻塞（如<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>sleep</SPAN>阻塞，<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>BlookingQueue</SPAN>阻塞）。</SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'><STRONG>轮询锁</STRONG></SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'><SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>tryLock(long 
+timeout, TimeUnit unit)</SPAN>这个方法延迟获取锁的方法，另外<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>还有一个非延迟也不阻塞的获取锁方法<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>tryLock()</SPAN>，尝试获取锁，如果没有获取到直接反回<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>false 
+</SPAN>不阻塞线程：</SPAN></P><PRE class="java" name="code">public boolean tryLock() {
+        //默认只有非公平实现
+        return sync.nonfairTryAcquire(1);
+}</PRE>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'><SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>不直接提供轮询锁<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>api，</SPAN>但可以用<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>tryLock(long 
+timeout, TimeUnit unit)</SPAN>和<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>tryLock() 
+</SPAN>这两个方法实现。即没有获取到锁，可以使用<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>while</SPAN>循环 
+隔一段时间再次获取，直到获取到为止，这种方式是解决死锁的常用手段。这两个方法的使用区别：<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>tryLock(long 
+timeout, TimeUnit unit)</SPAN>不用在<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>while</SPAN>中<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>sleep</SPAN>，而<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>tryLock()</SPAN>需要自己在<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>while</SPAN>中<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>sleep</SPAN>一会儿，减少资源开销。以<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>tryLock()</SPAN>为例 
+实现轮询锁：</SPAN></P><PRE class="java" name="code">public class ReentrantLockTest {
+ 
+    public static void main(String[] args) throws Exception{
+        ReentrantLock lock = new ReentrantLock(true);
+        while (true){
+            if(lock.tryLock()){//这里不阻塞
+                try{
+                    System.out.println("执行业务方法");
+                    //业务方法
+                    return;
+                }catch (Exception e){
+                    //业务异常
+                }finally {
+                    lock.unlock();
+                }
+ 
+            }
+            //如果没有获取到睡一会儿，再取锁
+            Thread.sleep(1000);
+        }
+    }
+}</PRE>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'><SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>中还有一个重要方法<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>newCondition</SPAN>获取<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>“</SPAN>条件队列<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>”</SPAN>方法，其作用类似使用内置锁时<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>Object</SPAN>的<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>wait</SPAN>、<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>notify</SPAN>、<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>notifyAll</SPAN>。这部分内容比较多，在这里就不展开讲解，后面抽时间单独总结下。另外<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>还有一些其他辅助方法，都比较好理解，就不一一列举，在使用过程中自行查阅即可。</SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'><STRONG><SPAN 
+style="font-size: 20px;">总结</SPAN></STRONG></SPAN></P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'></SPAN>&nbsp;</P>
+<P>&nbsp;</P>
+<P class="MsoNormal"><SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>最后再强调下显式锁<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>Lock</SPAN>与内置锁是互补关系，有些场景下只能使用内置锁（比如对方法加锁）；有些场景下只能使用<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>Lock</SPAN>（比如 
+需要防止死锁、或者实现公平锁）。显式锁在<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>java 
+API</SPAN>中常用的还有读写锁<SPAN style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantReadWriteLock</SPAN>，本次主要讲了重入锁<SPAN 
+style='font-family: "Microsoft YaHei", 微软雅黑, SimHei, tahoma, arial, helvetica, sans-serif; font-size: 18px;'>ReentrantLock</SPAN>的实现原理和基本用法。</SPAN></P>
+<P class="MsoNormal">&nbsp;</P>
+<P class="MsoNormal">&nbsp;</P></DIV>
+<DIV><!-- 广告位：PC端-iteye博客详情页底部banner2-728*90 -->
+<SCRIPT>(function() {
+          var s = "_" + Math.random().toString(36).slice(2);
+          document.write('<div id="' + s + '"></div>');
+          (window.slotbydup=window.slotbydup || []).push({
+              id: '4774193',
+              container: s,
+              size: '728,90',
+              display: 'inlay-fix'
+          });
+      })();
+      jQuery(function(){
+        window.csdn.recommendSide({
+          contentBox: "recommend",
+          postBox: jQuery(".news-right-side"),
+          query:'java显式锁之--ReentrantLock',
+          popu:'725'
+        })
+      });
+    </SCRIPT>
+</DIV>
+<DIV id="bottoms" class="clearfix">
+<DIV id="digg_bottom" class="clearfix">
+<DIV class="digged"><STRONG>0</STRONG> <BR>顶</DIV>
+<DIV class="digged"><STRONG>0</STRONG> <BR>踩</DIV></DIV>
+<DIV id="share_weibo">分享到：      <A title="分享到新浪微博" href="javascript:;" 
+data-type="sina"><IMG src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/sina.jpg"></A><A 
+title="分享到腾讯微博" href="javascript:;" data-type="qq"><IMG src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/tec.jpg"></A></DIV></DIV>
+<DIV class="blog_nav">
+<DIV class="pre_next"><A class="next" title="使用DelayQueue构建自己的ThreadPoolExecutor" 
+href="https://moon-walker.iteye.com/blog/2406790">使用DelayQueue构建自己的ThreadPoolExecut 
+...</A>      |      <A class="pre" title="java信号量—Semaphore" href="https://moon-walker.iteye.com/blog/2406557">java信号量—Semaphore</A></DIV></DIV>
+<DIV class="blog_bottom">
+<UL>
+  <LI>2018-01-04 15:10</LI>
+  <LI>浏览 1003</LI>
+  <LI><A 
+  href="https://moon-walker.iteye.com/blog/2406636#comments">评论(0)</A></LI>
+  <LI>分类:<A href="https://www.iteye.com/blogs/category/language">编程语言</A></LI>
+  <LI class="last"><A class="more" href="https://www.iteye.com/wiki/blog/2406636" 
+  target="_blank">查看更多</A></LI></UL></DIV>
+<DIV class="blog_comment">
+<H5>评论</H5><A id="comments" name="comments"></A></DIV>
+<DIV class="blog_comment">
+<H5>发表评论</H5>
+<P style="text-align: center; margin-top: 30px; margin-bottom: 0px;"><A style="background-color: white;" 
+href="https://moon-walker.iteye.com/login"> <IMG style="margin-right: 10px; vertical-align: middle;" 
+src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/login_icon.png"></A><A 
+href="https://moon-walker.iteye.com/login">  您还没有登录,请您登录后再发表评论 
+</A></P></DIV></DIV>
+<DIV class="boutique-curr-box blog_comment">
+<DIV id="album_detail_wrap" class="boutique-curr clearfix">
+<H5 class="h3titles">相关资源推荐</H5>
+<UL style="margin-top: 8px;" class="clearfix">
+  <LI class="news-recommends-ajax"><A title="并发编程学习总结(六) ：java 显式锁ReentrantLock使用详解之测试锁与超时" 
+  href="https://blog.csdn.net/u011784767/article/details/51659701" target="_blank" 
+  data-track-view='{"con":",https://blog.csdn.net/u011784767/article/details/51659701,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/u011784767/article/details/51659701,-","mod":"popu_712"}'>并发编程学习总结(六) 
+  ：<EM class="related_suggestion_highlight">java</EM> <EM class="related_suggestion_highlight">显式</EM>锁<EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>使用详解之测试锁与超时</A>
+  <P></P></LI>
+  <LI class="news-recommends-ajax"><A title="Java 可重入锁内存可见性分析" href="https://blog.csdn.net/moakun/article/details/80049272" 
+  target="_blank" data-track-view='{"con":",https://blog.csdn.net/moakun/article/details/80049272,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/moakun/article/details/80049272,-","mod":"popu_712"}'><EM 
+  class="related_suggestion_highlight">Java</EM> 可重入锁内存可见性分析</A>
+  <P>                转载自&nbsp;深度好文 | <EM 
+  class="related_suggestion_highlight">Java</EM> 可重入锁内存可见性分析一个习以为常的细节之前在做 <EM 
+  class="related_suggestion_highlight">ReentrantLock</EM> 
+  相关的试验，试验本身很简单，和本文相关的简化版如下：（提示：以下代码均可左右滑动）private static <EM class="related_suggestion_highlight">ReentrantLock</EM> 
+  LOCK = new <EM class="related_suggestion_highlight">ReentrantLock</EM>();
+   private static int count = 0; ... // 多线程 run 如下...              </P></LI>
+  <LI class="news-recommends-ajax"><A title="synchronized 与 ReentrantLock 同步代码块简单实现" 
+  href="https://blog.csdn.net/zhuyijian135757/article/details/51347682" target="_blank" 
+  data-track-view='{"con":",https://blog.csdn.net/zhuyijian135757/article/details/51347682,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/zhuyijian135757/article/details/51347682,-","mod":"popu_712"}'>synchronized 
+  与 <EM class="related_suggestion_highlight">ReentrantLock</EM> 同步代码块简单实现</A>
+  <P>synchronized 与 <EM class="related_suggestion_highlight">ReentrantLock</EM> 
+  简单实现              </P></LI>
+  <LI class="news-recommends-ajax"><A title="Java锁（二）ReentrantLock独占锁分析" href="https://blog.csdn.net/h70614959/article/details/51206990" 
+  target="_blank" data-track-view='{"con":",https://blog.csdn.net/h70614959/article/details/51206990,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/h70614959/article/details/51206990,-","mod":"popu_712"}'><EM 
+  class="related_suggestion_highlight">Java</EM>锁（二）<EM class="related_suggestion_highlight">ReentrantLock</EM>独占锁分析</A>
+  <P><EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>的功能是实现代码段的并发访问控制，是一种排它锁，也就是通常意义上所说的锁，内部有两种实现NonfairSync和FairSync，公平锁和非公平锁，默认采用非公平锁策略。<EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>的实现不仅可以替代隐式的synchronized关键字，而且能够提供超过关键字本身的多种功能。
+  1、<EM class="related_suggestion_highlight">ReentrantLock</EM>的使用class X {  
+  privat              </P></LI>
+  <LI class="news-recommends-ajax"><A title="java 显式锁ReentrantLock使用详解之条件对象" 
+  href="https://blog.csdn.net/liuchaoxuan/article/details/79560697" target="_blank" 
+  data-track-view='{"con":",https://blog.csdn.net/liuchaoxuan/article/details/79560697,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/liuchaoxuan/article/details/79560697,-","mod":"popu_712"}'><EM 
+  class="related_suggestion_highlight">java</EM> <EM class="related_suggestion_highlight">显式</EM>锁<EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>使用详解之条件对象</A>
+  <P>(1) <EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>的条件对象通常，线程进入临界区，却发现在某一条件满足之后才能执行，条件对象就是用来管理那些已经获得了锁，但是却不能做有用工作的线程。一个锁对象可以有一个或多个相关的条件对象，我们可用lock.newCondition()方法获得一个条件对象。[<EM 
+  class="related_suggestion_highlight">java</EM>] view plain copy <EM class="related_suggestion_highlight">ReentrantLock</EM> 
+  myLock = new ReentrantLoc              </P></LI>
+  <LI class="news-recommends-ajax"><A title="java并发锁ReentrantLock源码分析一 可重入支持中断锁的实现原理" 
+  href="https://blog.csdn.net/prestigeding/article/details/53084883" target="_blank" 
+  data-track-view='{"con":",https://blog.csdn.net/prestigeding/article/details/53084883,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/prestigeding/article/details/53084883,-","mod":"popu_712"}'><EM 
+  class="related_suggestion_highlight">java</EM>并发锁<EM class="related_suggestion_highlight">ReentrantLock</EM>源码分析一 
+  可重入支持中断锁的实现原理</A>
+  <P>                本文深入分析了<EM 
+  class="related_suggestion_highlight">Java</EM>可重入、支持中断锁<EM class="related_suggestion_highlight">ReentrantLock</EM>的实现原理，重点讲解了lock,unlock,lockInterupbilty方法的实现方式，并给出详细的流程图。并提出如下观点：
+  1）如果一个节点的状态设置为Node.SIGNAL,则说明它有后继节点，并处于阻塞状态。
+  2）ReentantLock的head节点，如果不为空，在该节点代表的线程为锁的占有者。这是对CLH算法的改进之处。众所周知，CLH算法的head节点为假节点，不代表任何线程。 
+               </P></LI>
+  <LI class="news-recommends-ajax"><A title="JAVA同步之ReentrantLock可中断锁的使用" href="https://blog.csdn.net/u011982711/article/details/78461234" 
+  target="_blank" data-track-view='{"con":",https://blog.csdn.net/u011982711/article/details/78461234,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/u011982711/article/details/78461234,-","mod":"popu_712"}'><EM 
+  class="related_suggestion_highlight">JAVA</EM>同步之<EM class="related_suggestion_highlight">ReentrantLock</EM>可中断锁的使用</A>
+  <P>http://www.iteedu.com/plang/<EM 
+  class="related_suggestion_highlight">java</EM>/super<EM class="related_suggestion_highlight">java</EM>/threadsafe/lockInterruptibly.php
+  以前我们用synchronized (mutex) {。。。。。。。 }
+  进行同步时必须等待别的线程释放锁后才能进入同步块，现在问题时当太长时间等待时不想再等了，怎么办？<EM class="related_suggestion_highlight">ReentrantLock</EM>为我们实现了中断等待 
+               </P></LI>
+  <LI class="news-recommends-ajax"><A title="《Java源码分析》：ReentrantLock.lock  锁机制" 
+  href="https://blog.csdn.net/u010412719/article/details/52083731" target="_blank" 
+  data-track-view='{"con":",https://blog.csdn.net/u010412719/article/details/52083731,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/u010412719/article/details/52083731,-","mod":"popu_712"}'>《<EM 
+  class="related_suggestion_highlight">Java</EM>源码分析》：<EM class="related_suggestion_highlight">ReentrantLock</EM>.lock 
+   锁机制</A>
+  <P>                《<EM 
+  class="related_suggestion_highlight">Java</EM>源码分析》：<EM class="related_suggestion_highlight">ReentrantLock</EM>.lock 
+   
+  锁机制AbstractQueuedSynchronizer这个类真的很难也很复杂，是构建锁以及实现其他相关同步类的基础框架。本来是没有打算来研究下这个类，但是由于想了解锁机制，因此，不可避免的需要研究它。但是这个类确实很难，自己看了几遍这个类也还是没有过多的看懂，本篇博文只能说是对自己看这个类的一点点理解和记录，若有错，请批评指正。基本的 
+               </P></LI>
+  <LI class="news-recommends-ajax"><A title="ReentrantLock获取锁及释放锁流程" href="https://blog.csdn.net/xuefeng0707/article/details/80445199" 
+  target="_blank" data-track-view='{"con":",https://blog.csdn.net/xuefeng0707/article/details/80445199,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/xuefeng0707/article/details/80445199,-","mod":"popu_712"}'><EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>获取锁及释放锁流程</A>
+  <P><EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>特性：可重入、排它锁内部使用AQS（AbstractQueuedSynchronizer）实现，主要技术：CAS、park/unpark主要使用AQS的两个成员变量来实现可重入排它锁。可重入：AQS.state用于记录进入锁的次数。排它锁：AQS.exclusiveOwnerThread用户当前占有锁的线程。一个线程获取锁时，调用<EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>.lock()，...             
+   </P></LI>
+  <LI class="news-recommends-ajax"><A title="java之ReentrantLock公平锁和非公平锁" href="https://blog.csdn.net/qq_22929803/article/details/51458340" 
+  target="_blank" data-track-view='{"con":",https://blog.csdn.net/qq_22929803/article/details/51458340,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/qq_22929803/article/details/51458340,-","mod":"popu_712"}'><EM 
+  class="related_suggestion_highlight">java</EM>之<EM class="related_suggestion_highlight">ReentrantLock</EM>公平锁和非公平锁</A>
+  <P>                大多数情况下，大家可能都会选择使用synchronized来加锁，<EM class="related_suggestion_highlight">ReentrantLock</EM>确实是一种高级加锁工具，在确实需要一些 
+  synchronized 所没有的特性的时候，比如时间锁等候、可中断锁等候、无块结构锁、多个条件变量或者锁投票。
+   以下实现公平锁和非公平锁，公平锁在性能上会多消耗点package com.cmcc.web.test.lock; import <EM class="related_suggestion_highlight">java</EM>.util 
+               </P></LI>
+  <LI class="news-recommends-ajax"><A title="Java线程并发中的锁——ReentrantLock（重入锁）原理详解" 
+  href="https://blog.csdn.net/fuyuwei2015/article/details/72583010" target="_blank" 
+  data-track-view='{"con":",https://blog.csdn.net/fuyuwei2015/article/details/72583010,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/fuyuwei2015/article/details/72583010,-","mod":"popu_712"}'><EM 
+  class="related_suggestion_highlight">Java</EM>线程并发中的锁——<EM class="related_suggestion_highlight">ReentrantLock</EM>（重入锁）原理详解</A>
+  <P><EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>是一个重入锁，可以支持一个线程对资源重复加锁，他还支持公平加锁和非公平加锁。synchronized关键字也隐式的支持重进入，比如一个synchronized修饰的递归方法，在方法执行时，执行线程在获取了锁之后仍能连续多次地获得该锁<EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>虽然没能像synchronized关键字一样支持隐式的重进入，但是在调用lock()方法时，已经获取到锁的线程，能够再 
+               </P></LI>
+  <LI class="news-recommends-ajax"><A title="ReentrantLock的lockInterruptibly和lock响应中断区别以及常见的锁汇总" 
+  href="https://blog.csdn.net/xuanfuhuo4769/article/details/81483695" target="_blank" 
+  data-track-view='{"con":",https://blog.csdn.net/xuanfuhuo4769/article/details/81483695,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/xuanfuhuo4769/article/details/81483695,-","mod":"popu_712"}'><EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>的lockInterruptibly和lock响应中断区别以及常见的锁汇总</A>
+  <P><EM 
+  class="related_suggestion_highlight">java</EM>.util.concurrent.locks.<EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>
+  1.lock.lockInterruptibly();立即响应中断：public class TestLockInterruptibly {
+  &nbsp;&nbsp; &nbsp;static <EM 
+  class="related_suggestion_highlight">ReentrantLock</EM> lock = new <EM class="related_suggestion_highlight">ReentrantLock</EM>();
+  &nbsp;&nbsp; &nbsp;public static void main(St...              </P></LI>
+  <LI class="news-recommends-ajax"><A title="synchronized和ReentrantLock异常退出时的锁处理" 
+  href="https://blog.csdn.net/JayLoveU/article/details/69475237" target="_blank" 
+  data-track-view='{"con":",https://blog.csdn.net/JayLoveU/article/details/69475237,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/JayLoveU/article/details/69475237,-","mod":"popu_712"}'>synchronized和<EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>异常退出时的锁处理</A>
+  <P>                在JDK5.0之前，在协调对共享对象的访问时可以使用的机制只有synchronized和volatile. 
+  JDK5.0新增了<EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>，作为一种可选的高级功能．<EM class="related_suggestion_highlight">ReentrantLock</EM>必须要在finally中unlock(), 
+  否则,如果在被加锁的代码中抛出了异常,那么这个锁将会永远无法释放. synchronized就没有这样的问题, 遇到异常退出时,会释放掉已经获得的锁.    
+            </P></LI>
+  <LI class="news-recommends-ajax"><A title="Java中的锁 synchronized、Lock、ReentrantLock、ReadWriteLock 和可重入锁、可中断锁、公平锁、读写锁" 
+  href="https://blog.csdn.net/ZHWang102107/article/details/83030604" target="_blank" 
+  data-track-view='{"con":",https://blog.csdn.net/ZHWang102107/article/details/83030604,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/ZHWang102107/article/details/83030604,-","mod":"popu_712"}'><EM 
+  class="related_suggestion_highlight">Java</EM>中的锁 synchronized、Lock、<EM class="related_suggestion_highlight">ReentrantLock</EM>、ReadWriteLock 
+  和可重入锁、可中断锁、公平锁、读写锁</A>
+  <P>                参考https://www.cnblogs.com/dolphin0520/p/3923167.html
+  在上一篇文章中我们讲到了如何使用关键字synchronized来实现同步访问。本文我们继续来探讨这个问题，从<EM class="related_suggestion_highlight">Java</EM> 
+  5之后，在<EM 
+  class="related_suggestion_highlight">java</EM>.util.concurrent.locks包下提供了另外一种方式来实现同步访问，那就是Lock。
+   也许有朋友会问，既然都可以通过synchronized来...              </P></LI>
+  <LI class="news-recommends-ajax"><A title="类锁 synchronized对象锁 和 Lock对象锁" href="https://blog.csdn.net/qq_33530388/article/details/63263530" 
+  target="_blank" data-track-view='{"con":",https://blog.csdn.net/qq_33530388/article/details/63263530,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/qq_33530388/article/details/63263530,-","mod":"popu_712"}'>https://blog.csdn.net/qq_33530388/article/details/63263530</A>
+  <P></P></LI>
+  <LI class="news-recommends-ajax"><A title="重入锁ReentrantLock、死锁和中断响应" href="https://blog.csdn.net/cby1516/article/details/80674703" 
+  target="_blank" data-track-view='{"con":",https://blog.csdn.net/cby1516/article/details/80674703,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/cby1516/article/details/80674703,-","mod":"popu_712"}'>重入锁<EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>、死锁和中断响应</A>
+  <P>import <EM 
+  class="related_suggestion_highlight">java</EM>.util.concurrent.locks.<EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>; public class IntLock 
+  implements Runnable{	//重入锁<EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>	public static <EM 
+  class="related_suggestion_highlight">ReentrantLock</EM> lock1 = new <EM class="related_suggestion_highlight">ReentrantLock</EM>();
+  	public static <EM class="related_suggestion_highlight">ReentrantLock</EM> 
+  l...              </P></LI>
+  <LI class="news-recommends-ajax"><A title="【锁机制】synchronized和ReentrantLock、锁优化" 
+  href="https://blog.csdn.net/weixin_38035852/article/details/81586094" target="_blank" 
+  data-track-view='{"con":",https://blog.csdn.net/weixin_38035852/article/details/81586094,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/weixin_38035852/article/details/81586094,-","mod":"popu_712"}'>【锁机制】synchronized和<EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>、锁优化</A>
+  <P><EM 
+  class="related_suggestion_highlight">java</EM>中的锁的种类很多。目前对这部分知识点只是停留在了解的基础上，就目前知识进行梳理，并长期补充。
+  <EM class="related_suggestion_highlight">java</EM>中锁常用的为synchronized 和<EM 
+  class="related_suggestion_highlight">java</EM>.util.concurrent.Lock下的锁。
+   这是一篇对各种分类锁的介绍：https://blog.csdn.net/u013256816/article/details/51204385&nbsp;
+  下面对<EM class="related_suggestion_highlight">java</EM>中实现的锁进行个人分析...            
+    </P></LI>
+  <LI class="news-recommends-ajax"><A title="Java锁是如何保证数据可见性的 （本文未经过技术多方验证，仅供留存）" 
+  href="https://blog.csdn.net/tomli2017/article/details/73263949" target="_blank" 
+  data-track-view='{"con":",https://blog.csdn.net/tomli2017/article/details/73263949,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/tomli2017/article/details/73263949,-","mod":"popu_712"}'><EM 
+  class="related_suggestion_highlight">Java</EM>锁是如何保证数据可见性的 
+  （本文未经过技术多方验证，仅供留存）</A>
+  <P>                引言 在&nbsp;<EM 
+  class="related_suggestion_highlight">java</EM>.util.concurrent.locks.Lock&nbsp;接口的<EM 
+  class="related_suggestion_highlight">Java</EM>doc中有这样一段话：All Lock 
+  implementations must enforce the&nbsp;same memory synchronization semantics as 
+  provided by the built-in monitor lock&nbsp;: A successf              </P></LI>
+  <LI class="news-recommends-ajax"><A title="JAVA面试要点010---重入锁_ReentrantLock 详解" 
+  href="https://blog.csdn.net/lidew521/article/details/83317019" target="_blank" 
+  data-track-view='{"con":",https://blog.csdn.net/lidew521/article/details/83317019,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/lidew521/article/details/83317019,-","mod":"popu_712"}'><EM 
+  class="related_suggestion_highlight">JAVA</EM>面试要点010---重入锁_<EM class="related_suggestion_highlight">ReentrantLock</EM> 
+  详解</A>
+  <P>&nbsp; <EM 
+  class="related_suggestion_highlight">JAVA</EM>技术交流QQ群：170933152&nbsp;&nbsp;
+   https://www.cnblogs.com/-new/p/7256297.html这个地方的文章还不错&nbsp;
+  ReentrantLocak特性（对比synchronized） 尝试获得锁	获取到锁的线程能够响应中断<EM class="related_suggestion_highlight">ReentrantLock</EM>(重入锁)
+  public class MyService {    private L...              </P></LI>
+  <LI class="news-recommends-ajax"><A title="ReentrantLock锁的可中断性" href="https://blog.csdn.net/nieyanshun_me/article/details/47750893" 
+  target="_blank" data-track-view='{"con":",https://blog.csdn.net/nieyanshun_me/article/details/47750893,-","mod":"popu_712"}' 
+  data-track-click='{"con":",https://blog.csdn.net/nieyanshun_me/article/details/47750893,-","mod":"popu_712"}'><EM 
+  class="related_suggestion_highlight">ReentrantLock</EM>锁的可中断性</A>
+  <P>                此文只是为了记录，先上代码class BlockedMutex {&nbsp; &nbsp; private Lock 
+  lock = new <EM class="related_suggestion_highlight">ReentrantLock</EM>();
+  &nbsp; &nbsp; public BlockedMutex() {&nbsp; &nbsp; &nbsp; &nbsp; 
+  this.lock.lock();// mian线程持有了这个锁&nbsp; &nbsp; &nbsp; &nbsp; 
+  System.out.println(Thread.curren              </P></LI></UL></DIV></DIV></DIV>
+<SCRIPT type="text/javascript">
+  dp.SyntaxHighlighter.HighlightAll('code', true, true);
+
+  $$('#main .blog_content pre[name=code]').each(function(pre, index){ // blog content
+    var post_id = 2406636;
+    var location = window.location;
+    source_url = location.protocol + "//" + location.host + location.pathname + location.search;
+    pre.writeAttribute('codeable_id', post_id);
+    pre.writeAttribute('codeable_type', "Blog");
+    pre.writeAttribute('source_url', source_url);
+    pre.writeAttribute('pre_index', index);
+    pre.writeAttribute('title', 'java显式锁之--ReentrantLock');
+  });
+
+  fix_image_size($$('div.blog_content img'), 700);
+
+  function processComment() {
+    $$('#main .blog_comment > div').each(function(comment){// comment
+      var post_id = comment.id.substr(2);
+      $$("#"+comment.id+" pre[name=code]").each(function(pre, index){
+        var location = window.location;
+        source_url = location.protocol + "//" + location.host + location.pathname + location.search;
+        source_url += "#" + comment.id;
+        pre.writeAttribute('codeable_id', post_id);
+        pre.writeAttribute('codeable_type', "BlogComment");
+        pre.writeAttribute('source_url', source_url);
+        pre.writeAttribute('pre_index', index);
+        pre.writeAttribute('title', 'java显式锁之--ReentrantLock');
+      });
+    });
+  }
+
+  function quote_comment(id) {
+    new Ajax.Request('/editor/quote', {
+      parameters: {'id':id, 'type':'BlogComment'},
+      onSuccess:function(response){editor.bbcode_editor.textarea.insertAfterSelection(response.responseText);
+        Element.scrollTo(editor.bbcode_editor.textarea.element);}
+    });
+  }
+
+  code_favorites_init();
+  processComment();
+  new WeiboShare({share_buttons: $('share_weibo'), img_scope: $('blog_content')});
+</SCRIPT>
+</DIV>
+<DIV class="blog-sidebar">
+<DIV class="blog-sidebar-fixed">
+<DIV class="news-right-side"></DIV>
+<DIV class="persion_article"></DIV></DIV></DIV>
+<SCRIPT>
+        setTimeout(function () {
+          var naviga_offsetTop = 0;
+
+          function onload_function() {
+            naviga_offsetTop = jQuery("#nav_show_top_stop").position().top;
+            jQuery(window).bind("scroll", naviga_stay_top);
+            jQuery(window).bind("mousewheel", naviga_stay_top);
+            jQuery(document).bind("scroll", naviga_stay_top);
+            jQuery(document).bind("mousewheel", naviga_stay_top);
+          }
+
+          function naviga_stay_top() {
+
+            var scrollTop = jQuery(document).scrollTop();
+            if (scrollTop > (naviga_offsetTop + 250)) {
+              jQuery("#nav_show_top_stop").css({
+                "position": "fixed"
+              });
+              jQuery("#nav_show_top_stop").css({
+                "top": "0px"
+              });
+            } else {
+              jQuery("#nav_show_top_stop").css({
+                "position": "fixed"
+              });
+              jQuery("#nav_show_top_stop").css({
+                "top": naviga_offsetTop + 250 - scrollTop + "px"
+              });
+            }
+          }
+          jQuery(document).ready(onload_function());
+        }, 200);
+      </SCRIPT>
+</DIV>
+<SCRIPT>
+          setTimeout(function () {
+              not_loading = true;
+              pageNum = 3;
+              oList = jQuery("#album_detail_wrap");
+              jQuery(window).scroll(function() {
+                  var scrollTop = jQuery(this).scrollTop();
+                  var scrollHeight = jQuery(document).height() ;
+                  var windowHeight = jQuery(this).height();
+                  if (scrollTop + windowHeight >= scrollHeight) {
+                      if(not_loading){
+                          refreshMore();
+                          setTimeout(function(){
+                              getMore();
+                          },100);
+                      }else{
+                          jQuery(".dl_more").remove();
+                      }
+                  }
+              });
+
+              function getMore(){
+                  not_loading = false;
+                  console.log("getMore......");
+                  jQuery.ajax({
+                      type: 'get',
+                      url: "/blog/ajax_get_blog_recommends/2406636",
+                      data:{
+                          page:pageNum
+                      },
+                      //async: false,
+                      dataType: 'json',
+                      success: function (resobj) {
+                          var totalNum = resobj.total_pages;
+                          if(pageNum <= totalNum && resobj.oHtml != '' ){
+                              jQuery(".dl_more").remove();
+                              oList.find('ul').append(resobj.oHtml);
+                              refreshMore();
+                              not_loading = true;
+                              pageNum++;
+                          }else{
+                              not_loading = false;
+                              noMore();
+                          }
+                      },
+                      error: function (err) {
+                          console.log(err);
+                      }
+                  });
+              }
+
+              function noMore(){
+                  jQuery(".dl_more").remove();
+                  if(oList.find(".dl_no_more").length ==0){
+                      oList.append('<div class="dl_no_more" style="font-size:14px; color:#0F8AC6; text-align:center;padding-top:10px; ">我们是很有底线的</div>');
+                  }
+              }
+
+              function refreshMore(){
+                  if(oList.find(".dl_more").length ==0){
+                      oList.append('<div class="dl_more" style="font-size:14px; color:#0F8AC6; text-align:center;padding-top:10px;">上滑加载更多</div>');
+                  }
+              }
+          }, 200);
+      </SCRIPT>
+
+<DIV id="footer" class="clearfix"><!-- <div id="copyright">
+        <hr />
+        声明：ITeye文章版权属于作者，受法律保护。没有作者书面许可不得转载。若作者同意转载，必须以超链接形式标明文章原始出处和作者。<br />
+        &copy; 2003-
+        2019 ITeye.com. All rights reserved. [ 京ICP证110151号 京公网安备110105010620 ]
+      </div> -->
+<DIV id="ad_pop">
+<DIV class="J_adv" data-con="ad_content_2070" data-order="21" data-mtp="62" 
+data-mod="ad_popu_64" data-view="true">
+<SCRIPT id="popuLayer_js_q" type="text/javascript" defer="" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/popuLayer.js"></SCRIPT>
+<!-- 广告位：PC端-iteye博客详情右侧弹窗-300*250 --></DIV></DIV></DIV></DIV>
+<SCRIPT type="text/javascript">
+  document.write("<img src='https://stat.iteye.com/?url="+ encodeURIComponent(document.location.href) + "&referrer=" + encodeURIComponent(document.referrer) + "&user_id=' width='0' height='0' />");
+</SCRIPT>
+   Global site tag (gtag.js) - Google Analytics  
+<SCRIPT src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/js.js" async=""></SCRIPT>
+
+<SCRIPT>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-127895514-6');
+  </SCRIPT>
+<LINK rel="stylesheet" href="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/content_toolbar.css">
+<SCRIPT type="text/javascript" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/jquery-1.11.1.min.js"></SCRIPT>
+
+<SCRIPT type="text/javascript" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/publib_footer-1.0.3.js" data-isfootertrack="false"></SCRIPT>
+
+<SCRIPT id="csdn-toolbar-id" type="text/javascript" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/content_toolbar.js" subCount="5" count="5" wrapId="note1" btnId="header_notice_num"></SCRIPT>
+
+<SCRIPT type="text/javascript" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/tracking-1.0.1.js"></SCRIPT>
+
+<SCRIPT language="javascript" type="text/javascript" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/async-1.0.1.js"></SCRIPT>
+
+<SCRIPT type="text/javascript" charset="utf-8" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/track.js"></SCRIPT>
+
+<STYLE>
+  .userinfo {display: none !important;}
+  .persion_article h3{
+    background: none !important;
+    border-bottom: none!important;
+    padding: 0!important;
+    margin-bottom: 0!important;
+    line-height: 1!important;
+  }
+  .persion_article .right_box{
+    margin-top: 0!important;
+  }
+  .persion_article .footer_box .feed_new_tit span{
+    padding-left: 0!important;
+  }
+</STYLE>
+
+<SCRIPT>
+(function($){
+  var windowHeight = $(window).height(),
+      contentHeight = $(".hide-main-content").height()
+      windowHeight = windowHeight * 1.2 //获得可视区域高度
+      if(contentHeight > windowHeight){
+        $(".hide-article-box").show()
+        $(".hide-main-content").css({'height': windowHeight,'overflow':'hidden'})
+        $(".hide-article-box").find("#btn-readmore").click(function(){
+          $(this).parents('.hide-main-content').removeAttr('style')
+          $(this).parent().hide()
+        })
+      }
+})(jQuery)
+</SCRIPT>
+
+<SCRIPT type="text/javascript">var $csdn_iteye_jq = jQuery.noConflict();// 解决jq与prototype.js命名空间冲突的问题</SCRIPT>
+
+<SCRIPT type="text/javascript" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/web-storage-cache.min.js"></SCRIPT>
+
+<SCRIPT type="text/javascript" src="java显式锁之--ReentrantLock%20-%20天星博客%20-%20ITeye博客_files/replace.min.js"></SCRIPT>
+
+<SCRIPT>
+  var jQuery = jQuery.noConflict();
+  setTimeout(function($){
+    window.csdn.fixedSidebar({
+        targetBox: $('.persion_article'), //判断到达底部的div,公共footer可选 $('.persion_article'),$('.public_pc_right_footer2018')
+        mainBox: $("#main"), //侧边栏旁边的主体div,默认 $("main")
+        sidebar: $(".blog-sidebar-fixed"), //侧边栏,默认 $("aside")
+        direction: 'right', //侧边栏浮动方向,可选'right','left',
+        position: 'fixed',//定位方式
+        bottom: 0,
+        zIndex: 99,
+        sidebarRightMargin: 8,//direction为left,侧边栏距离mainbox的右边距
+        sidebarLeftMargin: 37,//direction为right,侧边栏距离mainbox的左边距
+    })
+  },200,jQuery)
+  </SCRIPT>
+</BODY></HTML>

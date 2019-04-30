@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<!-- saved from url=(0051)https://www.cnblogs.com/davidwang456/p/6117734.html -->
+<html lang="zh-CN" class="translated-ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园</title>
+<meta property="og:description" content="并发框架分类 1. Executor相关类 Interfaces. Executor is a simple standardized interface for defining">
+    <link type="text/css" rel="stylesheet" href="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/bundle-arrow.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/bundle-arrow-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/davidwang456/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/davidwang456/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/davidwang456/wlwmanifest.xml">
+    <script src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/osd.js.下载"></script><script src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/amp4ads-host-v0.js.下载"></script><script src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/pubads_impl_rendering_308.js.下载"></script><script async="" src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/analytics.js.下载"></script><script type="text/javascript" src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/encoder.js.下载"></script><script src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/hm.js.下载"></script><script src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/jquery-2.2.0.min.js.下载"></script>
+    <script>var currentBlogId=138600;var currentBlogApp='davidwang456',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/blog-common.js.下载" type="text/javascript"></script>
+<link rel="preload" href="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/f.txt" as="script"><script type="text/javascript" src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/f.txt"></script><script src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/pubads_impl_308.js.下载" async=""></script><link rel="prefetch" href="https://tpc.googlesyndication.com/safeframe/1-0-32/html/container.html"><link type="text/css" rel="stylesheet" charset="UTF-8" href="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/translateelement.css"></head>
+<body>
+<a name="top"></a>
+
+
+<!--done-->
+<div id="header">
+	
+<!--done-->
+<div class="header">
+	<div class="headerText">
+		<a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/davidwang456/">一天不进步，就是退步!</a><br>
+		专注但要有大局观（先大后小，思路为先，实验为辅），一个人一生只要做好一件事就够了！记住：凡事预则立，不预则废。
+	</div>
+</div>
+
+</div>
+<div id="mylinks">
+<!--done-->
+<a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a>&nbsp;&nbsp;&nbsp;
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/davidwang456/">首页</a>&nbsp;&nbsp;&nbsp;
+<a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a>&nbsp;&nbsp;&nbsp;
+<a id="blog_nav_contact" accesskey="9" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/%E4%B8%80%E5%A4%A9%E4%B8%8D%E8%BF%9B%E6%AD%A5%EF%BC%8C%E5%B0%B1%E6%98%AF%E9%80%80%E6%AD%A5">联系</a>&nbsp;&nbsp;&nbsp;
+<a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/davidwang456/rss">订阅</a><a id="blog_nav_rss_image" href="https://www.cnblogs.com/davidwang456/rss"><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/xml.gif" alt="订阅"></a>&nbsp;&nbsp;&nbsp;
+<a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a>
+</div>
+<div id="mytopmenu">
+	
+		<div id="blog_stats">
+<div class="blogStats">随笔 - 1601&nbsp;
+文章 - 498&nbsp;评论 - 336&nbsp;trackbacks - 0
+</div></div>
+	
+</div>
+<div id="leftcontent">
+	
+		<div id="leftcontentcontainer">
+			<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" cellspacing="0" cellpadding="0" title="日历">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2019/01/01&#39;);return false;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&lt;</font></font></a></td><td align="center">2019年2月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2019/03/01&#39;);return false;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&gt;</font></font></a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" align="center" abbr="日" scope="col">日</th><th class="CalDayHeader" align="center" abbr="一" scope="col">一</th><th class="CalDayHeader" align="center" abbr="二" scope="col">二</th><th class="CalDayHeader" align="center" abbr="三" scope="col">三</th><th class="CalDayHeader" align="center" abbr="四" scope="col">四</th><th class="CalDayHeader" align="center" abbr="五" scope="col">五</th><th class="CalDayHeader" align="center" abbr="六" scope="col">六</th></tr><tr><td class="CalOtherMonthDay" align="center">27</td><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td class="CalOtherMonthDay" align="center">31</td><td align="center"><a href="https://www.cnblogs.com/davidwang456/archive/2019/02/01.html"><u>1</u></a></td><td class="CalWeekendDay" align="center">2</td></tr><tr><td class="CalWeekendDay" align="center">3</td><td align="center">4</td><td align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td class="CalWeekendDay" align="center">9</td></tr><tr><td class="CalWeekendDay" align="center">10</td><td align="center"><a href="https://www.cnblogs.com/davidwang456/archive/2019/02/11.html"><u>11</u></a></td><td align="center"><a href="https://www.cnblogs.com/davidwang456/archive/2019/02/12.html"><u>12</u></a></td><td align="center"><a href="https://www.cnblogs.com/davidwang456/archive/2019/02/13.html"><u>13</u></a></td><td align="center"><a href="https://www.cnblogs.com/davidwang456/archive/2019/02/14.html"><u>14</u></a></td><td align="center"><a href="https://www.cnblogs.com/davidwang456/archive/2019/02/15.html"><u>15</u></a></td><td class="CalWeekendDay" align="center">16</td></tr><tr><td class="CalWeekendDay" align="center">17</td><td align="center">18</td><td align="center"><a href="https://www.cnblogs.com/davidwang456/archive/2019/02/19.html"><u>19</u></a></td><td align="center"><a href="https://www.cnblogs.com/davidwang456/archive/2019/02/20.html"><u>20</u></a></td><td align="center"><a href="https://www.cnblogs.com/davidwang456/archive/2019/02/21.html"><u>21</u></a></td><td align="center">22</td><td class="CalWeekendDay" align="center">23</td></tr><tr><td class="CalWeekendDay" align="center">24</td><td align="center"><a href="https://www.cnblogs.com/davidwang456/archive/2019/02/25.html"><u>25</u></a></td><td align="center">26</td><td class="CalTodayDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">27</font></font></td><td align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">28</font></font></td><td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1</font></font></td><td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">2</font></font></td></tr><tr><td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">3</font></font></td><td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">4</font></font></td><td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">5</font></font></td><td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">6</font></font></td><td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">7</font></font></td><td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">8</font></font></td><td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">9</font></font></td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script><br>
+			
+<!--done-->
+<div class="newsItem">
+	<div id="blog-news"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/davidwang456/">一天不进步，就是退步</a><br>园龄：<a href="https://home.cnblogs.com/u/davidwang456/" title="入园时间：2013-01-04">6年1个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/davidwang456/followers/">1040</a><br>关注：<a href="https://home.cnblogs.com/u/davidwang456/followees/">21</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow(&#39;3183fc7e-1f56-e211-aa8f-842b2b196315&#39;)">+加关注</a></div><script>getFollowStatus('3183fc7e-1f56-e211-aa8f-842b2b196315')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input type="text" id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk">&nbsp;<input onclick="zzk_go()" type="button" value="找找看" id="btnZzk" class="btn_my_zzk"></div>
+
+</div>
+</div>
+
+</div><div id="sidebar_categories">
+<!--done-->
+
+		<h1 class="catListTitle">随笔分类<span style="font-size:11px;font-weight:normal">(1589)</span></h1>
+		
+				<ul class="catList">
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_0" class="listitem" href="https://www.cnblogs.com/davidwang456/category/537904.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">c program（11）</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_1" class="listitem" href="https://www.cnblogs.com/davidwang456/category/1398068.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">GOLANG（5）</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_2" class="listitem" href="https://www.cnblogs.com/davidwang456/category/462408.html">java开发基础(308)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_3" class="listitem" href="https://www.cnblogs.com/davidwang456/category/469778.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">JS＆jQuery的（25）</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_4" class="listitem" href="https://www.cnblogs.com/davidwang456/category/512568.html">linux学习(124)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_5" class="listitem" href="https://www.cnblogs.com/davidwang456/category/530316.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">redis的/分布式缓存/ mongodb的（40）</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_6" class="listitem" href="https://www.cnblogs.com/davidwang456/category/780497.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">spark / kafka / akka（4）</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_7" class="listitem" href="https://www.cnblogs.com/davidwang456/category/838233.html">spring boot/spring cloud笔记(50)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_8" class="listitem" href="https://www.cnblogs.com/davidwang456/category/805707.html">spring及其源码分析专辑(103)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_9" class="listitem" href="https://www.cnblogs.com/davidwang456/category/546621.html">TCP/IP协议(9)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_10" class="listitem" href="https://www.cnblogs.com/davidwang456/category/459087.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">tomcat weblogic jboss（72）</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_11" class="listitem" href="https://www.cnblogs.com/davidwang456/category/818202.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">VR / AR / MR（1）</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_12" class="listitem" href="https://www.cnblogs.com/davidwang456/category/459086.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">web服务（6）</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_13" class="listitem" href="https://www.cnblogs.com/davidwang456/category/461542.html">安全与测试(68)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_14" class="listitem" href="https://www.cnblogs.com/davidwang456/category/457345.html">程序生活(54)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_15" class="listitem" href="https://www.cnblogs.com/davidwang456/category/539681.html">大数据与云计算(95)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_16" class="listitem" href="https://www.cnblogs.com/davidwang456/category/467021.html">高并发及性能(66)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_17" class="listitem" href="https://www.cnblogs.com/davidwang456/category/530808.html">集群(62)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_18" class="listitem" href="https://www.cnblogs.com/davidwang456/category/1142637.html">架构读书笔记(17)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_19" class="listitem" href="https://www.cnblogs.com/davidwang456/category/448897.html">开源框架(145)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_20" class="listitem" href="https://www.cnblogs.com/davidwang456/category/1048298.html">爬虫与python(28)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_21" class="listitem" href="https://www.cnblogs.com/davidwang456/category/448898.html">其它(53)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_22" class="listitem" href="https://www.cnblogs.com/davidwang456/category/1294049.html">容器(1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_23" class="listitem" href="https://www.cnblogs.com/davidwang456/category/460787.html">设计模式(29)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_24" class="listitem" href="https://www.cnblogs.com/davidwang456/category/466454.html">数据结构与算法(23)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_25" class="listitem" href="https://www.cnblogs.com/davidwang456/category/448894.html">数据库(82)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_26" class="listitem" href="https://www.cnblogs.com/davidwang456/category/453156.html">系统架构(108)</a></li>
+			
+				</ul>
+			
+	
+		<h1 class="catListTitle">相册<span style="font-size:11px;font-weight:normal">(1)</span></h1>
+		
+				<ul class="catList">
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_0" class="listitem" href="https://www.cnblogs.com/davidwang456/gallery/1372532.html" rel="nofollow">微信公众号(1)</a></li>
+			
+				</ul>
+			
+	
+		<h1 class="catListTitle">常用网址</h1>
+		
+				<ul class="catList">
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_0" class="listitem" href="https://github.com/akullpp/awesome-java" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">真棒的Java</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_1" class="listitem" href="https://github.com/mfornos/awesome-microservices" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">真棒，微服务</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_2" class="listitem" href="http://www.concretepage.com/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">concretepage</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_3" class="listitem" href="http://www.dzone.com/links/index.html" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">装饰</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_4" class="listitem" href="http://ifeve.com/" rel="nofollow">ifeve.com</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_5" class="listitem" href="http://howtodoinjava.com/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Java的核心</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_6" class="listitem" href="http://martinfowler.com/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">马丁·福勒</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_7" class="listitem" href="http://www.mkyong.com/spring/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">mkyong</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_8" class="listitem" href="http://blog.didispace.com/archives/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">春季启动/云</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_9" class="listitem" href="http://afoo.me/" rel="nofollow">spring揭秘</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_10" class="listitem" href="http://www.baeldung.com/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">教程</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_11" class="listitem" href="http://www.tutorialspoint.com/design_pattern/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">tutorialspoint</font></font></a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_12" class="listitem" href="http://jinnianshilongnian.iteye.com/blog/2339876" rel="nofollow">电商主题</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_13" class="listitem" href="https://s.geekbang.org/" rel="nofollow">极客搜索</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_14" class="listitem" href="http://calvin1978.blogcn.com/" rel="nofollow">江南白衣</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_15" class="listitem" href="https://tech.meituan.com/archives" rel="nofollow">美团技术</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_16" class="listitem" href="http://blog.csdn.net/linghu_java" rel="nofollow">水</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_17" class="listitem" href="https://blog.csdn.net/column/details/dataming.html" rel="nofollow">算法</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_2_Link_18" class="listitem" href="http://www.iocoder.cn/" rel="nofollow">芋道源码</a></li>
+			
+				</ul>
+			
+	
+</div><div id="sidebar_scorerank" class="sidebar-block">
+<h3>积分与排名</h3>
+<ul>
+	<li>
+		积分 -
+		1548172
+	</li><li>
+		排名 -
+		40
+	</li>
+</ul>
+</div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div class="RecentComment">
+	<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/davidwang456/p/5099916.html">1. 在路上---一个平凡人的2015年总结及2016年展望(19)</a></li><li><a href="https://www.cnblogs.com/davidwang456/p/4432410.html">2. spring4.x注解概述(13)</a></li><li><a href="https://www.cnblogs.com/davidwang456/p/4213652.html">3. spring beans源码解读之--总结篇(10)</a></li><li><a href="https://www.cnblogs.com/davidwang456/p/3915031.html">4. 深入理解maven及应用--转(9)</a></li><li><a href="https://www.cnblogs.com/davidwang456/p/4013631.html">5. 基于注解的Spring AOP的配置和使用--转载(7)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script></div>		
+	
+</div>
+<div id="centercontent">
+	
+        <div id="post_detail">
+<!--done-->
+<div class="post">
+	<div class="postTitle">
+		<h1><a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/davidwang456/p/6117734.html">jdk8中java.util.concurrent包分析</a></h1>
+	</div>
+	<div id="cnblogs_post_body" class="blogpost-body"><p>&nbsp;并发框架分类</p>
+<p>1. Executor相关类</p>
+<p><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">接口。</font></font></strong>&nbsp;<a title="java.util.concurrent中的接口" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html"><code>Executor</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;是一个简单的标准化接口，用于定义自定义线程类子系统，包括线程池，异步I / O和轻量级任务框架。</font><font style="vertical-align: inherit;">根据正在使用的具体Executor类，任务可以在新创建的线程，现有任务执行线程或线程调用中&nbsp; </font></font><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html#execute-java.lang.Runnable-"><code>execute</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">执行，并且可以顺序执行或同时执行。&nbsp;</font></font><a title="java.util.concurrent中的接口" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html"><code>ExecutorService</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;提供了更完整的异步任务执行框架。</font><font style="vertical-align: inherit;">ExecutorService管理任务的排队和调度，并允许受控关闭。</font><font style="vertical-align: inherit;">该&nbsp; </font></font><a title="java.util.concurrent中的接口" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html"><code>ScheduledExecutorService</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;子接口及相关的接口添加了延迟的和定期任务执行的支持。</font><font style="vertical-align: inherit;">ExecutorServices提供了安排任何函数的异步执行的方法，表示为&nbsp; </font></font><a title="java.util.concurrent中的接口" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Callable.html"><code>Callable</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">结果模拟&nbsp; </font></font><a title="java.lang中的接口" href="https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html"><code>Runnable</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">一个&nbsp;</font></font><a title="java.util.concurrent中的接口" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html"><code>Future</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;返回函数的结果，允许确定执行是否已完成，并提供取消执行的方法。</font><font style="vertical-align: inherit;">A&nbsp; </font></font><a title="java.util.concurrent中的接口" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/RunnableFuture.html"><code>RunnableFuture</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;是</font></font><code>Future</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;拥有一种&nbsp; </font></font><code>run</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;方法，在执行时设置其结果。</font></font></p>
+<p><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">实现。</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;类&nbsp; </font></font><a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadPoolExecutor.html"><code>ThreadPoolExecutor</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;并&nbsp; </font></font><a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledThreadPoolExecutor.html"><code>ScheduledThreadPoolExecutor</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;提供可调节的灵活线程池。</font><font style="vertical-align: inherit;">本&nbsp; </font></font><a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html"><code>Executors</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;类提供大多数Executor的常见类型和配置，以及使用他们一些实用方法的工厂方法。</font><font style="vertical-align: inherit;">基于的其他实用程序&nbsp; </font></font><code>Executors</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;包括</font></font><a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/FutureTask.html"><code>FutureTask</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;提供Futures的通用可扩展实现</font><font style="vertical-align: inherit;">的具体类&nbsp; </font><font style="vertical-align: inherit;">，并且&nbsp; </font></font><a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorCompletionService.html"><code>ExecutorCompletionService</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">有助于协调异步任务组的处理。</font></font></p>
+<p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Class&nbsp; </font></font><a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ForkJoinPool.html"><code>ForkJoinPool</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;提供了一个Executor，主要用于处理实例&nbsp; </font></font><a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ForkJoinTask.html"><code>ForkJoinTask</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;及其子类。</font><font style="vertical-align: inherit;">这些类采用了一种工作窃取调度程序，可以获得符合计算密集型并行处理中常常存在的限制的任务的高吞吐量。</font></font></p>
+<p><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/486074-20161201154332193-400089457.png" alt=""></p>
+<p>&nbsp;</p>
+<p>2.future相关类</p>
+<p><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/486074-20161201154359459-336609403.png" alt=""></p>
+<p>&nbsp;</p>
+<p>3.Queue相关类</p>
+<p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">本&nbsp; </font></font><a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentLinkedQueue.html"><code>ConcurrentLinkedQueue</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;类提供一个高效的可扩展的线程安全的非阻塞FIFO队列。</font><font style="vertical-align: inherit;">的&nbsp; </font></font><a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentLinkedDeque.html"><code>ConcurrentLinkedDeque</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;类是类似的，但附加地支持&nbsp; </font></font><a title="java.util中的接口" href="https://docs.oracle.com/javase/8/docs/api/java/util/Deque.html"><code>Deque</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp;接口。</font></font></p>
+<p>Five implementations in&nbsp;<code>java.util.concurrent</code>&nbsp;support the extended&nbsp;<a title="java.util.concurrent中的接口" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html"><code>BlockingQueue</code></a>&nbsp;interface, that defines blocking versions of put and take:&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/LinkedBlockingQueue.html"><code>LinkedBlockingQueue</code></a>,&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ArrayBlockingQueue.html"><code>ArrayBlockingQueue</code></a>,&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/SynchronousQueue.html"><code>SynchronousQueue</code></a>,&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/PriorityBlockingQueue.html"><code>PriorityBlockingQueue</code></a>, and&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/DelayQueue.html"><code>DelayQueue</code></a>. The different classes cover the most common usage contexts for producer-consumer, messaging, parallel tasking, and related concurrent designs.</p>
+<p>Extended interface&nbsp;<a title="java.util.concurrent中的接口" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TransferQueue.html"><code>TransferQueue</code></a>, and implementation&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/LinkedTransferQueue.html"><code>LinkedTransferQueue</code></a>&nbsp;introduce a synchronous&nbsp;<code>transfer</code>&nbsp;method (along with related features) in which a producer may optionally block awaiting its consumer.</p>
+<p>The&nbsp;<a title="java.util.concurrent中的接口" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingDeque.html"><code>BlockingDeque</code></a>&nbsp;interface extends&nbsp;<code>BlockingQueue</code>&nbsp;to support both FIFO and LIFO (stack-based) operations. Class&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/LinkedBlockingDeque.html"><code>LinkedBlockingDeque</code></a>&nbsp;provides an implementation.</p>
+<p><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/486074-20161201154438396-1068481729.png" alt=""></p>
+<p>4.&nbsp;atomic相关类</p>
+<p><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/486074-20161201154924615-512065234.png" alt=""></p>
+<p>&nbsp;</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre> <span style="color: #0000ff;">class</span><span style="color: #000000;"> Node {
+   </span><span style="color: #0000ff;">private</span> <span style="color: #0000ff;">volatile</span><span style="color: #000000;"> Node left, right;<font></font>
+<font></font>
+   </span><span style="color: #0000ff;">private</span> <span style="color: #0000ff;">static</span> <span style="color: #0000ff;">final</span> AtomicReferenceFieldUpdater&lt;Node, Node&gt; leftUpdater =<span style="color: #000000;">
+     AtomicReferenceFieldUpdater.newUpdater(Node.</span><span style="color: #0000ff;">class</span>, Node.<span style="color: #0000ff;">class</span>, "left"<span style="color: #000000;">);
+   </span><span style="color: #0000ff;">private</span> <span style="color: #0000ff;">static</span> AtomicReferenceFieldUpdater&lt;Node, Node&gt; rightUpdater =<span style="color: #000000;">
+     AtomicReferenceFieldUpdater.newUpdater(Node.</span><span style="color: #0000ff;">class</span>, Node.<span style="color: #0000ff;">class</span>, "right"<span style="color: #000000;">);<font></font>
+<font></font>
+   Node getLeft() { </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> left;  }
+   </span><span style="color: #0000ff;">boolean</span><span style="color: #000000;"> compareAndSetLeft(Node expect, Node update) {
+     </span><span style="color: #0000ff;">return</span> leftUpdater.compareAndSet(<span style="color: #0000ff;">this</span><span style="color: #000000;">, expect, update);<font></font>
+   }<font></font>
+   </span><span style="color: #008000;">//</span><span style="color: #008000;"> ... and so on</span>
+ }</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>5. lock相关类</p>
+<p><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/486074-20161201154952287-166558583.png" alt=""></p>
+<p>5.1 lock</p>
+<p>Interfaces and classes providing a framework for locking and waiting for conditions that is distinct from built-in synchronization and monitors.</p>
+<p><a title="java.util.concurrent.locks中的接口" href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/Condition.html">Condition</a>：<code>Condition</code>&nbsp;factors out the&nbsp;<code>Object</code>&nbsp;monitor methods (<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html#wait()"><code>wait</code></a>,&nbsp;<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html#notify()"><code>notify</code></a>&nbsp;and&nbsp;<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html#notifyAll()"><code>notifyAll</code></a>) into distinct objects to give the effect of having multiple wait-sets per object, by combining them with the use of arbitrary&nbsp;<a title="java.util.concurrent.locks中的接口" href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/Lock.html"><code>Lock</code></a>&nbsp;implementations.</p>
+<p>As an example, suppose we have a bounded buffer which supports&nbsp;<code>put</code>&nbsp;and&nbsp;<code>take</code>&nbsp;methods. If a&nbsp;<code>take</code>&nbsp;is attempted on an empty buffer, then the thread will block until an item becomes available; if a&nbsp;<code>put</code>&nbsp;is attempted on a full buffer, then the thread will block until a space becomes available. We would like to keep waiting&nbsp;<code>put</code>&nbsp;threads and&nbsp;<code>take</code>threads in separate wait-sets so that we can use the optimization of only notifying a single thread at a time when items or spaces become available in the buffer. This can be achieved using two&nbsp;<a title="java.util.concurrent.locks中的接口" href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/Condition.html"><code>Condition</code></a>&nbsp;instances.</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre> <span style="color: #0000ff;">class</span><span style="color: #000000;"> BoundedBuffer {
+   </span><span style="color: #0000ff;">final</span> Lock lock = <span style="color: #0000ff;">new</span><span style="color: #000000;"> ReentrantLock();
+   </span><span style="color: #0000ff;">final</span> Condition notFull  =<span style="color: #000000;"> lock.newCondition(); 
+   </span><span style="color: #0000ff;">final</span> Condition notEmpty =<span style="color: #000000;"> lock.newCondition(); <font></font>
+<font></font>
+   </span><span style="color: #0000ff;">final</span> Object[] items = <span style="color: #0000ff;">new</span> Object[100<span style="color: #000000;">];
+   </span><span style="color: #0000ff;">int</span><span style="color: #000000;"> putptr, takeptr, count;<font></font>
+<font></font>
+   </span><span style="color: #0000ff;">public</span> <span style="color: #0000ff;">void</span> put(Object x) <span style="color: #0000ff;">throws</span><span style="color: #000000;"> InterruptedException {<font></font>
+     lock.lock();<font></font>
+     </span><span style="color: #0000ff;">try</span><span style="color: #000000;"> {
+       </span><span style="color: #0000ff;">while</span> (count ==<span style="color: #000000;"> items.length)<font></font>
+         notFull.await();<font></font>
+       items[putptr] </span>=<span style="color: #000000;"> x;
+       </span><span style="color: #0000ff;">if</span> (++putptr == items.length) putptr = 0<span style="color: #000000;">;
+       </span>++<span style="color: #000000;">count;<font></font>
+       notEmpty.signal();<font></font>
+     } </span><span style="color: #0000ff;">finally</span><span style="color: #000000;"> {<font></font>
+       lock.unlock();<font></font>
+     }<font></font>
+   }<font></font>
+<font></font>
+   </span><span style="color: #0000ff;">public</span> Object take() <span style="color: #0000ff;">throws</span><span style="color: #000000;"> InterruptedException {<font></font>
+     lock.lock();<font></font>
+     </span><span style="color: #0000ff;">try</span><span style="color: #000000;"> {
+       </span><span style="color: #0000ff;">while</span> (count == 0<span style="color: #000000;">)<font></font>
+         notEmpty.await();<font></font>
+       Object x </span>=<span style="color: #000000;"> items[takeptr];
+       </span><span style="color: #0000ff;">if</span> (++takeptr == items.length) takeptr = 0<span style="color: #000000;">;
+       </span>--<span style="color: #000000;">count;<font></font>
+       notFull.signal();<font></font>
+       </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> x;<font></font>
+     } </span><span style="color: #0000ff;">finally</span><span style="color: #000000;"> {<font></font>
+       lock.unlock();<font></font>
+     }<font></font>
+   }<font></font>
+ }</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>(The&nbsp;<a title="java.util.concurrent中的类" href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ArrayBlockingQueue.html"><code>ArrayBlockingQueue</code></a>&nbsp;class provides this functionality, so there is no reason to implement this sample usage class.)</p>
+<p><a title="java.util.concurrent.locks中的接口" href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/Lock.html">Lock</a>：<code>Lock</code>&nbsp;implementations provide more extensive locking operations than can be obtained using&nbsp;<code>synchronized</code>&nbsp;methods and statements.</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>     Lock l =<span style="color: #000000;"> ...;<font></font>
+     l.lock();<font></font>
+     </span><span style="color: #0000ff;">try</span><span style="color: #000000;"> {
+         </span><span style="color: #008000;">//</span><span style="color: #008000;"> access the resource protected by this lock</span>
+     } <span style="color: #0000ff;">finally</span><span style="color: #000000;"> {<font></font>
+         l.unlock();<font></font>
+     }<font></font>
+ </span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p><a title="java.util.concurrent.locks中的接口" href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/ReadWriteLock.html">ReadWriteLock</a>：A&nbsp;<tt>ReadWriteLock</tt>&nbsp;maintains a pair of associated&nbsp;<a title="java.util.concurrent.locks中的接口" href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/Lock.html"><code>locks</code></a>, one for read-only operations and one for writing.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;6.Timing</p>
+<p>The&nbsp;<a title="草的java.util.concurrent" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/TimeUnit.html"><code>TimeUnit</code></a>&nbsp;class provides multiple granularities (including nanoseconds) for specifying and controlling time-out based operations. Most classes in the package contain operations based on time-outs in addition to indefinite waits. In all cases that time-outs are used, the time-out specifies the minimum time that the method should wait before indicating that it timed-out. Implementations make a "best effort" to detect time-outs as soon as possible after they occur. However, an indefinite amount of time may elapse between a time-out being detected and a thread actually executing again after that time-out. All methods that accept timeout parameters treat values less than or equal to zero to mean not to wait at all. To wait "forever", you can use a value of<code>Long.MAX_VALUE</code>.</p>
+<p>7.Synchronizers</p>
+<p>Five classes aid common special-purpose synchronization idioms.</p>
+<ul>
+<li><a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Semaphore.html"><code>Semaphore</code></a>&nbsp;is a classic concurrency tool.</li>
+<li><a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CountDownLatch.html"><code>CountDownLatch</code></a>&nbsp;is a very simple yet very common utility for blocking until a given number of signals, events, or conditions hold.</li>
+<li>A&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CyclicBarrier.html"><code>CyclicBarrier</code></a>&nbsp;is a resettable multiway synchronization point useful in some styles of parallel programming.</li>
+<li>A&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Phaser.html"><code>Phaser</code></a>&nbsp;provides a more flexible form of barrier that may be used to control phased computation among multiple threads.</li>
+<li>An&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Exchanger.html"><code>Exchanger</code></a>&nbsp;allows two threads to exchange objects at a rendezvous point, and is useful in several pipeline designs.</li>
+</ul>
+<p>8.Concurrent Collections</p>
+<p>Besides Queues, this package supplies Collection implementations designed for use in multithreaded contexts:&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html"><code>ConcurrentHashMap</code></a>,&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentSkipListMap.html"><code>ConcurrentSkipListMap</code></a>,&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentSkipListSet.html"><code>ConcurrentSkipListSet</code></a>,&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CopyOnWriteArrayList.html"><code>CopyOnWriteArrayList</code></a>, and&nbsp;<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CopyOnWriteArraySet.html"><code>CopyOnWriteArraySet</code></a>. When many threads are expected to access a given collection, a&nbsp;<code>ConcurrentHashMap</code>&nbsp;is normally preferable to a synchronized&nbsp;<code>HashMap</code>, and a&nbsp;<code>ConcurrentSkipListMap</code>&nbsp;is normally preferable to a synchronized&nbsp;<code>TreeMap</code>. A&nbsp;<code>CopyOnWriteArrayList</code>&nbsp;is preferable to a synchronized<code>ArrayList</code>&nbsp;when the expected number of reads and traversals greatly outnumber the number of updates to a list.</p>
+<p>The "Concurrent" prefix used with some classes in this package is a shorthand indicating several differences from similar "synchronized" classes. For example&nbsp;<code>java.util.Hashtable</code>&nbsp;and&nbsp;<code>Collections.synchronizedMap(new HashMap())</code>&nbsp;are synchronized. But<a title="java.util.concurrent中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html"><code>ConcurrentHashMap</code></a>&nbsp;is "concurrent". A concurrent collection is thread-safe, but not governed by a single exclusion lock. In the particular case of ConcurrentHashMap, it safely permits any number of concurrent reads as well as a tunable number of concurrent writes. "Synchronized" classes can be useful when you need to prevent all access to a collection via a single lock, at the expense of poorer scalability. In other cases in which multiple threads are expected to access a common collection, "concurrent" versions are normally preferable. And unsynchronized collections are preferable when either collections are unshared, or are accessible only when holding other locks.</p>
+<p id="Weakly">Most concurrent Collection implementations (including most Queues) also differ from the usual&nbsp;<code>java.util</code>&nbsp;conventions in that their&nbsp;<a title="java.util中的接口" href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html">Iterators</a>&nbsp;and&nbsp;<a title="java.util中的接口" href="https://docs.oracle.com/javase/8/docs/api/java/util/Spliterator.html">Spliterators</a>&nbsp;provide&nbsp;<em>weakly consistent</em>&nbsp;rather than fast-fail traversal:</p>
+<ul>
+<li>they may proceed concurrently with other operations</li>
+<li>they will never throw&nbsp;<a title="java.util中的类" href="https://docs.oracle.com/javase/8/docs/api/java/util/ConcurrentModificationException.html"><code>ConcurrentModificationException</code></a></li>
+<li>they are guaranteed to traverse elements as they existed upon construction exactly once, and may (but are not guaranteed to) reflect any modifications subsequent to construction.</li>
+</ul>
+<p>9.Memory Consistency Properties</p>
+<p><a href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-17.html#jls-17.4.5">Chapter 17 of the Java Language Specification</a>&nbsp;defines the&nbsp;<em>happens-before</em>&nbsp;relation on memory operations such as reads and writes of shared variables. The results of a write by one thread are guaranteed to be visible to a read by another thread only if the write operation&nbsp;<em>happens-before</em>&nbsp;the read operation. The&nbsp;<code>synchronized</code>&nbsp;and&nbsp;<code>volatile</code>&nbsp;constructs, as well as the&nbsp;<code>Thread.start()</code>&nbsp;and&nbsp;<code>Thread.join()</code>&nbsp;methods, can form&nbsp;<em>happens-before</em>&nbsp;relationships. In particular:</p>
+<ul>
+<li>Each action in a thread&nbsp;<em>happens-before</em>&nbsp;every action in that thread that comes later in the program's order.</li>
+<li>An unlock (<code>synchronized</code>&nbsp;block or method exit) of a monitor&nbsp;<em>happens-before</em>&nbsp;every subsequent lock (<code>synchronized</code>&nbsp;block or method entry) of that same monitor. And because the&nbsp;<em>happens-before</em>&nbsp;relation is transitive, all actions of a thread prior to unlocking&nbsp;<em>happen-before</em>&nbsp;all actions subsequent to any thread locking that monitor.</li>
+<li>A write to a&nbsp;<code>volatile</code>&nbsp;field&nbsp;<em>happens-before</em>&nbsp;every subsequent read of that same field. Writes and reads of&nbsp;<code>volatile</code>&nbsp;fields have similar memory consistency effects as entering and exiting monitors, but do&nbsp;<em>not</em>&nbsp;entail mutual exclusion locking.</li>
+<li>A call to&nbsp;<code>start</code>&nbsp;on a thread&nbsp;<em>happens-before</em>&nbsp;any action in the started thread.</li>
+<li>All actions in a thread&nbsp;<em>happen-before</em>&nbsp;any other thread successfully returns from a&nbsp;<code>join</code>&nbsp;on that thread.</li>
+</ul>
+<p>The methods of all classes in&nbsp;<code>java.util.concurrent</code>&nbsp;and its subpackages extend these guarantees to higher-level synchronization. In particular:</p>
+<ul>
+<li>Actions in a thread prior to placing an object into any concurrent collection&nbsp;<em>happen-before</em>&nbsp;actions subsequent to the access or removal of that element from the collection in another thread.</li>
+<li>Actions in a thread prior to the submission of a&nbsp;<code>Runnable</code>&nbsp;to an&nbsp;<code>Executor</code>&nbsp;<em>happen-before</em>&nbsp;its execution begins. Similarly for&nbsp;<code>Callables</code>&nbsp;submitted to an&nbsp;<code>ExecutorService</code>.</li>
+<li>Actions taken by the asynchronous computation represented by a&nbsp;<code>Future</code>&nbsp;<em>happen-before</em>&nbsp;actions subsequent to the retrieval of the result via&nbsp;<code>Future.get()</code>&nbsp;in another thread.</li>
+<li>Actions prior to "releasing" synchronizer methods such as&nbsp;<code>Lock.unlock</code>,&nbsp;<code>Semaphore.release</code>, and&nbsp;<code>CountDownLatch.countDown</code>&nbsp;<em>happen-before</em>&nbsp;actions subsequent to a successful "acquiring" method such as&nbsp;<code>Lock.lock</code>,&nbsp;<code>Semaphore.acquire</code>,<code>Condition.await</code>, and&nbsp;<code>CountDownLatch.await</code>&nbsp;on the same synchronizer object in another thread.</li>
+<li>For each pair of threads that successfully exchange objects via an&nbsp;<code>Exchanger</code>, actions prior to the&nbsp;<code>exchange()</code>&nbsp;in each thread&nbsp;<em>happen-before</em>&nbsp;those subsequent to the corresponding&nbsp;<code>exchange()</code>&nbsp;in another thread.</li>
+<li>Actions prior to calling&nbsp;<code>CyclicBarrier.await</code>&nbsp;and&nbsp;<code>Phaser.awaitAdvance</code>&nbsp;(as well as its variants)&nbsp;<em>happen-before</em>&nbsp;actions performed by the barrier action, and actions performed by the barrier action&nbsp;<em>happen-before</em>&nbsp;actions subsequent to a successful return from the corresponding&nbsp;<code>await</code>&nbsp;in other threads.</li>
+</ul>
+<p>参考文献：</p>
+<p>【1】&nbsp;https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/package-summary.html</p></div><div id="MySignature" style="display: block;"><div>
+<p><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/t_微信公众号.jpg" alt="架构师日常笔记"></p>
+<p>微信公众号: 架构师日常笔记  欢迎关注！</p>
+    　</div></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/davidwang456/category/462408.html" target="_blank">java开发基础</a></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(6117734,cb_blogId,1);green_channel_success(this,&#39;谢谢推荐！&#39;);">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow(&#39;3183fc7e-1f56-e211-aa8f-842b2b196315&#39;);" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/davidwang456/" target="_blank"><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/20170707093520.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/davidwang456/">一天不进步，就是退步</a><br>
+            <a href="http://home.cnblogs.com/u/davidwang456/followees">关注 - 21</a><br>
+            <a href="http://home.cnblogs.com/u/davidwang456/followers">粉丝 - 1040</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow(&#39;3183fc7e-1f56-e211-aa8f-842b2b196315&#39;);return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(6117734,&#39;Digg&#39;)">
+        <span class="diggnum" id="digg_count">0</span>
+    </div>
+    <div class="buryit" onclick="votePost(6117734,&#39;Bury&#39;)">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/davidwang456/p/6117367.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/davidwang456/p/6117367.html" title="发布于2016-11-30 13:22">设计数据库字段或者java中使用boolean型时需谨慎</a><br><a href="https://www.cnblogs.com/davidwang456/p/6123095.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/davidwang456/p/6123095.html" title="发布于2016-12-01 18:30">Java内存模型深度解析：基础部分--转</a><br></div>
+</div>
+
+
+	<div class="postDesc">posted on <span id="post-date">2016-12-01 16:04</span> <a href="https://www.cnblogs.com/davidwang456/">一天不进步，就是退步</a> 阅读(<span id="post_view_count">4243</span>) 评论(<span id="post_comment_count">0</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=6117734" rel="nofollow">编辑</a> <a href="https://www.cnblogs.com/davidwang456/p/6117734.html#" onclick="AddToWz(6117734);return false;">收藏</a></div>
+</div>
+<script type="text/javascript">var allowComments=true,cb_blogId=138600,cb_entryId=6117734,cb_blogApp=currentBlogApp,cb_blogUserGuid='3183fc7e-1f56-e211-aa8f-842b2b196315',cb_entryCreatedDate='2016/12/1 16:04:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+
+</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="https://www.cnblogs.com/davidwang456/p/6117734.html#" onclick="return RefreshPage();">刷新页面</a><a href="https://www.cnblogs.com/davidwang456/p/6117734.html#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login(&#39;commentform&#39;);">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-工控&#39;)">【推荐】超50万C++/C#源码: 大型实时仿真HMI组态CAD\GIS图形源码！</a><br><a href="https://gitee.com/enterprises?from=bky-2" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-gitee&#39;)">【推荐】专业便捷的企业级代码托管服务 - Gitee 码云</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/gpt.js.下载"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CN_Lr_z-2uACFdi8lgoduAkHJA"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="第三方广告内容" name="google_ads_iframe_/1090369/C1_0" width="300" height="250" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" style="border: 0px; vertical-align: bottom;" data-google-container-id="1" data-load-complete="true" src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/saved_resource.html"></iframe></div></div>
+</div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>相关博文：</b><br>·  <a href="https://www.cnblogs.com/davidwang456/p/6117734.html" target="_blank" onclick="clickRecomItmem(undefined,&#39;undefined&#39;)">jdk8中java.util.concurrent包分析</a><br>·  <a href="https://www.cnblogs.com/sarafill/archive/2011/05/18/2049461.html" target="_blank" onclick="clickRecomItmem(undefined,&#39;undefined&#39;)">java.util.concurrent介绍</a><br>·  <a href="https://www.cnblogs.com/549294286/p/3825001.html" target="_blank" onclick="clickRecomItmem(undefined,&#39;undefined&#39;)">java.util.concurrent包</a><br>·  <a href="https://www.cnblogs.com/Android9527/p/5407101.html" target="_blank" onclick="clickRecomItmem(undefined,&#39;undefined&#39;)">java.util.concurrent包详细分析</a><br>·  <a href="https://www.cnblogs.com/developer-os/p/6208410.html" target="_blank" onclick="clickRecomItmem(undefined,&#39;undefined&#39;)">java util 下的concurrent包</a><br></div></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CJ3Nr_z-2uACFYeXlgod4eALMA"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="第三方广告内容" name="google_ads_iframe_/1090369/C2_0" width="468" height="60" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" style="border: 0px; vertical-align: bottom;" data-google-container-id="2" data-load-complete="true" src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/saved_resource(1).html"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/620441/" target="_blank">小米公司能力的修复、复制、升级与新建</a><br> ·  <a href="https://news.cnblogs.com/n/620447/" target="_blank">人脑PK猴脑：人类为何智商更高，且易患精神疾病？</a><br> ·  <a href="https://news.cnblogs.com/n/620443/" target="_blank">50块钱能买十几亿人数据 印度正在被巨型数据库撕裂</a><br> ·  <a href="https://news.cnblogs.com/n/620445/" target="_blank">为什么会有“双微一抖”的焦虑？停更你就失败了</a><br> ·  <a href="https://news.cnblogs.com/n/620446/" target="_blank">《人胚胎干细胞》标准落地，细胞有望成为“活药品”</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"><b>历史上的今天:</b><br>2015-12-01 <a href="https://www.cnblogs.com/davidwang456/p/5010499.html">hadoop和spark搭建记录</a><br>2015-12-01 <a href="https://www.cnblogs.com/davidwang456/p/5009659.html">zookeeper源码分析之六session机制</a><br>2014-12-01 <a href="https://www.cnblogs.com/davidwang456/p/4135965.html">java.sql.SQLException: Invalid parameter object type. Expected 'java.util.Map' but found 'java.lang.String 转载</a><br>2013-12-01 <a href="https://www.cnblogs.com/davidwang456/p/3453103.html">Redis: under the hood---转载</a><br></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	
+<!--done-->
+<div class="footer">
+	
+	Copyright ©2019 一天不进步，就是退步 Powered by: <a href="http://www.cnblogs.com/" class="footerlink">博客园</a> 模板提供：<a href="http://blog.hjenglish.com/" class="footerlink">沪江博客</a><br>
+</div>
+</div>
+
+
+
+
+<!--PageEndHtml Block Begin-->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4e17ff51730e4ef6af191fd287efc2d2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<!--PageEndHtml Block End-->
+
+
+<div id="goog-gt-tt" class="skiptranslate" dir="ltr"><div style="padding: 8px;"><div><div class="logo"><img src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/translate_24dp.png" width="20" height="20" alt="Google 翻译"></div></div></div><div class="top" style="padding: 8px; float: left; width: 100%;"><h1 class="title gray">原文</h1></div><div class="middle" style="padding: 8px;"><div class="original-text"></div></div><div class="bottom" style="padding: 8px;"><div class="activity-links"><span class="activity-link">提供更好的翻译建议</span><span class="activity-link"></span></div><div class="started-activity-container"><hr style="color: #CCC; background-color: #CCC; height: 1px; border: none;"><div class="activity-root"></div></div></div><div class="status-message" style="display: none;"></div></div><iframe id="google_osd_static_frame_1496944197781" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;" src="./jdk8中java.util.concurrent包分析 - 一天不进步，就是退步 - 博客园_files/saved_resource(2).html"></iframe><div class="goog-te-spinner-pos"><div class="goog-te-spinner-animation"><svg xmlns="http://www.w3.org/2000/svg" class="goog-te-spinner" width="96px" height="96px" viewBox="0 0 66 66"><circle class="goog-te-spinner-path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle></svg></div></div></body></html>

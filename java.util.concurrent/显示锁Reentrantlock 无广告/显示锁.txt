@@ -1,0 +1,8 @@
+ReentrantLock
+
+一、使用Lock加锁，需要显式的加锁以及释放锁
+	手动调用lock加锁和unlock解锁，如果忘记unlock 就会导致其他线程永远无法获取到锁的严重错误
+
+二、ReentrantLock与内置锁synchronized不同点：
+	1、内置锁synchronized锁是非公平的。ReentrantLock主要包括排它锁、公平锁、非公平锁、中断锁、延迟锁、轮询锁、重入锁
+	2、内置锁可以用在方法上，而显式锁只能用在代码块上，也就是说强制使用更细粒度的加锁

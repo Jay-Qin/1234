@@ -1,0 +1,1146 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0044)https://www.cnblogs.com/zqr99/p/7787833.html -->
+<!DOCTYPE html><HTML lang="zh-cn"><HEAD><META content="IE=9.0000" 
+http-equiv="X-UA-Compatible">
+
+<META charset="utf-8">
+<META name="viewport" content="width=device-width, initial-scale=1">
+<META name="referrer" content="origin"><TITLE>git 完全讲解 
+无废话,包含在myeclipse中使用,包括解决冲突 - 懒人写博客 - 博客园</TITLE>
+<META content="Git 1. Git简介 1.1 git是什么 1.1.1概念 Git:git是一款开源的分布式的版本控制软件 Github:是一个基于git的面向开源及私有软件项目的托管平台 因仅支持git 作为唯" 
+property="og:description"><LINK rel="stylesheet" type="text/css" href="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/blog-common.css">
+<LINK id="MainCss" rel="stylesheet" type="text/css" href="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/bundle-SimpleGamboge.css">
+<LINK id="mobile-style" rel="stylesheet" type="text/css" href="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/bundle-SimpleGamboge-mobile.css" 
+media="only screen and (max-width: 767px)"><LINK title="RSS" rel="alternate" 
+type="application/rss+xml" href="https://www.cnblogs.com/zqr99/rss"><LINK title="RSD" 
+rel="EditURI" type="application/rsd+xml" href="https://www.cnblogs.com/zqr99/rsd.xml">
+<LINK rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://www.cnblogs.com/zqr99/wlwmanifest.xml">
+<SCRIPT src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/jquery-2.2.0.min.js"></SCRIPT>
+
+<SCRIPT>var currentBlogId=362425;var currentBlogApp='zqr99',cb_enable_mathjax=false;var isLogined=false;</SCRIPT>
+
+<SCRIPT type="text/javascript" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/blog-common.js"></SCRIPT>
+
+<META name="GENERATOR" content="MSHTML 9.00.8112.16553"></HEAD>
+<BODY><A name="top"></A><!--done-->
+<DIV id="home">
+<DIV id="header">
+<DIV id="blogTitle"><A id="lnkBlogLogo" 
+href="https://www.cnblogs.com/zqr99/"><IMG id="blogLogo" alt="返回主页" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/logo.gif"></A><!--done-->
+<H1><A id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/zqr99/">必须往前走</A></H1>
+<H2></H2></DIV><!--end: blogTitle 博客的标题和副标题 -->
+<DIV id="navigator">
+<UL id="navList">
+  <LI><A id="blog_nav_sitehome" class="menu" 
+  href="https://www.cnblogs.com/">博客园</A></LI>
+  <LI><A id="blog_nav_myhome" class="menu" 
+  href="https://www.cnblogs.com/zqr99/">首页</A></LI>
+  <LI><A id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1" 
+  rel="nofollow">新随笔</A></LI>
+  <LI><A id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E6%87%92%E4%BA%BA%E5%86%99%E5%8D%9A%E5%AE%A2" 
+  rel="nofollow">联系</A></LI>
+  <LI><A id="blog_nav_rss" class="menu" 
+  href="https://www.cnblogs.com/zqr99/rss">订阅</A><!--<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/zqr99/rss"><img src="//www.cnblogs.com/images/xml.gif" alt="订阅" /></a>--></LI>
+  <LI><A id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/" rel="nofollow">管理</A></LI>
+</UL>
+<DIV class="blogStats">
+<DIV id="blog_stats"><SPAN id="stats_post_count">随笔 - 138&nbsp; </SPAN><SPAN id="stats_article_count">文章 
+- 0&nbsp; </SPAN><SPAN id="stats-comment_count">评论 - 32</SPAN></DIV></DIV><!--end: blogStats --></DIV><!--end: navigator 博客导航栏 -->
+</DIV><!--end: header 头部 -->
+<DIV id="main">
+<DIV id="mainContent">
+<DIV class="forFlow">
+<DIV id="post_detail"><!--done-->
+<DIV id="topics">
+<DIV class="post">
+<H1 class="postTitle"><A id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/zqr99/p/7787833.html">git 
+完全讲解 无废话,包含在myeclipse中使用,包括解决冲突</A></H1>
+<DIV class="clear"></DIV>
+<DIV class="postBody">
+<DIV id="cnblogs_post_body" class="blogpost-body">
+<H1>Git</H1>
+<H1>1. Git简介</H1>
+<H2>1.1 git是什么</H2>
+<H4>1.1.1概念</H4>
+<P>Git:git是一款<STRONG>开源的分布式的</STRONG>版本控制软件</P>
+<P>Github:是一个基于git的面向开源及私有软件项目的托管平台</P>
+<P>因仅支持git 作为唯一的版本库格式进行托管 故名gihub</P>
+<H4>1.1.2.Git的特点</H4>
+<P>①Git从服务器上克隆完整的项目到本机,相当于每一个开发者都拥有一个项目的完整版本</P>
+<P>②开发者在自己的机器上创建分支,修改代码.</P>
+<P>③将自己本地创建的分支提交到本地的版本库</P>
+<P>④在单机上合并分支</P>
+<P>⑤新建一个分支,把服务器上的最新版的代码fetch下来,然后跟自己的主分支合并</P>
+<P>⑥Git最大的亮点在于分支的管理.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H2>1.2&nbsp;&nbsp;&nbsp;&nbsp; 什么是版本控制</H2>
+<H4>版本控制概念:</H4>
+<P>这种方法是工程图（engineering drawings）维护（maintenance）的标准做法， 它伴随着工程图从图的诞生一直到图的定型。 
+一种简单的版本控制形式，例如，赋给图的初版一个版本等级“A”。当做了第一次改变后，版本等级改为“B”，以此类推等等.</P>
+<H4>1.2.1未引入版本控制的问题:</H4>
+<P>&nbsp;</P>
+<P>现实开发中最麻烦的是多人开发中的版本控制,如果未引入版本控制的概念,我们服务器上仅存在一个我们从最初开始开发的项目,我们每一次的增删改也是在这个项目之上,所以如果某一个开发者提交了带有bug的代码,或者对这个已经存在的项目进行更新操作,如果更新失败,则这个项目就废弃了</P>
+<P>一个项目如果有多个人开发,开发人员A,B,C,分别对项目中的同一代码进行了修改,那后一次提交的人的代码,就会覆盖前一个人的代码</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P align="center">&nbsp;</P>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162538216-66650083.png"></P>
+<P>&nbsp;</P>
+<P><BR>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H4>1.2.2传统的集中式版本控制</H4>
+<P>集中式版本控制系统（Centralized Version Control Systems，简称 
+CVCS），版本库是集中存放在中央服务器的，而干活的时候，用的都是自己的电脑，所以要先从中央服务器取得最新的版本，然后开始干活，干完活了，再把自己的活推送给中央服务器&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</P>
+<P>这么做最显而易见的缺点是中央服务器的单点故障。如果维修一小时，那么在这一小时内，谁都无法提交更新，也就无法协同工作。如果中心数据库所在的磁盘发生损坏，又没有做恰当备份，毫无疑问你将丢失所有数据——包括项目的整个变更历史.</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162553076-492140928.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H4>1.2.3使用分布式版本控制系统</H4>
+<P>分布式,当我们连接共享版本库时,可以先将服务器上的项目,克隆到本地,相当于每一台电脑上都有整个项目的文件备份,在没有网时也可以开发,完成开发后,可以先提交到本地仓库,当有网的时候,再提交到共享版本库,这样一来,如果我们的服务器或者我们自己的电脑出故障,我们也没有任何担心</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162603810-1971114321.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H2>1.3Git的安装</H2>
+<P>①下载软件<A href="https://git-scm.com/">https://git-scm.com/</A>官网地址</P>
+<P>②进行安装</P>
+<P>最重要的一步,其它可以直接走默认</P>
+<P>选择这一步可以直接将我们的git命令,添加到系统变量中</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162615091-44783040.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H1>2. git入门</H1>
+<P>&nbsp;</P>
+<H2>工作区,暂存区,主分支的概念</H2>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162629857-279028759.png"></P>
+<P>&nbsp;</P>
+<DIV>
+<H2>获取帮助</H2></DIV>
+<P>git help</P>
+<P>如果向对某个具体的命令获取帮助,可以使用git help &lt;verb&gt;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H2>2.1设置开发者的个人信息</H2>
+<P><STRONG>多人开发的项目中,</STRONG><STRONG>通过设置的用户名来区分开发者,</STRONG><STRONG>设置email</STRONG><STRONG>来联系开发者</STRONG></P>
+<P>&nbsp;</P>
+<H4>2.1.1配置当前项目中的用户信息(局部)</H4>
+<P>先创建一个本地版本库</P>
+<P><STRONG>在配置当前项目的用户信息时,</STRONG><STRONG>需要进入git</STRONG><STRONG>管理的项目中来进行设置</STRONG></P>
+<P>1.配置用户名:Git config user.name “用户名” 用来区分谁开发的代码</P>
+<P>2.配置邮箱信息:git config uer.eamil “邮箱” 可能是多个国家的开发者,便于联系开发者</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162642529-14875820.png"></P>
+<P>&nbsp;</P>
+<P>配置以后会可以在隐藏的.git文件夹的config文件中查看到,</P>
+<P>也可以使用git config –list进行查看</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162651310-1393223586.png"></P>
+<P>&nbsp;</P>
+<H4>2.2.2配置全局用户信息</H4>
+<P>1.配置用户名:git - -global config user.name “用户名” 用来区分谁开发的代码</P>
+<P>2.配置邮箱信息:git - -global config uer.eamil “邮箱” 可能是多个国家的开发者,便于联系开发者</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162703513-1652950387.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>可以在C:\Users\Administrator\.gitconfig中查看</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H2>2.2创建仓库</H2>
+<P>①创建文件夹E:\Mygit</P>
+<P>②初始化仓库:</P>
+<P>进入我们创建的文件夹cd e:\Mygit ,使用命令 git init进行初始化仓库</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162718373-558791449.png"></P>
+<P>&nbsp;</P>
+<P>这时候会在当前文件夹下创建一个.git隐藏文件夹,.git文件夹是我们的仓库信息,一定不要修改</P>
+<P>③对仓库信息进行配置,主要是设置user.name和user.email,如果设置了全局的用户信息,可以忽略</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H2>2.3添加文件</H2>
+<P>在仓库中添加一个hello.java的文件</P>
+<P>①&nbsp;&nbsp;查询仓库的状态:<STRONG>git status</STRONG></P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162731670-1422343349.png"></P>
+<P>&nbsp;</P>
+<P>②&nbsp;&nbsp;将文件加入到暂存区:<STRONG>git add </STRONG>文件名</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162738841-329008816.png"></P>
+<P>&nbsp;</P>
+<P>使用git status 再次查询出文件的状态</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162746232-581751139.png"></P>
+<P>&nbsp;</P>
+<P>现在的文件并没有真正的提交到主分支上(主分支就是我们真正要运行的程序的所有代码).</P>
+<P>③ 提交到本地版本库:<STRONG>git commit –m”</STRONG><STRONG>注释信息”</STRONG></P>
+<P>git commit -m"创建一个java文件"</P>
+<P>此时文件就被提交到了主分支上</P>
+<P>查询指定文件的日志记录:<STRONG>git log </STRONG><STRONG>文件名</STRONG> 如果出现end 使用q退出</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162758560-1569704848.png"></P>
+<P>&nbsp;</P>
+<P>74d914fdda87ba20f52b907413fb7eb3a29973de是我们的版本号</P>
+<P><STRONG>总结:</STRONG></P>
+<P><STRONG>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</STRONG><STRONG>每一次修改或者创建新文件时,</STRONG><STRONG>都需要先使用&nbsp;&nbsp;&nbsp; git add 
+</STRONG><STRONG>文件名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</STRONG><STRONG>的命令来将文件添加到缓存区,</STRONG><STRONG>再使用git commit –m 
+“</STRONG><STRONG>注释信息” </STRONG><STRONG>来将我们的文件添加到版本库</STRONG></P>
+<P><STRONG>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</STRONG><STRONG>或者使用简化命令 git commit–a –m”</STRONG><STRONG>注释信息” 
+</STRONG><STRONG>来将我们的文件添加到版本库</STRONG></P>
+<H2>2.4修改文件</H2>
+<P>Git 如何管理修改的文件</P>
+<P>①&nbsp;&nbsp;将我们之前创建的Hello.java文件进行修改</P>
+<P>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 查询当前仓库状态 <STRONG>git 
+status</STRONG></P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162811091-1932644766.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>以上看到git的一个建议</P>
+<TABLE border="1" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD vAlign="top" width="553">
+      <P>(use "git add &lt;file&gt;..." to update what will be  committed)</P>
+      <P>&nbsp;(use "git checkout --  &lt;file&gt;..." to discard changes in 
+      working directory)</P></TD></TR></TBODY></TABLE>
+<P>我们可以选择<STRONG>git add</STRONG>进行添加到缓存,或者我们可以使用<STRONG>git 
+checkout</STRONG>进行恢复</P>
+<P>使用git diff HEAD Hello.java可以查看我们对文件具体做了哪些修改</P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162821951-1260220010.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>②&nbsp;&nbsp;使用git add 文件名,将文件加入到缓存</P>
+<P>③&nbsp;&nbsp;使用git commit –m”注释信息” 提交到本地版本库</P><PRE>如果进行了vim编辑器,首先Esc退出输入状态，然后Shift+;，再输入q!或wq!（不保存改动，wq!是保存文件的写入修改）退出</PRE>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H2>2.5.Git工作区与缓存区</H2>
+<P><STRONG>工作区:</STRONG>包含.git文件夹的文件夹(除了.git文件夹)</P>
+<P><STRONG>仓库:</STRONG>也称为版本库,这个不算工作区</P>
+<P><STRONG>暂存区:</STRONG>.git版本库中有很多东西,包括重要要的称为stage 的暂存区,还有git为用户</P>
+<P>自动创建的主程序分支master,以及指向master的HEAD指针,HEAD指针永远指向我们当前项目的最高版本</P>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162907232-634872772.png"></P>
+<P>&nbsp;</P>
+<P><BR>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>这个就像我们之前学习的mysql数据库中的事务一样,使用insert 增加了,但是没有使用commit是不会成功的</P>
+<P>当使用commit后,会清空暂存区的内容</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H2>2.6 版本回退</H2>
+<P>我们每次提交代码后,都会生成一个40位的哈希值, 可以成为commit id</P>
+<P>使用git log来查看我们的提交记录</P>
+<P>可以使用git show +版本号来查看修改 此版本号的修改内容</P>
+<H4>2.6.1恢复到上一版本</H4>
+<P>使用git reset - - hard HAED~1 或使用git reset - - hard HEAD^</P>
+<H4>2.6.2恢复到指定版本</H4>
+<P>①查询当前的日志信息 git reflog </P>
+<P>Git log 和git reflog的区别:</P>
+<P>git log只会查询历史有效版本的版本号</P>
+<P>git reflog 会查询历史所有版本的版本号,包括已经废弃的</P>
+<P>②找到想要恢复的版本号 使用 git reset –hard 版本号,进行恢复到指定版本</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H2>2.7撤销修改</H2>
+<H4>2.7.1 未执行git add 添加到缓存区时</H4>
+<P>可以使用gid checkout&nbsp; - -&nbsp; Hello.java 与本地仓库中进行对比,同步</P>
+<P>切记用于恢复文件时,文件名前面有--</P>
+<H4>2.7.2 已经执行git add 添加到了暂存区,但是没有执行git commit</H4>
+<P>可以使用git reset HEAD Hello.java 将暂存区的内容恢复到了工作区</P>
+<P>如果文件有错误,想恢复到上一次提交,还可以直接使用gid checkout&nbsp; - -&nbsp; Hello.java进行恢复</P>
+<H2>2.8删除文件</H2>
+<P>①.从磁盘上删除文件</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162925873-1531333151.png"></P>
+<P>&nbsp;</P>
+<P>还是可以使用git恢复的命令进行恢复</P>
+<P>如果使用</P>
+<P>删除文件,git rm &lt;filename&gt;</P>
+<P>删除文件夹,git rm –r &lt;文件夹名&gt;</P>
+<P>同时时候git commit时本地仓库中的文才会删除</P>
+<P>&nbsp;</P>
+<H1>3 Git和github</H1>
+<H4>3.1注册账号</H4>
+<H4>3.2生成SSH Key</H4>
+<P><STRONG>使用git bash</STRONG><STRONG>生成</STRONG></P>
+<P>Ssh-keygen –t rsa –c <A 
+href="mailto:429189785@qq.com">429189785@qq.com</A></P>
+<P>会生成两个文件</P>
+<P>id_rsa –私钥</P>
+<P>id_rsa.pub ---公钥</P>
+<P>在github 的setting中选择SSH Keys 进行添加</P>
+<P>将公钥的内容,粘贴进去</P>
+<H4>3.3添加远程仓库</H4>
+<P>①将本地已有仓库与远程仓库相关联</P>
+<P>使用命令 git remote add origin <A 
+href="https://github.com/zhaoqinrong/admin.git">https://github.com/zhaoqinrong/admin.git</A></P>
+<P>Git remote add origin+远程仓库地址</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162946966-1408541338.png"></P>
+<P>&nbsp;</P>
+<P>但是目前为止,远程仓库中没有我们本地仓库的内容</P>
+<P>&nbsp;</P>
+<P>②将本地所有内容,提交到远程仓库</P>
+<P>使用命令git push –u origin master</P>
+<P>会提示输入github的用户名和密码</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105162955170-1947208946.png"></P>
+<P>&nbsp;</P>
+<P>由于是第一次推送,而且推送的为master分支,就会使用”-u”的参数将远程master与本地master进行关联</P>
+<P>④&nbsp;&nbsp;修改本地文件后,提交到本地版本库add 和commit命令</P>
+<P>⑤&nbsp;&nbsp;推送到远程仓库git push</P>
+<H4>3.3 克隆仓库</H4>
+<P>将远程版本库克隆到本地</P>
+<P>①&nbsp;&nbsp; ,在github上建立仓库,并进行初始化</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163005435-1796537447.png"></P>
+<P>&nbsp;</P>
+<P>勾选<STRONG>Initialize this repository with a README</STRONG>初始化这个仓库</P>
+<P>②&nbsp;&nbsp;克隆远程仓库</P>
+<P>点击Clone or download,将仓库的地址复制下来</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163012795-1415766918.png"></P>
+<P>&nbsp;</P>
+<P>使用git clone +远程仓库地址,对远程仓库进行克隆</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163020482-285233389.png"></P>
+<P>&nbsp;</P>
+<P>这样就克隆下来了</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163026060-1006473994.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>③&nbsp;&nbsp;在我们克隆的仓库中进行项目的开发,这里我们新建一个hello.java的文件
+ 并使用add和commit命令进行本地版本库的提交</P>
+<P>④&nbsp;&nbsp;使用<STRONG>git push–u origin master</STRONG> 进行推送 Master为分支名</P>
+<H4>3.4克隆其他开源项目</H4>
+<P>&nbsp;</P>
+<P>①&nbsp;&nbsp;找到需要克隆的开源项目的地址,然后fork到自己的远程仓库</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163035107-1680432167.png"></P>
+<P>②&nbsp;&nbsp;复制自己仓库中这个项目的地址</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163055138-115269439.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>③&nbsp;&nbsp;使用 命令</P>
+<P><STRONG>Git clone +</STRONG><STRONG>远程仓库<IMG id="uploading_image_36555" alt="" 
+src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/loading.gif">地址 
+</STRONG><STRONG>进行克隆</STRONG></P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163117451-1578282513.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H4>3.5如何从远程仓库中获取更新</H4>
+<P>①远程仓库与本地仓库进行关联</P>
+<P>要向从远程仓库中获取更新,必须先将本地仓库与远程仓库进行关联,可以使用</P>
+<P><STRONG>git remote add origin </STRONG><A href="https://github.com/zhaoqinrong/Mygit"><STRONG>https://github.com/zhaoqinrong/Mygit</STRONG></A></P>
+<P><STRONG>可以使用命令git remote rm origin</STRONG><STRONG>删除关联的远程仓库</STRONG></P>
+<P><STRONG>使用git remote show 
+origin</STRONG><STRONG>来查看ms</STRONG><STRONG>远程仓库的具体分支</STRONG></P>
+<P><STRONG>使用git remote –v </STRONG><STRONG>来查看与当前本地仓库相关联的远程仓库</STRONG></P>
+<P><STRONG>origin</STRONG><STRONG>为我们为远程仓库起的别名</STRONG></P>
+<P><STRONG>③&nbsp;&nbsp; </STRONG>使用<STRONG>git pull origin 
+master</STRONG>进行获取并合并到本地仓库</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163208560-1058982161.png"></P>
+<P>&nbsp;</P>
+<P><STRONG>如果直接使用git pull</STRONG><STRONG>可以会出错,</STRONG><STRONG>建议先git 
+fetch</STRONG><STRONG>到本地,</STRONG><STRONG>然后使用git merge 
+</STRONG><STRONG>合并</STRONG></P>
+<H4>3.6 如何向远程仓库推送更新</H4>
+<P>我们编写项目后,需要将我们的项目推送到远程仓库</P>
+<P>可以使用git push &lt;url&gt; &lt;本地分支名&gt;</P>
+<P>①&nbsp;&nbsp;远程仓库与本地仓库进行关联</P>
+<P>②&nbsp;&nbsp;推送更新</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163219904-642928591.png"></P>
+<P>&nbsp;</P>
+<P>建议我们推送更新前都先使用pull获取远程仓库中的更新,然后在push推送</P>
+<P>Ms 是我们远程仓库的一个别名,我们自定义</P>
+<P>可以使用<STRONG>git push ms master:mygit-1</STRONG></P>
+<P>将本地的master分支推送到ms远程仓库的mygit-1分支中</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163227029-472055043.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H4>3.7删除远程仓库中的文件</H4>
+<P>①先要将本地仓库和远程仓库进行关联</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163235779-2115616470.png"></P>
+<P>&nbsp;</P>
+<P>进入到我们的git命令<IMG id="uploading_image_89455" alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/loading.gif">行页面后，先将远程代码pull到本地，保持本地仓库跟远端仓库同步。</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163251701-543344915.png"></P>
+<P>&nbsp;</P>
+<P>④&nbsp;&nbsp;使用<STRONG>git rm </STRONG><STRONG>文件名</STRONG> 删除 文件</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163301763-944392067.png"></P>
+<P>&nbsp;</P>
+<P>⑤&nbsp;&nbsp; ,进行提交(和数据库事务一样,提交后才会处理)</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163308795-86326670.png"></P>
+<P>&nbsp;</P>
+<P>⑥&nbsp;&nbsp;向远程仓库进行推送</P>
+<P>&nbsp;<IMG id="uploading_image_59806" alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/loading.gif"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H1>4分支管理</H1>
+<P>Master 主分支,主要作为程序的发布</P>
+<P>所以不能在master上进行开发,所以应该建立子分支进行开发</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H4>4.1 HEAD指针和Master指针</H4>
+<P>①在没有分支的情况下,Master指针永远指向当前的最高版本</P>
+<P>而head指针指向master</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163355310-137048071.png"></P>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV>
+      <P align="center">&nbsp;</P></DIV></TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<P>           &nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>②&nbsp;&nbsp;创建了新分支,HEAD指向了</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163431529-1293150077.png"></P>
+<P>&nbsp;</P>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV>
+      <P align="center">&nbsp;</P></DIV></TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV>
+      <P align="center">&nbsp;</P></DIV></TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV>
+      <P align="center">&nbsp;</P></DIV></TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV>
+      <P align="center">&nbsp;</P></DIV></TD></TR></TBODY></TABLE>
+<P>           &nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>③&nbsp;&nbsp;主分支和子分支进行合并</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163545216-56601309.png"></P>
+<P>&nbsp;</P>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV>
+      <P align="center">&nbsp;</P></DIV></TD></TR></TBODY></TABLE>
+<TABLE style="width: 1055px; height: 22px;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>&nbsp;</TD></TR></TBODY></TABLE>
+<TABLE style="width: 100%;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV>
+      <P align="center">&nbsp;</P></DIV></TD></TR></TBODY></TABLE>
+<TABLE style="width: 1111px; height: 1px;" cellSpacing="0" cellPadding="0">
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV>
+      <P align="center">&nbsp;</P></DIV></TD></TR></TBODY></TABLE>
+<P>                     &nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H4>4.2分支创建</H4>
+<P>①创建分支:</P>
+<P>使用命令 <STRONG>git branch + </STRONG><STRONG>分支名</STRONG></P>
+<P><STRONG>使用git&nbsp; branch </STRONG><STRONG>查看当前项目的分支</STRONG></P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163555466-1853453702.png"></P>
+<P>&nbsp;</P>
+<P>⑦&nbsp;&nbsp;&nbsp;切换分支 使用命令 <STRONG>git checkout 
++</STRONG><STRONG>分支名</STRONG></P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163601154-1865418897.png"></P>
+<P>&nbsp;</P>
+<P>⑧&nbsp;&nbsp;&nbsp;使用命令<STRONG>git checkout +</STRONG><STRONG>分支名</STRONG> 
+切换到主分支,然后删除分支 使用命令 <STRONG>git branch –d +</STRONG><STRONG>分支名</STRONG></P>
+<P><STRONG>注意:</STRONG><STRONG>要删除分支,</STRONG><STRONG>必须要先切换到主分支</STRONG></P>
+<P><STRONG></STRONG>&nbsp;</P>
+<P><STRONG>可以使用 &nbsp; git checkout –b +</STRONG><STRONG>分支名&nbsp;&nbsp;&nbsp; 
+</STRONG><STRONG>创建并切换分支</STRONG></P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163608685-2083540650.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>分支上的文件是相互独立的,修改文件不会影响</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>模拟:建立两个分支,并分别进行推送</P>
+<P>先连接远程仓库 git remote set-url origin&nbsp; <A href="https://github.com/zhaoqinrong/mygithub.git">https://github.com/zhaoqinrong/mygithub.git</A></P>
+<P>然后分别推送分支 git push origin master&nbsp;&nbsp;&nbsp; git push origin brh</P>
+<P>推送成功后可以在我们github上进行查看</P>
+<P>&nbsp;</P>
+<H4>4.3合并分支</H4>
+<P>①切换回主分支<STRONG>git checkout master</STRONG></P>
+<P>②&nbsp;&nbsp;合并分支<STRONG>git merge brh(</STRONG><STRONG>子分支名)</STRONG></P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163812498-1798009489.png"></P>
+<P>&nbsp;</P>
+<P>③,删除子分支<STRONG>&nbsp;git branch -d brh</STRONG></P>
+<P>③&nbsp;&nbsp;推送到远程仓库<STRONG>git push origin master</STRONG></P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163820623-111024457.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>现在在本地没有brh的子分支,但是远程仓库中的子分支还在</P>
+<P>④删除远程子分支<STRONG>git push origin –delete 
+brh(</STRONG><STRONG>子分支名称)</STRONG></P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163831591-1389159632.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H4>4.4 删除分支</H4>
+<P>删除本地分支:git branch –d &lt;branch-name&gt;</P>
+<P>删除远程分支: git push origin –delete &lt;branchName&gt;<BR><BR></P>
+<P>&nbsp;</P>
+<H4>4.4 解决代码冲突</H4>
+<P align="left">git fetch origin master</P>
+<P align="left">git merge origin/master</P>
+<P>&nbsp;</P>
+<P>代码冲突如何产生的:</P>
+<P>当我们在分支上进行开发的时候,难免遇到别的开发人员和我们自己向仓库中提交相同的代码</P>
+<P>比如我们有一个商城的项目,开发人员A和开发人员B都对同一段代码做了修改,当A进行提交后并push到远程仓库中master合并,B再进行提交并与远程仓库中的master进行合并</P>
+<P>这时候就会出现代码冲突</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163855576-985226695.png"></P>
+<P>&nbsp;</P>
+<P>现在我们来模拟一下代码冲突,并试图解决</P>
+<P>①&nbsp;&nbsp;在E盘新建文件夹GitConflict,并初始化仓库git init</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163908732-2016819270.png"></P>
+<P>&nbsp;</P>
+<P>②&nbsp;&nbsp;在工作区创建名为Conflict.txt的文件,并写上hello git</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163916732-397159637.png"></P>
+<P>&nbsp;</P>
+<P>③&nbsp;&nbsp;把文件提交到本地仓库</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163925920-294515522.png"></P>
+<P>&nbsp;</P>
+<P>④&nbsp;&nbsp;创建新分支,名为Conflict并切换</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163934623-750095546.png"></P>
+<P>&nbsp;</P>
+<P>⑤&nbsp;&nbsp;在conflict分支下对Conflict.txt文件进行修改</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163941107-1662640785.png"></P>
+<P>&nbsp;</P>
+<P>⑥&nbsp;&nbsp;然后在conflict分支下进行提交</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163949888-780977960.png"></P>
+<P>&nbsp;</P>
+<P>⑦,切换到主分支</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163957216-1910349844.png"></P>
+<P>&nbsp;</P>
+<P>⑧&nbsp;&nbsp;再次对文件进行修改</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164004295-1939726896.png"></P>
+<P>&nbsp;</P>
+<P>⑨&nbsp;&nbsp;&nbsp;提交修改后的文件</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164015388-1377006120.png"></P>
+<P>&nbsp;</P>
+<P>⑩&nbsp;&nbsp;和分支conflict进行合并</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164025935-813870316.png"></P>
+<P>&nbsp;</P>
+<P>文件报错,有冲突</P>
+<P>然后我们可以打开仓库中的Conflict.txt文件进行查看</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164048138-34844141.png"></P>
+<P>&nbsp;</P>
+<P>中间内容表示有冲突的地方,我们可以选择保留一条信息,进行合并,假如我们保留一下数据</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164100138-1557936818.png"></P>
+<P>&nbsp;</P>
+<P>再次提交并合并</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164110263-1365852110.png"></P>
+<P>&nbsp;</P>
+<P>OK了</P>
+<H1>5.使用tag</H1>
+<P>&nbsp;</P>
+<P>发布一个版本时，我们通常先在版本库中打一个标签（tag），这样，就唯一确定了打标签时刻的版本。将来无论什么时候，取某个标签的版本，就是把那个打标签的时刻的历史版本取出来。所以，标签也是版本库的一个快照。</P>
+<P>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 打标签命令:git tag
+&lt; tagname&gt;</P>
+<P>在以往历史中的提交id上打标签</P>
+<P>使用:git tag &lt;tagname&gt; &lt;commitid&gt;</P>
+<P>删除标签git tag -d&lt;tagname&gt;</P>
+<H1>&nbsp;5 eclipse中使用git</H1>
+<P>&nbsp;</P>
+<H2>5.1用eclipse将项目保存到github中</H2>
+<P>1首先注册github</P>
+<P>2.使用eclipse生成一个SSHkey</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164140873-739513584.png"></P>
+<P>&nbsp;</P>
+<P>3.在github上对进行添加</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164153248-1255844703.png"></P>
+<P>&nbsp;</P>
+<P>4.在github上创建一个新的仓库,并对仓库进行初始化</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164203295-648287943.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>5.将我们的项目发布到刚刚创建的仓库中</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164215404-1700534966.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164242310-1893627059.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164258420-1548445824.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>因为我们这里是新项目,所以选择创建一个repository</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164310638-201288897.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>表示我们的项目还没有指针</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164338951-1110923635.png"></P>
+<P>&nbsp;</P>
+<P>将项目提交到本地仓库</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164355107-1237860551.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>写上注释,选上所有文件进行commit and push</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164407013-679128425.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164415701-176702797.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164427982-1686628888.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>选择master分支</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164452857-1715608916.png"></P>
+<P>&nbsp;</P>
+<P>正在推送</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164504779-764808167.png"></P>
+<P>&nbsp;</P>
+<P>成功</P>
+<P>&nbsp;</P>
+<P>这是我们成功发布的项目,提交给github托管,当我们需要对项目进行修改的时候</P>
+<H2>5.2我们可以将项目从github上导入到本地</H2>
+<P>&nbsp;</P>
+<P>打开MyEclipseàfileàimport</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164528295-522239928.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164551466-237064291.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164607263-1178038873.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164623154-287387327.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164632216-1175221889.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164641701-640927839.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>正在导入</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164655326-91124389.png"></P>
+<P>&nbsp;</P>
+<P>导入完成,然后我们在这个项目上进行开发,不会影响到我们仓库中的项目的完整性</P>
+<P>目前是master分支,我们需要新建分支进行我们的开发</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164709888-947499330.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164733904-877949330.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>新建分支后,自动切换分支</P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164752216-1180024805.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H2>5.3在分支上进行开发,并git到github分支上</H2>
+<P>1.现在我们已经切换到了上一节创建的分支上,现在我们在我们之前的项目上做一点修改</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164810982-327459574.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>这是我在MyJindong分支上对项目进行的一个修改,新增了一个aaaaa.html的文件</P>
+<P>2.先将我们修改的项目git到本地的仓库进行一次commit</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164823013-148195868.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164850420-195103888.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>2. 将更新推送到远程仓库,并自动创建分支</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164908982-192092505.png"></P>
+<P>&nbsp;</P>
+<P>这是检查本地和远程仓库的差异:</P>
+<P>&nbsp;</P>
+<P>检查出本地和远程仓库有差异,可以进行,然后在仓库中创建新分支,将我们的修改后的项目git到远程仓库</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164925576-1199913282.png"></P>
+<P>&nbsp;</P>
+<P>3.这是我们的新分支和master分支,这就成功的,将新分支git到了远程仓库</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105164948779-1225188198.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165007920-556720466.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H2>5.4将我们分支开发的项目和master分支的进行合并</H2>
+<P>我们第一版的项目有bug,我们在新分支上进行修改,将修改后的项目与我们的之前的项目进行合并</P>
+<OL>
+  <LI>首先我们要确定我们要与哪个分支合并,然后将我们的项目切换到哪个分支下,然后使用Merge进行合并</LI></OL>
+<P>我们这里要与主分支合并,首先切换到主分支,看主分支是否有更新,然后我们合并到本地项目</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165042138-700371035.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165105279-268340910.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>选择我们修改的项目进行本地合并</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165133716-349619055.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165150591-1866481815.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>合并后的结果</P>
+<OL>
+  <LI>然后选择push to upstream进行检查,是否有更新需要上传到我们的远程服务器</LI></OL>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165218576-2025368122.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165242576-560474007.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165258138-69222255.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>这是合并到远程仓库的结果.成功</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165315638-542297253.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H2>5.5删除本地分支和远程分支</H2>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165352623-885637106.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165407170-1072645853.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>选择以后点击OK即可</P>
+<P>&nbsp;</P>
+<H2>5.6版本回退</H2>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165433763-871737887.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165453451-2137684843.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165510998-2009748146.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165527545-58987247.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>便可以进行版本的回退</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H2>5.7 使用eclipse解决代码的冲突</H2>
+<P>模拟</P>
+<P>①从远程仓库中导入一个项目到我们的eclipe中</P>
+<P>导入过程不过讲解</P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165542420-120711959.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>这是我们导入的项目,并进行本地版本库的提交</P>
+<P>②创建新分支</P>
+<P>&nbsp;</P>
+<P>并对项目内容进行修改.然后提交到本地版本库</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165604982-1095873515.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>④&nbsp;&nbsp;切换到主分支master,对项目进行修改,并提交本地版本库</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165625170-131318936.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>⑤&nbsp;&nbsp; ,与conflict分支进行合并</P>
+<P>便出现了我们期待的结果</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165641357-763930985.png"></P>
+<P>&nbsp;</P>
+<P>⑥&nbsp;&nbsp;查看冲突的代码</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165651951-1397732505.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165704810-1673326085.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>标红的文件代表有冲突</P>
+<P>⑦&nbsp;&nbsp;查看冲突的代码</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165723826-1163168199.png"></P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165740779-1548938281.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>双击</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165753373-906077025.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>红色框起来的代码就是有冲突的代码,再手动进行修改</P>
+<P>&nbsp;</P>
+<P>假设我们现在修改左侧的代码为</P>
+<P>&nbsp;</P>
+<P>&nbsp;<IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105165812545-1274531087.png"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>再次提交,然后合并查看效果</P>
+<P>&nbsp;</P>
+<H4>注意:如果git pull失败,则需要添加参数</H4>
+<P align="left">[remote "origin"]</P>
+<P align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; url = 
+https://github.com/zhaoqinrong/test.git</P>
+<P align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fetch = 
++refs/heads/*:refs/remotes/origin/*</P>
+<P align="left">[branch "master"] </P>
+<P align="left">&nbsp;&nbsp;&nbsp;&nbsp; remote = origin </P>
+<P>&nbsp;&nbsp;&nbsp;&nbsp; merge = refs/heads/master</P>
+<P>&nbsp;</P>
+<P><IMG alt="" src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/1186254-20171105163145795-28442024.png"></P>
+<P>&nbsp;</P></DIV>
+<DIV id="MySignature"></DIV>
+<DIV class="clear"></DIV>
+<DIV id="blog_post_info_block">
+<DIV id="BlogPostCategory"></DIV>
+<DIV id="EntryTag"></DIV>
+<DIV id="blog_post_info"></DIV>
+<DIV class="clear"></DIV>
+<DIV id="post_next_prev"></DIV></DIV></DIV>
+<DIV class="postDesc">posted @ <SPAN id="post-date">2017-11-05 17:00</SPAN> <A 
+href="https://www.cnblogs.com/zqr99/">懒人写博客</A> 阅读(<SPAN 
+id="post_view_count">...</SPAN>) 评论(<SPAN id="post_comment_count">...</SPAN>)  
+<A href="https://i.cnblogs.com/EditPosts.aspx?postid=7787833" 
+rel="nofollow">编辑</A> <A onclick="AddToWz(7787833);return false;" href="https://www.cnblogs.com/zqr99/p/7787833.html#">收藏</A></DIV></DIV>
+<SCRIPT type="text/javascript">var allowComments=true,cb_blogId=362425,cb_entryId=7787833,cb_blogApp=currentBlogApp,cb_blogUserGuid='451eec47-2001-4f80-4253-08d4a8d9e085',cb_entryCreatedDate='2017/11/5 17:00:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</SCRIPT>
+</DIV><!--end: topics 文章、评论容器--></DIV><A name="!comments"></A>
+<DIV id="blog-comments-placeholder"></DIV>
+<SCRIPT type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</SCRIPT>
+
+<DIV id="comment_form" class="commentform"><A name="commentform"></A>
+<DIV id="divCommentShow"></DIV>
+<DIV id="comment_nav"><SPAN id="span_refresh_tips"></SPAN><A id="lnk_RefreshComments" 
+onclick="return RefreshCommentList();" href="javascript:void(0);" clientidmode="Static" 
+runat="server">刷新评论</A><A onclick="return RefreshPage();" href="https://www.cnblogs.com/zqr99/p/7787833.html#">刷新页面</A><A 
+href="https://www.cnblogs.com/zqr99/p/7787833.html#top">返回顶部</A></DIV>
+<DIV id="comment_form_container"></DIV>
+<DIV id="ad_text_under_commentbox" class="ad_text_commentbox"></DIV>
+<DIV id="ad_t2"></DIV>
+<DIV id="opt_under_post"></DIV>
+<SCRIPT src="git%20完全讲解%20无废话,包含在myeclipse中使用,包括解决冲突%20-%20懒人写博客%20-%20博客园_files/gpt.js" async="async"></SCRIPT>
+
+<SCRIPT>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</SCRIPT>
+
+<SCRIPT>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</SCRIPT>
+
+<DIV id="cnblogs_c1" class="c_ad_block">
+<DIV style="width: 300px; height: 250px;" id="div-gpt-ad-1546353474406-0"></DIV>
+</DIV>
+<DIV id="under_post_news"></DIV>
+<DIV id="cnblogs_c2" class="c_ad_block">
+<DIV style="width: 468px; height: 60px;" id="div-gpt-ad-1539008685004-0"></DIV>
+</DIV>
+<DIV id="under_post_kb"></DIV>
+<DIV id="HistoryToday" class="c_ad_block"></DIV>
+<SCRIPT type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</SCRIPT>
+</DIV></DIV><!--end: forFlow --></DIV><!--end: mainContent 主体内容容器-->
+<DIV id="sideBar">
+<DIV id="sideBarMain"><!--done-->
+<DIV class="newsItem">
+<H3 class="catListTitle">公告</H3>
+<DIV id="blog-news"></DIV>
+<SCRIPT type="text/javascript">loadBlogNews();</SCRIPT>
+</DIV>
+<DIV style="display: none;" id="blog-calendar"></DIV>
+<SCRIPT type="text/javascript">loadBlogDefaultCalendar();</SCRIPT>
+
+<DIV id="leftcontentcontainer">
+<DIV id="blog-sidecolumn"></DIV>
+<SCRIPT type="text/javascript">loadBlogSideColumn();</SCRIPT>
+</DIV></DIV><!--end: sideBarMain --></DIV><!--end: sideBar 侧边栏容器 -->
+<DIV class="clear"></DIV></DIV><!--end: main -->
+<DIV class="clear"></DIV>
+<DIV id="footer"><!--done-->Copyright ©2019 懒人写博客	</DIV><!--end: footer -->
+</DIV><!--end: home 自定义的最大容器 --></BODY></HTML>

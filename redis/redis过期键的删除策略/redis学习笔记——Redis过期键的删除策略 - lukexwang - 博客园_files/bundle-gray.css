@@ -1,0 +1,309 @@
+html {
+	font: 12px/150% black verdana; margin: auto; font-size-adjust: none; font-stretch: normal;
+}
+body {
+	font: 12px/150% black verdana; margin: auto; font-size-adjust: none; font-stretch: normal;
+}
+div {
+	font-family: verdana; word-wrap: break-word;
+}
+td {
+	font-size: 12px;
+}
+ul {
+	list-style-type: circle;
+}
+a:link {
+	color: rgb(0, 102, 153); text-decoration: none;
+}
+a:visited {
+	color: rgb(0, 102, 153); text-decoration: none;
+}
+a:hover {
+	color: rgb(204, 204, 204); text-decoration: none;
+}
+a:active {
+	color: red; text-decoration: none;
+}
+a.whitelink:link {
+	color: rgb(255, 255, 255); text-decoration: none;
+}
+a.whitelink:visited {
+	color: rgb(255, 255, 255); text-decoration: none;
+}
+a.whitelink:hover {
+	color: rgb(201, 201, 201); text-decoration: none;
+}
+a.whitelink:active {
+	color: rgb(255, 255, 255); text-decoration: none;
+}
+.none {
+	
+}
+.floatright {
+	float: right;
+}
+.clear {
+	clear: both;
+}
+#bnr_pic {
+	background: url("images/top2.gif") no-repeat right top; border: 0px solid red; width: 100%; height: 100%;
+}
+#left_border {
+	background: url("images/line.gif") repeat-y left top; border: 0px solid red; width: 100%; height: 100%;
+}
+#banner {
+	background: url("images/top.gif") repeat-x left top; border: 0px solid rgb(0, 0, 0); width: 100%; height: 118px;
+}
+#main {
+	width: 100%; clear: both;
+}
+#left {
+	background: url("images/bg_left_border.gif") repeat-y right top; border: 0px solid green; width: 77%; margin-right: 0px; float: left;
+}
+#right {
+	background: url("images/bg_rt.gif") repeat-y right top; border: 0px solid red; width: 23%; float: right; overflow-x: hidden;
+}
+#right_content {
+	border: 0px solid red; width: 90%; text-align: left; margin-right: 10px;
+}
+#footer {
+	background: url("images/bottom.gif") no-repeat; padding: 40px 0px 5px; border: 0px solid red; left: 0px; width: 100%; text-align: right; color: rgb(201, 201, 201); display: none;
+}
+.listtitle {
+	background: url("images/tit_list.jpg") no-repeat left; width: 90%; height: 39px; color: rgb(102, 102, 102); padding-top: 3px; padding-left: 45px; font-size: 14px;
+}
+.catListTitle {
+	background: url("images/tit_list.jpg") no-repeat left; width: 90%; height: 39px; color: rgb(102, 102, 102); padding-top: 14px; padding-left: 42px; font-size: 14px;
+}
+.catList {
+	margin-left: 10px;
+}
+#right_content ul {
+	margin-left: -40px;
+}
+li {
+	margin-left: 10px; list-style-type: none;
+}
+.newsItem {
+	padding: 10px; border: 0px solid red; width: 95%; margin-bottom: 10px;
+}
+#mylinks {
+	padding: 20px 0px 10px; margin-left: 45px;
+}
+a.menu:link {
+	color: rgb(0, 102, 153); text-decoration: none;
+}
+a.menu:visited {
+	color: rgb(0, 102, 153); text-decoration: none;
+}
+a.menu:hover {
+	color: rgb(164, 49, 41); text-decoration: underline;
+}
+a.menu:active {
+	color: rgb(0, 102, 153); text-decoration: none;
+}
+#mystats {
+	padding: 10px; float: right;
+}
+.headerText {
+	border: 0px solid red; padding-top: 20px; padding-left: 50px;
+}
+.headermaintitle {
+	padding-left: 0px; font-family: verdana,monospace; font-weight: bold;
+}
+a.headermaintitle:link {
+	color: rgb(255, 255, 255); text-decoration: none;
+}
+a.headermaintitle:visited {
+	color: rgb(255, 255, 255); text-decoration: none;
+}
+a.headermaintitle:hover {
+	color: rgb(218, 88, 107); text-decoration: underline;
+}
+a.headermaintitle:active {
+	color: rgb(218, 88, 107); text-decoration: none;
+}
+.headerDis {
+	text-align: left; color: rgb(255, 255, 255); overflow: hidden; padding-top: 10px; padding-bottom: 10px; padding-left: 50px; font-family: "courier new",verdana,monospace;
+}
+.blogStats {
+	color: rgb(85, 85, 85); padding-top: 5px; margin-top: 0px; margin-bottom: 0px;
+}
+#topics {
+	margin: 30px 10px auto 30px; border: 0px solid red; width: 96% !important;
+}
+.day {
+	padding: 0px 15px 15px; border: 0px dashed red; margin-bottom: 20px; overflow-x: hidden;
+}
+.dayTitle {
+	background: url("images/post_title.jpg") no-repeat left top; padding: 0px; height: 20px; text-transform: uppercase; font-size: 13px; font-weight: bold; margin-bottom: 10px;
+}
+.postTitle {
+	margin: 5px 0px 15px; padding: 32px 15px 8px 28px; font-family: arial; font-size: 14px; font-weight: bold; border-bottom-color: rgb(204, 204, 204); border-bottom-width: 1px; border-bottom-style: dashed; position: relative; background-image: url("images/bg_post_tilte.gif"); background-attachment: scroll; background-repeat: no-repeat; background-color: transparent;
+}
+a.postTitle2:link {
+	color: rgb(80, 80, 80); text-decoration: none;
+}
+a.postTitle2:visited {
+	color: rgb(80, 80, 80); text-decoration: none;
+}
+a.postTitle2:hover {
+	color: rgb(102, 102, 102); text-decoration: underline;
+}
+a.postTitle2:active {
+	color: rgb(102, 102, 102); text-decoration: none;
+}
+.postTitle2 {
+	border-bottom-color: rgb(239, 239, 239); border-bottom-width: 0px; border-bottom-style: dotted;
+}
+.post a:link {
+	color: rgb(85, 85, 85); text-decoration: none;
+}
+.post a:visited {
+	color: rgb(85, 85, 85); text-decoration: none;
+}
+.post a:hover {
+	color: rgb(167, 167, 167); text-decoration: underline;
+}
+.post a:active {
+	color: rgb(85, 85, 85); text-decoration: underline;
+}
+.postCon {
+	padding: 10px; width: 100%; line-height: 180%; overflow: hidden; font-size: 14px;
+}
+.postDesc {
+	border: 0px solid red; text-align: right; color: gray; font-family: arial; font-size: 12px; margin-top: 5px;
+}
+.postDesc a:link {
+	color: rgb(120, 175, 211); text-decoration: underline;
+}
+.postDesc a:visited {
+	color: rgb(120, 175, 211); text-decoration: underline;
+}
+.postDesc a:hover {
+	color: rgb(167, 167, 167); text-decoration: underline;
+}
+.postDesc a:active {
+	color: rgb(120, 175, 211); text-decoration: underline;
+}
+.postSeparator {
+	height: 20px; margin-top: 30px; margin-bottom: 5px;
+}
+.post {
+	background: url("images/post_line.gif") repeat-x left bottom; padding: 15px; border: 0px dashed rgb(103, 103, 103); line-height: 1.6; font-size: 14px;
+}
+.entrylist {
+	background: rgb(255, 255, 255); padding: 15px; border: 1px dashed rgb(103, 103, 103);
+}
+.entrylistTitle {
+	padding: 10px; border: 0px solid red; font-family: verdana; font-size: 14px; font-weight: bold;
+}
+.entrylistDescription {
+	padding: 15px; color: gray;
+}
+.entrylistItem {
+	padding: 15px; border-bottom-color: rgb(204, 204, 204); border-bottom-width: 0px; border-bottom-style: dotted;
+}
+.entrylistItemTitle {
+	font-family: verdana; font-size: 14px;
+}
+.entrylistItemPostDesc {
+	text-align: right; color: gray; font-family: arial;
+}
+.feedback_area_title {
+	margin: 0px 20px 15px 10px; color: rgb(191, 23, 23); font-size: 14px; font-weight: bold; border-bottom-color: rgb(204, 204, 204); border-bottom-width: 0px; border-bottom-style: dotted;
+}
+.feedbackListSubtitle {
+	color: rgb(79, 79, 79); font-weight: bold; margin-bottom: 10px;
+}
+.commentform {
+	margin: 0px 20px 10px;
+}
+.feedbackItem {
+	margin: 0px 20px 10px;
+}
+.feedbackManage {
+	color: red; font-weight: normal; float: right;
+}
+.postDesc a:link {
+	color: rgb(120, 175, 211); text-decoration: underline;
+}
+.postDesc a:visited {
+	color: rgb(120, 175, 211); text-decoration: underline;
+}
+.postDesc a:hover {
+	color: rgb(167, 167, 167); text-decoration: underline;
+}
+.postDesc a:active {
+	color: rgb(120, 175, 211); text-decoration: underline;
+}
+a.feedbackmanagelink:link {
+	color: rgb(0, 102, 153); text-decoration: none;
+}
+a.feedbackmanagelink:visited {
+	color: rgb(0, 102, 153); text-decoration: none;
+}
+a.feedbackmanagelink:hover {
+	color: rgb(204, 204, 204); text-decoration: none;
+}
+a.feedbackmanagelink:active {
+	color: red; text-decoration: none;
+}
+.feedbackCon {
+	background: url("images/comment-norm.gif") no-repeat left top rgb(255, 255, 255); padding-top: 25px; padding-bottom: 20px; padding-left: 30px; margin-bottom: 20px;
+}
+.calendar {
+	text-align: center;
+}
+.Cal {
+	background: url("images/splodge.gif") no-repeat center; padding: 0px; width: 90%; line-height: 22px; font-family: arial; font-size: 12px; margin-left: 7px;
+}
+.CalTitle {
+	height: 30px; font-family: verdana; font-size: 12px; font-weight: bold;
+}
+.CalDayHeader {
+	border: 1px solid rgb(225, 225, 225); font-weight: bold; background-color: transparent;
+}
+.CalTodayDay {
+	background: url("images/bg_cal.gif") no-repeat center; color: rgb(102, 102, 102); font-weight: bold;
+}
+.CalSelector {
+	
+}
+.CalOtherMonthDay {
+	color: rgb(243, 243, 243); background-color: transparent;
+}
+.CalNextPrev {
+	padding: 5px 15px; font-weight: bold;
+}
+.pfl_feedback {
+	width: 95%; margin-left: 20px;
+}
+.pfl_feedback_area_title {
+	font-size: 14px; font-weight: bold;
+}
+.pfl_feedback_area_title a:hover {
+	color: rgb(204, 204, 204); text-decoration: underline;
+}
+.pfl_feedbackname a:hover {
+	color: rgb(204, 204, 204); font-weight: bold; text-decoration: underline;
+}
+.pfl_feedbackItem {
+	padding: 10px; font-size: 12px; margin-top: 5px; margin-bottom: 10px;
+}
+.pfl_feedbacksubtitle {
+	height: 22px; line-height: 22px; margin-bottom: 8px; margin-left: 20px;
+}
+.pfl_feedbackname {
+	background: url("images/arrow.gif") no-repeat left; color: rgb(79, 79, 79); padding-left: 18px; float: left;
+}
+.pfl_feedbackManage {
+	float: right;
+}
+.pfl_feedbackCon {
+	background: url("images/comment-norm.gif") no-repeat left top rgb(255, 255, 255); padding-top: 25px; padding-bottom: 20px; padding-left: 30px; margin-bottom: 5px;
+}
+.pfl_answer {
+	border: 1px solid rgb(255, 255, 255); width: 95%; padding-top: 8px; padding-bottom: 5px; padding-left: 5px; margin-left: 40px;
+}

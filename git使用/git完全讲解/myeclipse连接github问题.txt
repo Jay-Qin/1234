@@ -1,0 +1,50 @@
+myeclipse10连接github失败
+
+jdk7以下不支持
+解决办法
+
+将myeclipse.ini文件下
+				==================================     jdk8       ==========================================================
+改为jdk8
+-vm
+F:/jdk8/jdk/jre/bin/client/jvm.dll
+
+
+				==================================     jdk7         ===========================================================
+
+-startup
+ ../Common/plugins/org.eclipse.equinox.launcher_1.0.201.R35x_v20090715.jar
+ --launcher.library
+ ../Common/plugins/org.eclipse.equinox.launcher.win32.win32.x86_1.0.200.v20090519
+ -install
+ C:/Users/jack/AppData/Local/Genuitec/MyEclipse 8.5
+ -vm
+C:/Users/jack/AppData/Local/Genuitec/Common/binary/com.sun.java.jdk.win32.x86_1.6.0.013/jre/bin/client/jvm.dll
+ -vmargs
+ -Xms256m
+ -Xmx512m
+ -XX:MaxPermSize=256m
+ -XX:ReservedCodeCacheSize=64m
+ -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2
+
+6.修改默认jdk版本为1.7版本：
+
+-vm
+ C:\Program Files\Java\jdk1.7.0_80\bin\javaw.exe
+
+或者：
+
+C:\Program Files\Java\jdk1.7.0_80\jre\bin\jvm.dll
+
+启动MyEclipse8.5报错，无法启动。
+
+7.检查jdk版本，发现1.7版本为64位版本，我的win7旗舰版为64位系统，myeclipse8.5为32位版本，默认安装的是jdk1.6的32位版本。所以必须安装jdk1.7的32位版本。
+
+8.重新修改myeclipse8.5的配置文件，改为：
+
+-vm
+ C:\Program Files (x86)\Java\jdk1.7.0_25\jre\bin\client\jvm.dll
+
+此时，发现32位版本下jre\bin目录下面有client目录，而64位版本下是server目录，用server目录下的jvm.dll则启动报错。
+
+9.最后再team-remote-push...，如果报错reject，则先pull一下，再push即可。

@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<!-- saved from url=(0047)http://www.cnblogs.com/chengxiao/p/6059914.html -->
+<html lang="zh-cn"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园</title>
+<meta property="og:description" content="哈希表（hash table）也叫散列表，是一种非常重要的数据结构，应用场景及其丰富，许多缓存技术（比如memcached）的核心其实就是在内存中维护一张大的哈希表，而HashMap的实现原理也常常出">
+    <link type="text/css" rel="stylesheet" href="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/bundle-CodingLife.css">
+<link type="text/css" rel="stylesheet" href="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/304993.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/bundle-CodingLife-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chengxiao/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chengxiao/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chengxiao/wlwmanifest.xml">
+    <script src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/osd.js.下载"></script><script src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/pubads_impl_rendering_308.js.下载"></script><script async="" src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/analytics.js.下载"></script><script type="text/javascript" src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/encoder.js.下载"></script><script src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/jquery-2.2.0.min.js.下载"></script>
+    <script>var currentBlogId=304993;var currentBlogApp='chengxiao',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/blog-common.js.下载" type="text/javascript"></script>
+<link rel="preload" href="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/f(3).txt" as="script"><script type="text/javascript" src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/f(3).txt"></script><script src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/pubads_impl_308.js.下载" async=""></script><link rel="prefetch" href="http://tpc.googlesyndication.com/safeframe/1-0-32/html/container.html"></head>
+<body>
+<a name="top"></a>
+
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="https://www.cnblogs.com/chengxiao/"><img id="blogLogo" src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/chengxiao/">dreamcatcher-cx</a></h1>
+<h2>why is more important than what.</h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+<li><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chengxiao/">首页</a></li>
+<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li><a id="blog_nav_contact" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/dreamcatcher-cx">联系</a></li>
+<li><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/chengxiao/rss">订阅</a>
+<!--<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/chengxiao/rss"><img src="//www.cnblogs.com/images/xml.gif" alt="订阅" /></a>--></li>
+<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<span id="stats_post_count">随笔 - 20&nbsp; </span>
+<span id="stats_article_count">文章 - 0&nbsp; </span>
+<span id="stats-comment_count">评论 - 191</span>
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/chengxiao/p/6059914.html">HashMap实现原理及源码分析</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body"><p>　　哈希表（hash table）也叫散列表，是一种非常重要的数据结构，应用场景及其丰富，许多缓存技术（比如memcached）的核心其实就是在内存中维护一张大的哈希表，而HashMap的实现原理也常常出现在各类的面试题中，重要性可见一斑。本文会对java集合框架中的对应实现HashMap的实现原理进行讲解，然后会对JDK7的HashMap源码进行分析。</p>
+<p><span style="font-size: 18px;"><strong>目录</strong></span></p>
+<p style="margin-left: 30px;"><span style="color: #000000; font-size: 18px;"><strong style="color: #339966; font-size: 14px;">　<span style="font-size: 16px;">　<span style="color: #993366;">一、<span style="font-size: 15px;"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#t1"><span style="color: #993366;">什么是哈希表</span></a></span></span></span></strong></span></p>
+<p style="margin-left: 30px;"><span style="color: #993366; font-size: 15px;"><strong>　　二、<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#t2"><span style="color: #993366;">HashMap实现原理</span></a></strong></span></p>
+<p style="margin-left: 30px;"><span style="color: #993366; font-size: 15px;"><strong>　　三、<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#t3"><span style="color: #993366;">为何HashMap的数组长度一定是2的次幂？</span></a></strong></span></p>
+<p style="margin-left: 30px;"><span style="color: #993366; font-size: 15px;"><strong>　　四、<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#t4"><span style="color: #993366;">重写equals方法需同时重写hashCode方法</span></a></strong></span></p>
+<p style="margin-left: 30px;"><span style="color: #993366; font-size: 15px;"><strong>　　五、<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#t5"><span style="color: #993366;">总结</span></a></strong></span></p>
+<h1><a name="t1"></a>一、什么是哈希表</h1>
+<p>　　在讨论哈希表之前，我们先大概了解下其他数据结构在新增，查找等基础操作执行性能</p>
+<p>　　<strong>数组</strong>：采用一段连续的存储单元来存储数据。对于指定下标的查找，时间复杂度为O(1)；通过给定值进行查找，需要遍历数组，逐一比对给定关键字和数组元素，时间复杂度为O(n)，当然，对于有序数组，则可采用二分查找，插值查找，斐波那契查找等方式，可将查找复杂度提高为O(logn)；对于一般的插入删除操作，涉及到数组元素的移动，其平均复杂度也为O(n)</p>
+<p>　　<strong>线性链表</strong>：对于链表的新增，删除等操作（在找到指定操作位置后），仅需处理结点间的引用即可，时间复杂度为O(1)，而查找操作需要遍历链表逐一进行比对，复杂度为O(n)</p>
+<p>　　<strong>二叉树</strong>：对一棵相对平衡的有序二叉树，对其进行插入，查找，删除等操作，平均复杂度均为O(logn)。</p>
+<p>　　<strong>哈希表</strong>：相比上述几种数据结构，在哈希表中进行添加，删除，查找等操作，性能十分之高，不考虑哈希冲突的情况下，仅需一次定位即可完成，时间复杂度为O(1)，接下来我们就来看看哈希表是如何实现达到惊艳的常数阶O(1)的。</p>
+<p>　　我们知道，数据结构的物理存储结构只有两种：<span style="color: #ff0000;"><strong>顺序存储结构</strong></span>和<span style="color: #ff0000;"><strong>链式存储结构</strong><span style="color: #000000;">（像栈，队列，树，图等是从逻辑结构去抽象的，映射到内存中，也这两种物理组织形式），而在上面我们提到过，在数组中根据下标查找某个元素，一次定位就可以达到，哈希表利用了这种特性，<span style="color: #ff0000;"><strong>哈希表的主干就是数组</strong></span>。</span></span></p>
+<p><span style="color: #ff0000;"><span style="color: #000000;">　　比如我们要新增或查找某个元素，我们通过把当前元素的关键字 通过某个函数映射到数组中的某个位置，通过数组下标一次定位就可完成操作。</span><strong><span style="color: #000000;"><br></span></strong></span></p>
+<p><span style="color: #ff0000;"><span style="color: #000000;">　　　　　　　　<span style="font-size: 18px; color: #ff0000;"><strong>存储位置 = f(关键字)</strong></span></span></span></p>
+<p><span style="color: #ff0000;"><span style="color: #000000;"><span style="font-size: 18px; color: #ff0000;"><strong>　</strong><span style="color: #000000; font-size: 15px;">　其中，这个函数f一般称为<strong>哈希函数</strong>，这个函数的设计好坏会直接影响到哈希表的优劣。举个例子，比如我们要在哈希表中执行插入操作：</span></span></span></span></p>
+<p><span style="color: #ff0000;"><span style="color: #000000;"><span style="font-size: 18px; color: #ff0000;"><span style="color: #000000; font-size: 15px;">　　<img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/1024555-20161113180447499-1953916974.png" alt="" width="768" height="354"></span></span></span></span></p>
+<p><span style="color: #ff0000;"><span style="color: #000000;"><span style="font-size: 18px; color: #ff0000;"><span style="color: #000000; font-size: 15px;">　　查找操作同理，先通过哈希函数计算出实际存储地址，然后从数组中对应地址取出即可。</span></span></span></span></p>
+<p><span style="color: #ff0000;"><span style="color: #000000;"><span style="font-size: 18px; color: #ff0000;"><span style="color: #000000; font-size: 15px;">　　<span style="font-size: 16px;"><strong>哈希冲突</strong></span></span></span></span></span></p>
+<p><span style="color: #ff0000;"><span style="color: #000000;"><span style="font-size: 18px; color: #ff0000;"><span style="color: #000000; font-size: 15px;">　　然而万事无完美，如果两个不同的元素，通过哈希函数得出的实际存储地址相同怎么办？也就是说，当我们对某个元素进行哈希运算，得到一个存储地址，然后要进行插入的时候，发现已经被其他元素占用了，其实这就是所谓的<span style="color: #ff0000;"><strong>哈希冲突</strong></span>，也叫哈希碰撞。前面我们提到过，哈希函数的设计至关重要，好的哈希函数会尽可能地保证 <strong>计算简单</strong>和<strong>散列地址分布均匀,</strong>但是，我们需要清楚的是，数组是一块连续的固定长度的内存空间，再好的哈希函数也不能保证得到的存储地址绝对不发生冲突。那么哈希冲突如何解决呢？哈希冲突的解决方案有多种:开放定址法（发生冲突，继续寻找下一块未被占用的存储地址），再散列函数法，链地址法，而HashMap即是采用了链地址法，也就是<strong>数组+链表</strong>的方式，</span></span></span></span></p>
+<h1><a name="t2"></a>二、HashMap实现原理</h1>
+<p>　HashMap的主干是一个Entry数组。Entry是HashMap的基本组成单元，每一个Entry包含一个key-value键值对。</p>
+<div class="cnblogs_code">
+<pre><span style="color: #008000;">//</span><span style="color: #008000;">HashMap的主干数组，可以看到就是一个Entry数组，初始值为空数组{}，主干数组的长度一定是2的次幂，至于为什么这么做，后面会有详细分析。</span>
+<span style="color: #0000ff;">transient</span> Entry&lt;K,V&gt;[] table = (Entry&lt;K,V&gt;[]) EMPTY_TABLE;</pre>
+</div>
+<p>&nbsp;Entry是HashMap中的一个静态内部类。代码如下</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>    <span style="color: #0000ff;">static</span> <span style="color: #0000ff;">class</span> Entry&lt;K,V&gt; <span style="color: #0000ff;">implements</span> Map.Entry&lt;K,V&gt;<span style="color: #000000;"> {
+        </span><span style="color: #0000ff;">final</span><span style="color: #000000;"> K key;
+        V value;
+        Entry</span>&lt;K,V&gt;<span style="color: #000000;"> next;<span style="color: #008000;">//存储指向下一个Entry的引用，单链表结构
+        </span></span><span style="color: #0000ff;">int</span><span style="color: #000000;"> hash;<span style="color: #008000;">//对key的hashcode值进行hash运算后得到的值，存储在Entry，避免重复计算
+
+        </span></span><span style="color: #008000;">/**</span><span style="color: #008000;">
+         * Creates new entry.
+         </span><span style="color: #008000;">*/</span><span style="color: #000000;">
+        Entry(</span><span style="color: #0000ff;">int</span> h, K k, V v, Entry&lt;K,V&gt;<span style="color: #000000;"> n) {
+            value </span>=<span style="color: #000000;"> v;
+            next </span>=<span style="color: #000000;"> n;
+            key </span>=<span style="color: #000000;"> k;
+            hash </span>=<span style="color: #000000;"> h;
+        }</span>&nbsp;</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>&nbsp;所以，HashMap的整体结构如下</p>
+<p><span style="color: #000000; font-size: 16px;"><img style="font-size: 15px;" src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/1024555-20161113235348670-746615111.png" alt="" width="934" height="566"><span style="font-size: 15px;">　　</span></span></p>
+<p><span style="font-size: 15px;">　　<span style="color: #000000;"><strong>简单来说，HashMap由数组+链表组成的，数组是HashMap的主体，链表则是主要为了解决哈希冲突而存在的，如果定位到的数组位置不含链表（当前entry的next指向null）,那么对于查找，添加等操作很快，仅需一次寻址即可；如果定位到的数组包含链表，对于添加操作，其时间复杂度为O(n)，首先遍历链表，存在即覆盖，否则新增；对于查找操作来讲，仍需遍历链表，然后通过key对象的equals方法逐一比对查找。所以，性能考虑，HashMap中的链表出现越少，性能才会越好。</strong></span></span></p>
+<p>其他几个重要字段</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008000;">//</span><span style="color: #008000;">实际存储的key-value键值对的个数</span>
+<span style="color: #0000ff;">transient</span> <span style="color: #0000ff;">int</span><span style="color: #000000;"> size;
+</span><span style="color: #008000;">//</span><span style="color: #008000;">阈值，当table == {}时，该值为初始容量（初始容量默认为16）；当table被填充了，也就是为table分配内存空间后，threshold一般为 capacity*loadFactory。HashMap在进行扩容时需要参考threshold，后面会详细谈到</span>
+<span style="color: #0000ff;">int</span><span style="color: #000000;"> threshold;
+</span><span style="color: #008000;">//</span><span style="color: #008000;">负载因子，代表了table的填充度有多少，默认是0.75</span>
+<span style="color: #0000ff;">final</span> <span style="color: #0000ff;">float</span><span style="color: #000000;"> loadFactor;
+</span><span style="color: #008000;">//用于快速失败，由于HashMap非线程安全，在对HashMap进行迭代时，如果</span><span style="color: #008000;">期间其他线程的参与导致HashMap的结构发生变化了（比如put，remove等操作），需要抛出异常ConcurrentModificationException</span>
+<span style="color: #0000ff;">transient</span> <span style="color: #0000ff;">int</span> modCount;</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>HashMap有4个构造器，其他构造器如果用户没有传入initialCapacity 和loadFactor这两个参数，会使用默认值</p>
+<p>initialCapacity默认为16，loadFactory默认为0.75</p>
+<p>我们看下其中一个</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #0000ff;">public</span> HashMap(<span style="color: #0000ff;">int</span> initialCapacity, <span style="color: #0000ff;">float</span><span style="color: #000000;"> loadFactor) {<br>　　　　　<span style="color: #008000;">//此处对传入的初始容量进行校验，最大不能超过MAXIMUM_CAPACITY = 1&lt;&lt;30(2<sup>30</sup>)
+        </span></span><span style="color: #0000ff;">if</span> (initialCapacity &lt; 0<span style="color: #000000;">)
+            </span><span style="color: #0000ff;">throw</span> <span style="color: #0000ff;">new</span> IllegalArgumentException("Illegal initial capacity: " +<span style="color: #000000;">
+                                               initialCapacity);
+        </span><span style="color: #0000ff;">if</span> (initialCapacity &gt;<span style="color: #000000;"> MAXIMUM_CAPACITY)
+            initialCapacity </span>=<span style="color: #000000;"> MAXIMUM_CAPACITY;
+        </span><span style="color: #0000ff;">if</span> (loadFactor &lt;= 0 ||<span style="color: #000000;"> Float.isNaN(loadFactor))
+            </span><span style="color: #0000ff;">throw</span> <span style="color: #0000ff;">new</span> IllegalArgumentException("Illegal load factor: " +<span style="color: #000000;">
+                                               loadFactor);
+
+        </span><span style="color: #0000ff;">this</span>.loadFactor =<span style="color: #000000;"> loadFactor;
+        threshold </span>=<span style="color: #000000;"> initialCapacity;<br>　　　　　
+        init();<span style="color: #008000;">//init方法在HashMap中没有实际实现，不过在其子类如 linkedHashMap中就会有对应实现</span>
+    }</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>　　从上面这段代码我们可以看出，<strong><span style="color: #000000;">在常规构造器中，没有为数组table分配内存空间（有一个入参为指定Map的构造器例外），而是在执行put操作的时候才真正构建table数组</span></strong></p>
+<p><span style="color: #000000; font-size: 14px;">　　OK,接下来我们来看看put操作的实现吧</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>    <span style="color: #0000ff;">public</span><span style="color: #000000;"> V put(K key, V value) {
+        <span style="color: #008000;">//如果table数组为空数组{}，进行数组填充（为table分配实际内存空间），入参为threshold，此时threshold为initialCapacity 默认是1</span></span><span style="color: #008000;">&lt;&lt;4(2<sup>4</sup>=16)
+        </span><span style="color: #0000ff;">if</span> (table ==<span style="color: #000000;"> EMPTY_TABLE) {
+            inflateTable(threshold);
+        }
+       </span><span style="color: #008000;">//</span><span style="color: #008000;">如果key为null，存储位置为table[0]或table[0]的冲突链上</span>
+        <span style="color: #0000ff;">if</span> (key == <span style="color: #0000ff;">null</span><span style="color: #000000;">)
+            </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> putForNullKey(value);
+        </span><span style="color: #0000ff;">int</span> hash = hash(key);<span style="color: #008000;">//</span><span style="color: #008000;">对key的hashcode进一步计算，确保散列均匀</span>
+        <span style="color: #0000ff;">int</span> i = indexFor(hash, table.length);<span style="color: #008000;">//</span><span style="color: #008000;">获取在table中的实际位置</span>
+        <span style="color: #0000ff;">for</span> (Entry&lt;K,V&gt; e = table[i]; e != <span style="color: #0000ff;">null</span>; e =<span style="color: #000000;"> e.next) {
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">如果该对应数据已存在，执行覆盖操作。用新value替换旧value，并返回旧value</span>
+<span style="color: #000000;">            Object k;
+            </span><span style="color: #0000ff;">if</span> (e.hash == hash &amp;&amp; ((k = e.key) == key ||<span style="color: #000000;"> key.equals(k))) {
+                V oldValue </span>=<span style="color: #000000;"> e.value;
+                e.value </span>=<span style="color: #000000;"> value;
+                e.recordAccess(</span><span style="color: #0000ff;">this</span><span style="color: #000000;">);
+                </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> oldValue;
+            }
+        }
+        modCount</span>++<span style="color: #000000;">;<span style="color: #008000;">//保证并发访问时，若HashMap内部结构发生变化，快速响应失败</span>
+        addEntry(hash, key, value, i);</span><span style="color: #008000;">//</span><span style="color: #008000;">新增一个entry</span>
+        <span style="color: #0000ff;">return</span> <span style="color: #0000ff;">null</span><span style="color: #000000;">;
+    }    </span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>&nbsp;先来看看inflateTable这个方法</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #0000ff;">private</span> <span style="color: #0000ff;">void</span> inflateTable(<span style="color: #0000ff;">int</span><span style="color: #000000;"> toSize) {
+        </span><span style="color: #0000ff;">int</span> capacity =<span style="color: #000000;"> roundUpToPowerOf2(toSize);<span style="color: #008000;">//capacity一定是2的次幂</span>
+        threshold </span>= (<span style="color: #0000ff;">int</span>) Math.min(capacity * loadFactor, MAXIMUM_CAPACITY + 1<span style="color: #000000;">);<span style="color: #008000;">//此处为threshold赋值，取capacity*loadFactor和MAXIMUM_CAPACITY+1的最小值，capaticy一定不会超过MAXIMUM_CAPACITY，除非loadFactor大于1</span>
+        table </span>= <span style="color: #0000ff;">new</span><span style="color: #000000;"> Entry[capacity];
+        initHashSeedAsNeeded(capacity);
+    }</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>　　inflateTable这个方法用于为主干数组table在内存中分配存储空间，通过roundUpToPowerOf2(toSize)可以确保capacity为大于或等于toSize的最接近toSize的二次幂，比如toSize=13,则capacity=16;to_size=16,capacity=16;to_size=17,capacity=32.</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre> <span style="color: #0000ff;">private</span> <span style="color: #0000ff;">static</span> <span style="color: #0000ff;">int</span> roundUpToPowerOf2(<span style="color: #0000ff;">int</span><span style="color: #000000;"> number) {
+        </span><span style="color: #008000;">//</span><span style="color: #008000;"> assert number &gt;= 0 : "number must be non-negative";</span>
+        <span style="color: #0000ff;">return</span> number &gt;=<span style="color: #000000;"> MAXIMUM_CAPACITY
+                </span>?<span style="color: #000000;"> MAXIMUM_CAPACITY
+                : (number </span>&gt; 1) ? Integer.highestOneBit((number - 1) &lt;&lt; 1) : 1<span style="color: #000000;">;
+    }</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>roundUpToPowerOf2中的这段处理使得数组长度一定为2的次幂，Integer.highestOneBit是用来获取最左边的bit（其他bit位为0）所代表的数值.</p>
+<p>hash函数</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008000;">//</span><span style="color: #008000;">这是一个神奇的函数，用了很多的异或，移位等运算，对key的hashcode进一步进行计算以及二进制位的调整等来保证最终获取的存储位置尽量分布均匀</span>
+<span style="color: #0000ff;">final</span> <span style="color: #0000ff;">int</span><span style="color: #000000;"> hash(Object k) {
+        </span><span style="color: #0000ff;">int</span> h =<span style="color: #000000;"> hashSeed;
+        </span><span style="color: #0000ff;">if</span> (0 != h &amp;&amp; k <span style="color: #0000ff;">instanceof</span><span style="color: #000000;"> String) {
+            </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> sun.misc.Hashing.stringHash32((String) k);
+        }
+
+        h </span>^=<span style="color: #000000;"> k.hashCode();
+
+        h </span>^= (h &gt;&gt;&gt; 20) ^ (h &gt;&gt;&gt; 12<span style="color: #000000;">);
+        </span><span style="color: #0000ff;">return</span> h ^ (h &gt;&gt;&gt; 7) ^ (h &gt;&gt;&gt; 4<span style="color: #000000;">);
+    }</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>以上hash函数计算出的值，通过indexFor进一步处理来获取实际的存储位置</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008000;">　　/**</span><span style="color: #008000;">
+     * 返回数组下标
+     </span><span style="color: #008000;">*/</span>
+    <span style="color: #0000ff;">static</span> <span style="color: #0000ff;">int</span> indexFor(<span style="color: #0000ff;">int</span> h, <span style="color: #0000ff;">int</span><span style="color: #000000;"> length) {
+        </span><span style="color: #0000ff;">return</span> h &amp; (length-1<span style="color: #000000;">);
+    }</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>h&amp;（length-1）保证获取的index一定在数组范围内，举个例子，默认容量16，length-1=15，h=18,转换成二进制计算为</p>
+<div class="cnblogs_code">
+<pre><span style="color: #ff0000;">        1  0  0  1  0
+    &amp;   0  1  1  1  1
+    __________________
+        0  0  0  1  0    = 2</span></pre>
+</div>
+<p>　　最终计算出的index=2。有些版本的对于此处的计算会使用 取模运算，也能保证index一定在数组范围内，不过位运算对计算机来说，性能更高一些（HashMap中有大量位运算）</p>
+<p>所以最终存储位置的确定流程是这样的：</p>
+<p><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/1024555-20161115133556388-1098209938.png" alt="" width="753" height="74"></p>
+<p>再来看看addEntry的实现：</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #0000ff;">void</span> addEntry(<span style="color: #0000ff;">int</span> hash, K key, V value, <span style="color: #0000ff;">int</span><span style="color: #000000;"> bucketIndex) {
+        </span><span style="color: #0000ff;">if</span> ((size &gt;= threshold) &amp;&amp; (<span style="color: #0000ff;">null</span> !=<span style="color: #000000;"> table[bucketIndex])) {
+            resize(</span>2 *<span style="color: #000000;"> table.length);<span style="color: #008000;">//当size超过临界阈值threshold，并且即将发生哈希冲突时进行扩容</span>
+            hash </span>= (<span style="color: #0000ff;">null</span> != key) ? hash(key) : 0<span style="color: #000000;">;
+            bucketIndex </span>=<span style="color: #000000;"> indexFor(hash, table.length);
+        }
+
+        createEntry(hash, key, value, bucketIndex);
+    }</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>　　通过以上代码能够得知，当发生哈希冲突并且size大于阈值的时候，需要进行数组扩容，扩容时，需要新建一个长度为之前数组2倍的新的数组，然后将当前的Entry数组中的元素全部传输过去，扩容后的新数组长度为之前的2倍，所以扩容相对来说是个耗资源的操作。</p>
+<h1><a name="t3"></a>三、为何HashMap的数组长度一定是2的次幂？</h1>
+<p>我们来继续看上面提到的resize方法</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre> <span style="color: #0000ff;">void</span> resize(<span style="color: #0000ff;">int</span><span style="color: #000000;"> newCapacity) {
+        Entry[] oldTable </span>=<span style="color: #000000;"> table;
+        </span><span style="color: #0000ff;">int</span> oldCapacity =<span style="color: #000000;"> oldTable.length;
+        </span><span style="color: #0000ff;">if</span> (oldCapacity ==<span style="color: #000000;"> MAXIMUM_CAPACITY) {
+            threshold </span>=<span style="color: #000000;"> Integer.MAX_VALUE;
+            </span><span style="color: #0000ff;">return</span><span style="color: #000000;">;
+        }
+
+        Entry[] newTable </span>= <span style="color: #0000ff;">new</span><span style="color: #000000;"> Entry[newCapacity];
+        transfer(newTable, initHashSeedAsNeeded(newCapacity));
+        table </span>=<span style="color: #000000;"> newTable;
+        threshold </span>= (<span style="color: #0000ff;">int</span>)Math.min(newCapacity * loadFactor, MAXIMUM_CAPACITY + 1<span style="color: #000000;">);
+    }</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>如果数组进行扩容，数组长度发生变化，而存储位置 index = h&amp;(length-1),index也可能会发生变化，需要重新计算index，我们先来看看transfer这个方法</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #0000ff;">void</span> transfer(Entry[] newTable, <span style="color: #0000ff;">boolean</span><span style="color: #000000;"> rehash) {
+        </span><span style="color: #0000ff;">int</span> newCapacity =<span style="color: #000000;"> newTable.length;<br>　　　　　<span style="color: #008000;">//for循环中的代码，逐个遍历链表，重新计算索引位置，将老数组数据复制到新数组中去（数组不存储实际数据，所以仅仅是拷贝引用而已）
+        </span></span><span style="color: #0000ff;">for</span> (Entry&lt;K,V&gt;<span style="color: #000000;"> e : table) {
+            </span><span style="color: #0000ff;">while</span>(<span style="color: #0000ff;">null</span> !=<span style="color: #000000;"> e) {
+                Entry</span>&lt;K,V&gt; next =<span style="color: #000000;"> e.next;
+                </span><span style="color: #0000ff;">if</span><span style="color: #000000;"> (rehash) {
+                    e.hash </span>= <span style="color: #0000ff;">null</span> == e.key ? 0<span style="color: #000000;"> : hash(e.key);
+                }
+                </span><span style="color: #0000ff;">int</span> i =<span style="color: #000000;"> indexFor(e.hash, newCapacity);<br>　　　　　　　　　<span style="color: #008000;"> //将当前entry的next链指向新的索引位置,newTable[i]有可能为空，有可能也是个entry链，如果是entry链，直接在链表头部插入。</span>
+                e.next </span>=<span style="color: #000000;"> newTable[i];
+                newTable[i] </span>=<span style="color: #000000;"> e;
+                e </span>=<span style="color: #000000;"> next;
+            }
+        }
+    }</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>　　这个方法将老数组中的数据逐个链表地遍历，扔到新的扩容后的数组中，我们的数组索引位置的计算是通过 对key值的hashcode进行hash扰乱运算后，再通过和 length-1进行位运算得到最终数组索引位置。</p>
+<p>　　hashMap的数组长度一定保持2的次幂，比如16的二进制表示为 10000，那么length-1就是15，二进制为01111，同理扩容后的数组长度为32，二进制表示为100000，length-1为31，二进制表示为011111。从下图可以我们也能看到这样会保证低位全为1，而扩容后只有一位差异，也就是多出了最左位的1，这样在通过 h&amp;(length-1)的时候，只要h对应的最左边的那一个差异位为0，就能保证得到的新的数组索引和老数组索引一致(大大减少了之前已经散列良好的老数组的数据位置重新调换)，个人理解。</p>
+<p>　　<img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/1024555-20161115215812138-679881037.png" alt="" width="438" height="194"></p>
+<p>&nbsp;还有，数组长度保持2的次幂，length-1的低位都为1，会使得获得的数组索引index更加均匀，比如：</p>
+<p><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/1024555-20161116001404732-625340289.png" alt="" width="541" height="244"></p>
+<p>　　我们看到，上面的&amp;运算，高位是不会对结果产生影响的（hash函数采用各种位运算可能也是为了使得低位更加散列），我们只关注低位bit，如果低位全部为1，那么对于h低位部分来说，任何一位的变化都会对结果产生影响，也就是说，要得到index=21这个存储位置，h的低位只有这一种组合。这也是数组长度设计为必须为2的次幂的原因。</p>
+<p><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/1024555-20161116001717560-1455096254.png" alt="" width="643" height="231"></p>
+<p>　　如果不是2的次幂，也就是低位不是全为1此时，要使得index=21，h的低位部分不再具有唯一性了，哈希冲突的几率会变的更大，同时，index对应的这个bit位无论如何不会等于1了，而对应的那些数组位置也就被白白浪费了。</p>
+<p>get方法</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre> <span style="color: #0000ff;">public</span><span style="color: #000000;"> V get(Object key) {<br>　　　　 <span style="color: #008000;">//如果key为null,则直接去table[0]处去检索即可。
+        </span></span><span style="color: #0000ff;">if</span> (key == <span style="color: #0000ff;">null</span><span style="color: #000000;">)
+            </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> getForNullKey();
+        Entry</span>&lt;K,V&gt; entry =<span style="color: #000000;"> getEntry(key);
+        </span><span style="color: #0000ff;">return</span> <span style="color: #0000ff;">null</span> == entry ? <span style="color: #0000ff;">null</span><span style="color: #000000;"> : entry.getValue();
+ }</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>get方法通过key值返回对应value，如果key为null，直接去table[0]处检索。我们再看一下getEntry这个方法</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #0000ff;">final</span> Entry&lt;K,V&gt;<span style="color: #000000;"> getEntry(Object key) {
+            
+        </span><span style="color: #0000ff;">if</span> (size == 0<span style="color: #000000;">) {
+            </span><span style="color: #0000ff;">return</span> <span style="color: #0000ff;">null</span><span style="color: #000000;">;
+        }
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">通过key的hashcode值计算hash值</span>
+        <span style="color: #0000ff;">int</span> hash = (key == <span style="color: #0000ff;">null</span>) ? 0<span style="color: #000000;"> : hash(key);
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">indexFor (hash&amp;length-1) 获取最终数组索引，然后遍历链表，通过equals方法比对找出对应记录</span>
+        <span style="color: #0000ff;">for</span> (Entry&lt;K,V&gt; e =<span style="color: #000000;"> table[indexFor(hash, table.length)];
+             e </span>!= <span style="color: #0000ff;">null</span><span style="color: #000000;">;
+             e </span>=<span style="color: #000000;"> e.next) {
+            Object k;
+            </span><span style="color: #0000ff;">if</span> (e.hash == hash &amp;&amp; <span style="color: #000000;">
+                ((k </span>= e.key) == key || (key != <span style="color: #0000ff;">null</span> &amp;&amp;<span style="color: #000000;"> key.equals(k))))
+                </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> e;
+        }
+        </span><span style="color: #0000ff;">return</span> <span style="color: #0000ff;">null</span><span style="color: #000000;">;
+    }    </span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>　　可以看出，get方法的实现相对简单，key(hashcode)--&gt;hash--&gt;indexFor--&gt;最终索引位置，找到对应位置table[i]，再查看是否有链表，遍历链表，通过key的equals方法比对查找对应的记录。要注意的是，有人觉得上面在定位到数组位置之后然后遍历链表的时候，e.hash == hash这个判断没必要，仅通过equals判断就可以。其实不然，试想一下，如果传入的key对象重写了equals方法却没有重写hashCode，而恰巧此对象定位到这个数组位置，如果仅仅用equals判断可能是相等的，但其hashCode和当前对象不一致，这种情况，根据Object的hashCode的约定，不能返回当前对象，而应该返回null，后面的例子会做出进一步解释。</p>
+<h1><a name="t4"></a>四、重写equals方法需同时重写hashCode方法</h1>
+<p>　　关于HashMap的源码分析就介绍到这儿了，最后我们再聊聊老生常谈的一个问题，各种资料上都会提到，“重写equals时也要同时覆盖hashcode”，我们举个小例子来看看，如果重写了equals而不重写hashcode会发生什么样的问题</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008000;">/**</span><span style="color: #008000;">
+ * Created by chengxiao on 2016/11/15.
+ </span><span style="color: #008000;">*/</span>
+<span style="color: #0000ff;">public</span> <span style="color: #0000ff;">class</span><span style="color: #000000;"> MyTest {
+    </span><span style="color: #0000ff;">private</span> <span style="color: #0000ff;">static</span> <span style="color: #0000ff;">class</span><span style="color: #000000;"> Person{
+        </span><span style="color: #0000ff;">int</span><span style="color: #000000;"> idCard;
+        String name;
+
+        </span><span style="color: #0000ff;">public</span> Person(<span style="color: #0000ff;">int</span><span style="color: #000000;"> idCard, String name) {
+            </span><span style="color: #0000ff;">this</span>.idCard =<span style="color: #000000;"> idCard;
+            </span><span style="color: #0000ff;">this</span>.name =<span style="color: #000000;"> name;
+        }
+        @Override
+        </span><span style="color: #0000ff;">public</span> <span style="color: #0000ff;">boolean</span><span style="color: #000000;"> equals(Object o) {
+            </span><span style="color: #0000ff;">if</span> (<span style="color: #0000ff;">this</span> ==<span style="color: #000000;"> o) {
+                </span><span style="color: #0000ff;">return</span> <span style="color: #0000ff;">true</span><span style="color: #000000;">;
+            }
+            </span><span style="color: #0000ff;">if</span> (o == <span style="color: #0000ff;">null</span> || getClass() !=<span style="color: #000000;"> o.getClass()){
+                </span><span style="color: #0000ff;">return</span> <span style="color: #0000ff;">false</span><span style="color: #000000;">;
+            }
+            Person person </span>=<span style="color: #000000;"> (Person) o;
+            </span><span style="color: #008000;">//</span><span style="color: #008000;">两个对象是否等值，通过idCard来确定</span>
+            <span style="color: #0000ff;">return</span> <span style="color: #0000ff;">this</span>.idCard ==<span style="color: #000000;"> person.idCard;
+        }
+
+    }
+    </span><span style="color: #0000ff;">public</span> <span style="color: #0000ff;">static</span> <span style="color: #0000ff;">void</span><span style="color: #000000;"> main(String []args){
+        HashMap</span>&lt;Person,String&gt; map = <span style="color: #0000ff;">new</span> HashMap&lt;Person, String&gt;<span style="color: #000000;">();
+        Person person </span>= <span style="color: #0000ff;">new</span> Person(1234,"乔峰"<span style="color: #000000;">);
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">put到hashmap中去</span>
+        map.put(person,"天龙八部"<span style="color: #000000;">);
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">get取出，从逻辑上讲应该能输出“天龙八部”</span>
+        System.out.println("结果:"+map.get(<span style="color: #0000ff;">new</span> Person(1234,"萧峰"<span style="color: #000000;">)));
+    }
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>实际输出结果：</p>
+<div class="cnblogs_code">
+<pre><span style="color: #ff0000;">结果：null</span></pre>
+</div>
+<p>　　如果我们已经对HashMap的原理有了一定了解，这个结果就不难理解了。尽管我们在进行get和put操作的时候，使用的key从逻辑上讲是等值的（通过equals比较是相等的），但由于没有重写hashCode方法，所以put操作时，key(hashcode1)--&gt;hash--&gt;indexFor--&gt;最终索引位置 ，而通过key取出value的时候 key(hashcode1)--&gt;hash--&gt;indexFor--&gt;最终索引位置，由于hashcode1不等于hashcode2，导致没有定位到一个数组位置而返回逻辑上错误的值null（也有可能碰巧定位到一个数组位置，但是也会判断其entry的hash值是否相等，上面get方法中有提到。）</p>
+<p>　　所以，在重写equals的方法的时候，必须注意重写hashCode方法，同时还要保证通过equals判断相等的两个对象，调用hashCode方法要返回同样的整数值。而如果equals判断不相等的两个对象，其hashCode可以相同（只不过会发生哈希冲突，应尽量避免）。</p>
+<h1><a name="t5"></a>五、总结</h1>
+<p>　　本文描述了HashMap的实现原理，并结合源码做了进一步的分析，也涉及到一些源码细节设计缘由，最后简单介绍了为什么重写equals的时候需要重写hashCode方法。希望本篇文章能帮助到大家，同时也欢迎讨论指正，谢谢支持！</p></div><div id="MySignature" style="display: block;"><div style="margin-bottom: 10px; padding: 5px 10px; background-color: #D9FFFF; border: #53FF53 1px solid;">
+    <p>
+            作者： 
+            <a href="http://www.cnblogs.com/chengxiao/">dreamcatcher-cx</a>
+    </p>
+    <p>
+            出处：
+            <a href="http://www.cnblogs.com/chengxiao/">&lt;http://www.cnblogs.com/chengxiao/&gt;</a>
+    </p>
+    <p>
+             本文版权归作者和博客园共有，欢迎转载，但未经作者同意必须保留此段声明，且在页面明显位置给出原文链接。
+    </p>
+
+</div></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/chengxiao/category/909714.html" target="_blank">java集合框架</a></div>
+<div id="EntryTag">标签: <a href="https://www.cnblogs.com/chengxiao/tag/hashmap/">hashmap</a></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(6059914,cb_blogId,1);green_channel_success(this,&#39;谢谢推荐！&#39;);">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow(&#39;8319750a-5977-e611-9fc1-ac853d9f53cc&#39;);" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/chengxiao/" target="_blank"><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/20170217101538.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/chengxiao/">dreamcatcher-cx</a><br>
+            <a href="http://home.cnblogs.com/u/chengxiao/followees">关注 - 29</a><br>
+            <a href="http://home.cnblogs.com/u/chengxiao/followers">粉丝 - 578</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow(&#39;8319750a-5977-e611-9fc1-ac853d9f53cc&#39;);return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(6059914,&#39;Digg&#39;)">
+        <span class="diggnum" id="digg_count">98</span>
+    </div>
+    <div class="buryit" onclick="votePost(6059914,&#39;Bury&#39;)">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/chengxiao/p/6032183.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/chengxiao/p/6032183.html" title="发布于2016-11-06 22:34">Oracle约束(Constraint)详解</a><br><a href="https://www.cnblogs.com/chengxiao/p/6103002.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/chengxiao/p/6103002.html" title="发布于2016-11-26 12:46">图解排序算法(一)之3种简单排序(选择，冒泡，直接插入)</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2016-11-16 00:27</span> <a href="https://www.cnblogs.com/chengxiao/">dreamcatcher-cx</a> 阅读(<span id="post_view_count">205358</span>) 评论(<span id="post_comment_count">47</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=6059914" rel="nofollow">编辑</a> <a href="http://www.cnblogs.com/chengxiao/p/6059914.html#" onclick="AddToWz(6059914);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=304993,cb_entryId=6059914,cb_blogApp=currentBlogApp,cb_blogUserGuid='8319750a-5977-e611-9fc1-ac853d9f53cc',cb_entryCreatedDate='2016/11/16 0:27:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"><div id="comments_pager_top"></div>
+<br>
+<div class="feedback_area_title">评论列表</div>
+<div class="feedbackNoItems"></div>	
+
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3667558" class="layer">#1楼</a><a name="3667558" id="comment_anchor_3667558"></a>  <span class="comment_date">2017-04-13 21:03</span> <a id="a_comment_author_3667558" href="https://www.cnblogs.com/bugbean/" target="_blank">BugBean</a> <a href="http://msg.cnblogs.com/send/BugBean" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3667558" class="blog_comment_body">你的jdk版本是什么，我看1.7的源码和你这有点不一样，构建table数组是在构造方法里进行的，不是在put方法里进行的</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3667558,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3667558,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3674840" class="layer">#2楼</a><a name="3674840" id="comment_anchor_3674840"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2017-04-23 15:24</span> <a id="a_comment_author_3674840" href="https://www.cnblogs.com/chengxiao/" target="_blank">dreamcatcher-cx</a> <a href="http://msg.cnblogs.com/send/dreamcatcher-cx" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3674840" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3667558" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3667558);">@</a>
+BugBean<br>是1.7，put方法调用了inflateTable()方法</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3674840,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3674840,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3674840_avatar" style="display:none;">http://pic.cnblogs.com/face/1024555/20170217101538.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3737330" class="layer">#3楼</a><a name="3737330" id="comment_anchor_3737330"></a>  <span class="comment_date">2017-07-17 18:34</span> <a id="a_comment_author_3737330" href="https://www.cnblogs.com/xiong2ge/" target="_blank">熊二哥</a> <a href="http://msg.cnblogs.com/send/%E7%86%8A%E4%BA%8C%E5%93%A5" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3737330" class="blog_comment_body">很帅！</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3737330,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3737330,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3737330_avatar" style="display:none;">http://pic.cnblogs.com/face/636325/20160206100653.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3737424" class="layer">#4楼</a><a name="3737424" id="comment_anchor_3737424"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2017-07-17 20:31</span> <a id="a_comment_author_3737424" href="https://www.cnblogs.com/chengxiao/" target="_blank">dreamcatcher-cx</a> <a href="http://msg.cnblogs.com/send/dreamcatcher-cx" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3737424" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3737330" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3737330);">@</a>
+熊二哥<br>多谢支持</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3737424,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3737424,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3737424_avatar" style="display:none;">http://pic.cnblogs.com/face/1024555/20170217101538.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3749257" class="layer">#5楼</a><a name="3749257" id="comment_anchor_3749257"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2017-08-02 17:08</span> <a id="a_comment_author_3749257" href="https://www.cnblogs.com/chengxiao/" target="_blank">dreamcatcher-cx</a> <a href="http://msg.cnblogs.com/send/dreamcatcher-cx" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3749257" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3749253" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3749253);">@</a>
+Paul_bai<br>谢谢</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3749257,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3749257,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3749257_avatar" style="display:none;">http://pic.cnblogs.com/face/1024555/20170217101538.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3749263" class="layer">#6楼</a><a name="3749263" id="comment_anchor_3749263"></a>  <span class="comment_date">2017-08-02 17:11</span> <a id="a_comment_author_3749263" href="https://www.cnblogs.com/paulbai/" target="_blank">Paul_bai</a> <a href="http://msg.cnblogs.com/send/Paul_bai" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3749263" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3749257" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3749257);">@</a>
+dreamcatcher-cx<br><fieldset class="comment_quote"><legend><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3749257" title="查看引用原文">引用</a></legend><br>@Paul_bai<br>谢谢<br></fieldset><br>不客气，有人才可以推荐下，谢谢！</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3749263,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3749263,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3749266" class="layer">#7楼</a><a name="3749266" id="comment_anchor_3749266"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2017-08-02 17:12</span> <a id="a_comment_author_3749266" href="https://www.cnblogs.com/chengxiao/" target="_blank">dreamcatcher-cx</a> <a href="http://msg.cnblogs.com/send/dreamcatcher-cx" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3749266" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3749263" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3749263);">@</a>
+Paul_bai<br><fieldset class="comment_quote"><legend><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3749263" title="查看引用原文">引用</a></legend><br>@dreamcatcher-cx<br><fieldset class="comment_quote"><legend>引用</legend>引用<br>@Paul_bai<br>谢谢<br></fieldset><br>不客气，有人才可以推荐下，谢谢！<br></fieldset><br>好的👌</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3749266,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3749266,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3749266_avatar" style="display:none;">http://pic.cnblogs.com/face/1024555/20170217101538.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3811967" class="layer">#8楼</a><a name="3811967" id="comment_anchor_3811967"></a>  <span class="comment_date">2017-10-16 14:42</span> <a id="a_comment_author_3811967" href="https://www.cnblogs.com/dougest/" target="_blank">Dougest</a> <a href="http://msg.cnblogs.com/send/Dougest" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3811967" class="blog_comment_body">求画图软件</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3811967,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3811967,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3811967_avatar" style="display:none;">http://pic.cnblogs.com/face/1128155/20180803000356.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3811977" class="layer">#9楼</a><a name="3811977" id="comment_anchor_3811977"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2017-10-16 14:48</span> <a id="a_comment_author_3811977" href="https://www.cnblogs.com/chengxiao/" target="_blank">dreamcatcher-cx</a> <a href="http://msg.cnblogs.com/send/dreamcatcher-cx" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3811977" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3811967" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3811967);">@</a>
+Dougest<br>OmniGraffle</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3811977,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3811977,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3811977_avatar" style="display:none;">http://pic.cnblogs.com/face/1024555/20170217101538.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3834880" class="layer">#10楼</a><a name="3834880" id="comment_anchor_3834880"></a>  <span class="comment_date">2017-11-08 15:13</span> <a id="a_comment_author_3834880" href="https://www.cnblogs.com/ktao/" target="_blank">涛声依旧~</a> <a href="http://msg.cnblogs.com/send/%E6%B6%9B%E5%A3%B0%E4%BE%9D%E6%97%A7~" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3834880" class="blog_comment_body">求分享画图软件和博客主题css文件</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3834880,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3834880,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3834880_avatar" style="display:none;">http://pic.cnblogs.com/face/876623/20170814093809.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3866611" class="layer">#11楼</a><a name="3866611" id="comment_anchor_3866611"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2017-12-15 14:35</span> <a id="a_comment_author_3866611" href="https://www.cnblogs.com/chengxiao/" target="_blank">dreamcatcher-cx</a> <a href="http://msg.cnblogs.com/send/dreamcatcher-cx" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3866611" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3834880" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3834880);">@</a>
+涛声依旧~<br>OmniGraffle</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3866611,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3866611,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3866611_avatar" style="display:none;">http://pic.cnblogs.com/face/1024555/20170217101538.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3921516" class="layer">#12楼</a><a name="3921516" id="comment_anchor_3921516"></a>  <span class="comment_date">2018-03-13 11:48</span> <a id="a_comment_author_3921516" href="https://www.cnblogs.com/aotemanzhifu/" target="_blank">奥特曼之父</a> <a href="http://msg.cnblogs.com/send/%E5%A5%A5%E7%89%B9%E6%9B%BC%E4%B9%8B%E7%88%B6" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3921516" class="blog_comment_body">膜拜大神</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3921516,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3921516,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3925245" class="layer">#13楼</a><a name="3925245" id="comment_anchor_3925245"></a>  <span class="comment_date">2018-03-16 17:20</span> <a id="a_comment_author_3925245" href="https://www.cnblogs.com/doveshelly/" target="_blank">doveshelly</a> <a href="http://msg.cnblogs.com/send/doveshelly" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3925245" class="blog_comment_body">终于明白为何HashMap的数组长度一定是2的次幂,楼主解答了我心中一直以来的疑惑,非常感谢!</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3925245,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3925245,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3930979" class="layer">#14楼</a><a name="3930979" id="comment_anchor_3930979"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-03-23 10:56</span> <a id="a_comment_author_3930979" href="https://www.cnblogs.com/chengxiao/" target="_blank">dreamcatcher-cx</a> <a href="http://msg.cnblogs.com/send/dreamcatcher-cx" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3930979" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3925245" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3925245);">@</a>
+doveshelly<br>🤝共勉</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3930979,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3930979,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3930979_avatar" style="display:none;">http://pic.cnblogs.com/face/1024555/20170217101538.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3930983" class="layer">#15楼</a><a name="3930983" id="comment_anchor_3930983"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-03-23 10:58</span> <a id="a_comment_author_3930983" href="https://www.cnblogs.com/chengxiao/" target="_blank">dreamcatcher-cx</a> <a href="http://msg.cnblogs.com/send/dreamcatcher-cx" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3930983" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3921516" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3921516);">@</a>
+奥特曼之父<br>感谢支持</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3930983,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3930983,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3930983_avatar" style="display:none;">http://pic.cnblogs.com/face/1024555/20170217101538.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3932495" class="layer">#16楼</a><a name="3932495" id="comment_anchor_3932495"></a>  <span class="comment_date">2018-03-25 12:56</span> <a id="a_comment_author_3932495" href="https://www.cnblogs.com/duang0626/" target="_blank">大脸喵</a> <a href="http://msg.cnblogs.com/send/%E5%A4%A7%E8%84%B8%E5%96%B5" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3932495" class="blog_comment_body">终于看到有个图的了，网上一对hashmap的文章，全是将使用方法，就没一个图，给作者打call</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3932495,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3932495,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3932495_avatar" style="display:none;">http://pic.cnblogs.com/face/1235129/20170908110704.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3936184" class="layer">#17楼</a><a name="3936184" id="comment_anchor_3936184"></a>  <span class="comment_date">2018-03-28 21:21</span> <a id="a_comment_author_3936184" href="https://www.cnblogs.com/kobesfan/" target="_blank">大师兄咚咚咚</a> <a href="http://msg.cnblogs.com/send/%E5%A4%A7%E5%B8%88%E5%85%84%E5%92%9A%E5%92%9A%E5%92%9A" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3936184" class="blog_comment_body"><b>博主，你好，在分析table的容量为什么是2的N次方的时，个人的想法是：key----&gt;hashcode------&gt;hash-----&gt;index，整体上这是一个多对一的映射，而key-----&gt;hash这个过程也是一个多对一的映射，因此hash----&gt;index必须为一对一的映射，而只有在bit位都为1时才符合这种情况，无论是否扩容都需要保证bit位全部置1.</b><br><img src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/1363607-20180328212101074-1218714080.png" alt="" border="0" "=""></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3936184,&#39;Digg&#39;,this)">支持(1)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3936184,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3936184_avatar" style="display:none;">http://pic.cnblogs.com/face/1363607/20180328210905.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3936191" class="layer">#18楼</a><a name="3936191" id="comment_anchor_3936191"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-03-28 21:25</span> <a id="a_comment_author_3936191" href="https://www.cnblogs.com/chengxiao/" target="_blank">dreamcatcher-cx</a> <a href="http://msg.cnblogs.com/send/dreamcatcher-cx" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3936191" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3932495" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3932495);">@</a>
+大脸喵<br>感谢支持哈</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3936191,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3936191,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3936191_avatar" style="display:none;">http://pic.cnblogs.com/face/1024555/20170217101538.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3937251" class="layer">#19楼</a><a name="3937251" id="comment_anchor_3937251"></a>  <span class="comment_date">2018-03-29 21:41</span> <a id="a_comment_author_3937251" href="https://www.cnblogs.com/yundanwy/" target="_blank">云淡wy</a> <a href="http://msg.cnblogs.com/send/%E4%BA%91%E6%B7%A1wy" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3937251" class="blog_comment_body">如果定位到的数组包含链表，对于添加操作，其时间复杂度依然为O(1)，因为最新的Entry会插入链表头部，<b>急需要简单改变引用链即可</b><br>这个是不是写错了,急是不是应该改成仅</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3937251,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3937251,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3937251_avatar" style="display:none;">http://pic.cnblogs.com/face/993794/20160718101327.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3937252" class="layer">#20楼</a><a name="3937252" id="comment_anchor_3937252"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-03-29 21:45</span> <a id="a_comment_author_3937252" href="https://www.cnblogs.com/chengxiao/" target="_blank">dreamcatcher-cx</a> <a href="http://msg.cnblogs.com/send/dreamcatcher-cx" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3937252" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3937251" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3937251);">@</a>
+云淡wy<br>谢谢指正，改过了。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3937252,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3937252,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3937252_avatar" style="display:none;">http://pic.cnblogs.com/face/1024555/20170217101538.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3950264" class="layer">#21楼</a><a name="3950264" id="comment_anchor_3950264"></a>  <span class="comment_date">2018-04-12 22:39</span> <a id="a_comment_author_3950264" href="http://home.cnblogs.com/u/1119406/" target="_blank">敲代码的小哥</a> <a href="http://msg.cnblogs.com/send/%E6%95%B2%E4%BB%A3%E7%A0%81%E7%9A%84%E5%B0%8F%E5%93%A5" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3950264" class="blog_comment_body">如果不重写HashCode（）好像会默认使用Object的hashcode()方法</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3950264,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3950264,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3957269" class="layer">#22楼</a><a name="3957269" id="comment_anchor_3957269"></a>  <span class="comment_date">2018-04-21 13:28</span> <a id="a_comment_author_3957269" href="https://www.cnblogs.com/data-magnifier/" target="_blank">柯广</a> <a href="http://msg.cnblogs.com/send/%E6%9F%AF%E5%B9%BF" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3957269" class="blog_comment_body">学到了，谢谢！</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3957269,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3957269,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3957269_avatar" style="display:none;">http://pic.cnblogs.com/face/1165270/20170513185612.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3981473" class="layer">#23楼</a><a name="3981473" id="comment_anchor_3981473"></a>  <span class="comment_date">2018-05-24 18:43</span> <a id="a_comment_author_3981473" href="https://www.cnblogs.com/wyx-xyz/" target="_blank">wangyanxiang-</a> <a href="http://msg.cnblogs.com/send/wangyanxiang-" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3981473" class="blog_comment_body">“如果定位到的数组包含链表，对于添加操作，其时间复杂度依然为O(1)，因为最新的Entry会插入链表头部，仅需简单改变引用链即可。”<br>楼主这句话我不理解，对于添加操作，应该会遍历链表查找是否存在key相同的Node节点吧？</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3981473,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3981473,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3981473_avatar" style="display:none;">http://pic.cnblogs.com/face/1087937/20170805173302.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3981914" class="layer">#24楼</a><a name="3981914" id="comment_anchor_3981914"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-05-25 11:01</span> <a id="a_comment_author_3981914" href="https://www.cnblogs.com/chengxiao/" target="_blank">dreamcatcher-cx</a> <a href="http://msg.cnblogs.com/send/dreamcatcher-cx" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3981914" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3981473" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3981473);">@</a>
+wangyanxiang-<br>sorry，是我表述有问题。是会先遍历链表，存在即覆盖。不存在则新增。已处理，谢指正。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3981914,&#39;Digg&#39;,this)">支持(3)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3981914,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3981914_avatar" style="display:none;">http://pic.cnblogs.com/face/1024555/20170217101538.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3981922" class="layer">#25楼</a><a name="3981922" id="comment_anchor_3981922"></a>  <span class="comment_date">2018-05-25 11:05</span> <a id="a_comment_author_3981922" href="https://www.cnblogs.com/wyx-xyz/" target="_blank">wangyanxiang-</a> <a href="http://msg.cnblogs.com/send/wangyanxiang-" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3981922" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3981914" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3981914);">@</a>
+dreamcatcher-cx<br>赞</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3981922,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3981922,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3981922_avatar" style="display:none;">http://pic.cnblogs.com/face/1087937/20170805173302.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4013418" class="layer">#26楼</a><a name="4013418" id="comment_anchor_4013418"></a>  <span class="comment_date">2018-07-05 16:44</span> <a id="a_comment_author_4013418" href="https://www.cnblogs.com/albert0707/" target="_blank">albert0707</a> <a href="http://msg.cnblogs.com/send/albert0707" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4013418" class="blog_comment_body">非常感谢</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4013418,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4013418,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4016829" class="layer">#27楼</a><a name="4016829" id="comment_anchor_4016829"></a>  <span class="comment_date">2018-07-10 10:46</span> <a id="a_comment_author_4016829" href="http://home.cnblogs.com/u/1432622/" target="_blank">甜酒0917</a> <a href="http://msg.cnblogs.com/send/%E7%94%9C%E9%85%920917" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4016829" class="blog_comment_body">@Override<br>        public int hashCode(){<br>        	return this.idCard;<br>        }</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4016829,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4016829,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4025069" class="layer">#28楼</a><a name="4025069" id="comment_anchor_4025069"></a>  <span class="comment_date">2018-07-20 17:01</span> <a id="a_comment_author_4025069" href="http://home.cnblogs.com/u/1400937/" target="_blank">清歌丶</a> <a href="http://msg.cnblogs.com/send/%E6%B8%85%E6%AD%8C%E4%B8%B6" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4025069" class="blog_comment_body">讲解透彻，支持</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4025069,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4025069,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4029707" class="layer">#29楼</a><a name="4029707" id="comment_anchor_4029707"></a>  <span class="comment_date">2018-07-26 19:59</span> <a id="a_comment_author_4029707" href="https://www.cnblogs.com/ysq0908/" target="_blank">YaoShuangQisBlogs</a> <a href="http://msg.cnblogs.com/send/YaoShuangQisBlogs" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4029707" class="blog_comment_body">写的很不错，学到了，只是有些还是不大明白，博主，我还是有个问题需要请教你下，我看完你的整篇文章后，总感觉懵懵懂懂的样子，也不知道学习这个后，在实际项目中该如何使用其中的思想，也就是不知道该在哪里能用到，还请博主指点迷津。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4029707,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4029707,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4029707_avatar" style="display:none;">http://pic.cnblogs.com/face/781158/20150703192119.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4031856" class="layer">#30楼</a><a name="4031856" id="comment_anchor_4031856"></a>  <span class="comment_date">2018-07-30 15:44</span> <a id="a_comment_author_4031856" href="https://www.cnblogs.com/longforus/" target="_blank">longforus</a> <a href="http://msg.cnblogs.com/send/longforus" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4031856" class="blog_comment_body">谢谢博主分享,写得很好</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4031856,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4031856,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4031856_avatar" style="display:none;">http://pic.cnblogs.com/face/935516/20160419225433.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4034534" class="layer">#31楼</a><a name="4034534" id="comment_anchor_4034534"></a>  <span class="comment_date">2018-08-03 05:18</span> <a id="a_comment_author_4034534" href="https://www.cnblogs.com/smile-hope/" target="_blank">安然菇凉</a> <a href="http://msg.cnblogs.com/send/%E5%AE%89%E7%84%B6%E8%8F%87%E5%87%89" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4034534" class="blog_comment_body">博主，我觉得你写的那个demo并不能说明问题：你放进去的是person，所以你取的时候也应该是person对象啊，但是你new了一个新的对象，不就应该是null吗</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4034534,&#39;Digg&#39;,this)">支持(1)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4034534,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4040606" class="layer">#32楼</a><a name="4040606" id="comment_anchor_4040606"></a>  <span class="comment_date">2018-08-11 09:57</span> <a id="a_comment_author_4040606" href="https://www.cnblogs.com/goalone/" target="_blank">Go-Alone</a> <a href="http://msg.cnblogs.com/send/Go-Alone" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4040606" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3667558" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3667558);">@</a>
+BugBean<br>可能你的jdk7小版本比较早，最新的jdk里面是在put方法中初始化的</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4040606,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4040606,&#39;Bury&#39;,this)">反对(1)</a></div><span id="comment_4040606_avatar" style="display:none;">http://pic.cnblogs.com/face/482189/20180813180532.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4040624" class="layer">#33楼</a><a name="4040624" id="comment_anchor_4040624"></a>  <span class="comment_date">2018-08-11 10:10</span> <a id="a_comment_author_4040624" href="https://www.cnblogs.com/goalone/" target="_blank">Go-Alone</a> <a href="http://msg.cnblogs.com/send/Go-Alone" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4040624" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4034534" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4034534);">@</a>
+安然菇凉<br>hashmap中存储时，是按照hashcode的值计算出在hashmap数组的位置，进行存储的。<br>你想表达的是，因为两个对象的内存地址不一样，两个对象就是不一样，所以取出来的是null。这个理解是有错误的，两个不一样的对象是可以产生同一个hashcode值的，产生了同一个hash值，并且equals又返回true，按楼主demo就不应该返回null。<br><br>楼主主要是演示【为什么重写equals方法需同时重写hashCode方法】，具体原因可以看一下&lt;&lt;Effective Java&gt;&gt; 第9条，讲解的非常详细，大致是 如果不一致重写，则会违反Object的【相互equals的对象，必须具有相同的hash值】约定</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4040624,&#39;Digg&#39;,this)">支持(1)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4040624,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4040624_avatar" style="display:none;">http://pic.cnblogs.com/face/482189/20180813180532.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4050522" class="layer">#34楼</a><a name="4050522" id="comment_anchor_4050522"></a>  <span class="comment_date">2018-08-25 15:43</span> <a id="a_comment_author_4050522" href="http://home.cnblogs.com/u/1437418/" target="_blank">Aliang-seu</a> <a href="http://msg.cnblogs.com/send/Aliang-seu" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4050522" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#3981473" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3981473);">@</a>
+wangyanxiang-<br>链表是无序的所以插入节点的操作复杂度为O（1），你说的那个是查找，当然put操作首先要进行查找</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4050522,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4050522,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4056598" class="layer">#35楼</a><a name="4056598" id="comment_anchor_4056598"></a>  <span class="comment_date">2018-09-03 11:55</span> <a id="a_comment_author_4056598" href="https://www.cnblogs.com/mistermoney/" target="_blank">mistermoney</a> <a href="http://msg.cnblogs.com/send/mistermoney" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4056598" class="blog_comment_body">不错，收藏了</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4056598,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4056598,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4089577" class="layer">#36楼</a><a name="4089577" id="comment_anchor_4089577"></a>  <span class="comment_date">2018-10-15 10:35</span> <a id="a_comment_author_4089577" href="http://home.cnblogs.com/u/1084278/" target="_blank">yexinyan</a> <a href="http://msg.cnblogs.com/send/yexinyan" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4089577" class="blog_comment_body">博主写得非常好，但是有一点质疑的是，博主说将capacity长度定为2的次幂的好处之一是“大大减少了之前已经散列良好的老数组的数据位置重新调换”，但是从transfer方法的代码中并没有看到这一好处。在数组扩容后，老数组中的各链表是从头往后遍历，然后插入到新数组相应位置的链表头部。不管这一链表中的hash值计算出的数组位置有没有变化，都会经过取出，重新插入的过程。并没有减少数据位置的变换。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4089577,&#39;Digg&#39;,this)">支持(1)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4089577,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4091413" class="layer">#37楼</a><a name="4091413" id="comment_anchor_4091413"></a>  <span class="comment_date">2018-10-16 21:02</span> <a id="a_comment_author_4091413" href="http://home.cnblogs.com/u/1199028/" target="_blank">Jinke2017</a> <a href="http://msg.cnblogs.com/send/Jinke2017" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4091413" class="blog_comment_body"><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4089577" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4089577);">@</a>
+yexinyan<br>同学你好，请问你看懂扩容过程中 if(rehash){....}的判断吗？<br>如果为true就要重新哈希，这个boolean rehash是怎么求的？</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4091413,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4091413,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4091527" class="layer">#38楼</a><a name="4091527" id="comment_anchor_4091527"></a>  <span class="comment_date">2018-10-16 22:47</span> <a id="a_comment_author_4091527" href="http://home.cnblogs.com/u/1199028/" target="_blank">Jinke2017</a> <a href="http://msg.cnblogs.com/send/Jinke2017" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4091527" class="blog_comment_body">楼主，虽然时隔已久，但我还是想请教：<br>threshold = (int) Math.min(capacity * loadFactor, MAXIMUM_CAPACITY + 1);//此处为threshold赋值，取capacity*loadFactor和MAXIMUM_CAPACITY+1的最小值，capaticy一定不会超过MAXIMUM_CAPACITY，除非loadFactor大于1<br><br>从代码上看，即使loadFactor大于1,capacity也不会超过MAXIMUM_CAPACITY的吧？</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4091527,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4091527,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4115905" class="layer">#39楼</a><a name="4115905" id="comment_anchor_4115905"></a>  <span class="comment_date">2018-11-16 13:09</span> <a id="a_comment_author_4115905" href="https://www.cnblogs.com/panda2/" target="_blank">业余草</a> <a href="http://msg.cnblogs.com/send/%E4%B8%9A%E4%BD%99%E8%8D%89" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4115905" class="blog_comment_body">这么好的文章不评论评论亏大了！<a href="http://www.xttblog.com/" target="_blank">www.xttblog.com</a></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4115905,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4115905,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4130481" class="layer">#40楼</a><a name="4130481" id="comment_anchor_4130481"></a>  <span class="comment_date">2018-12-03 15:56</span> <a id="a_comment_author_4130481" href="http://home.cnblogs.com/u/1386097/" target="_blank">米茶饿了</a> <a href="http://msg.cnblogs.com/send/%E7%B1%B3%E8%8C%B6%E9%A5%BF%E4%BA%86" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4130481" class="blog_comment_body">虽然没有全部看懂，都是受益了，谢谢楼主</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4130481,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4130481,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4133459" class="layer">#41楼</a><a name="4133459" id="comment_anchor_4133459"></a>  <span class="comment_date">2018-12-06 23:43</span> <a id="a_comment_author_4133459" href="http://home.cnblogs.com/u/1553670/" target="_blank">菜鸡shawn</a> <a href="http://msg.cnblogs.com/send/%E8%8F%9C%E9%B8%A1shawn" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4133459" class="blog_comment_body">写的很好，受益良多，感谢！</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4133459,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4133459,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4137538" class="layer">#42楼</a><a name="4137538" id="comment_anchor_4137538"></a>  <span class="comment_date">2018-12-12 13:57</span> <a id="a_comment_author_4137538" href="http://home.cnblogs.com/u/1518148/" target="_blank">小杰仔dyz</a> <a href="http://msg.cnblogs.com/send/%E5%B0%8F%E6%9D%B0%E4%BB%94dyz" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4137538" class="blog_comment_body">transfer()里的e.next = newTable[i]; newTable[i] = e; e = next;这几条语句能否详细描述一下各种可能的情况</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4137538,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4137538,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4144952" class="layer">#43楼</a><a name="4144952" id="comment_anchor_4144952"></a>  <span class="comment_date">2018-12-21 16:37</span> <a id="a_comment_author_4144952" href="http://home.cnblogs.com/u/1261909/" target="_blank">okguo</a> <a href="http://msg.cnblogs.com/send/okguo" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4144952" class="blog_comment_body">好文，推荐<br>不过这个源码是1.7的，1.8及以上的版本改了不少</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4144952,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4144952,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4161512" class="layer">#44楼</a><a name="4161512" id="comment_anchor_4161512"></a>  <span class="comment_date">2019-01-12 18:51</span> <a id="a_comment_author_4161512" href="https://www.cnblogs.com/viscu/" target="_blank">小新动感光波</a> <a href="http://msg.cnblogs.com/send/%E5%B0%8F%E6%96%B0%E5%8A%A8%E6%84%9F%E5%85%89%E6%B3%A2" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4161512" class="blog_comment_body">关于比较hash是否有必要说一下自己的见解，当然楼主说的是一点，我的观点就是java的判断有失败机制，即当前条件失败，后面的条件不会去执行，<br>假设我们的key的参数比较多的，对于每个节点都要去equals一次，效率是很低的。先用hash值可以直接筛除大部分的节点，效率可以加快。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4161512,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4161512,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4161512_avatar" style="display:none;">http://pic.cnblogs.com/face/898930/20181012165620.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4165715" class="layer">#45楼</a><a name="4165715" id="comment_anchor_4165715"></a>  <span class="comment_date">2019-01-18 11:21</span> <a id="a_comment_author_4165715" href="http://home.cnblogs.com/u/1585361/" target="_blank">Hungry&amp;秃鹫</a> <a href="http://msg.cnblogs.com/send/Hungry%26amp%3B%E7%A7%83%E9%B9%AB" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4165715" class="blog_comment_body">学习</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4165715,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4165715,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4181597" class="layer">#46楼</a><a name="4181597" id="comment_anchor_4181597"></a>  <span class="comment_date">2019-02-17 14:32</span> <a id="a_comment_author_4181597" href="https://www.cnblogs.com/xiaovfight/" target="_blank">V仔</a> <a href="http://msg.cnblogs.com/send/V%E4%BB%94" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4181597" class="blog_comment_body">我看1.8版本的结构是Node</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4181597,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4181597,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4181597_avatar" style="display:none;">http://pic.cnblogs.com/face/u167125.jpg</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="http://www.cnblogs.com/chengxiao/p/6059914.html#4183188" class="layer">#47楼</a><a name="4183188" id="comment_anchor_4183188"></a><span id="comment-maxId" style="display:none;">4183188</span><span id="comment-maxDate" style="display:none;">2019/2/19 16:14:47</span>  <span class="comment_date">2019-02-19 16:14</span> <a id="a_comment_author_4183188" href="https://www.cnblogs.com/66it/" target="_blank">限量版爱</a> <a href="http://msg.cnblogs.com/send/%E9%99%90%E9%87%8F%E7%89%88%E7%88%B1" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4183188" class="blog_comment_body">推荐阅读：<a href="https://tryenough.com/java-hashmap" target="_blank">https://tryenough.com/java-hashmap</a></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4183188,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4183188,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4183188_avatar" style="display:none;">http://pic.cnblogs.com/face/778724/20150627000924.png</span>
+			</div>
+		</div>
+	<div id="comments_pager_bottom"></div></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#" onclick="return RefreshPage();">刷新页面</a><a href="http://www.cnblogs.com/chengxiao/p/6059914.html#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login(&#39;commentform&#39;);">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-工控&#39;)">【推荐】超50万C++/C#源码: 大型实时仿真HMI组态CAD\GIS图形源码！</a><br><a href="https://gitee.com/enterprises?from=bky-2" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-gitee&#39;)">【推荐】专业便捷的企业级代码托管服务 - Gitee 码云</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/gpt.js.下载"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CMb8wq6x2-ACFRezlgodjA8AjQ"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none; display: inline-block; width: 300px; height: 250px;"><iframe frameborder="0" src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/container.html" id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="" scrolling="no" marginwidth="0" marginheight="0" width="300" height="250" data-is-safeframe="true" sandbox="allow-forms allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" data-google-container-id="1" style="border: 0px; vertical-align: bottom;" data-load-complete="true"></iframe></div></div>
+</div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>相关博文：</b><br>·  <a href="https://www.cnblogs.com/chengxiao/p/6059914.html" target="_blank" onclick="clickRecomItmem(undefined,&#39;undefined&#39;)">HashMap实现原理及源码分析</a><br>·  <a href="https://www.cnblogs.com/baihmpgy/p/osgi_muinavtree_fx.html" target="_blank" onclick="clickRecomItmem(undefined,&#39;undefined&#39;)">【源码分享】WPF漂亮界面框架实现原理分析及源码分享</a><br>·  <a href="https://www.cnblogs.com/chengxiao/p/6842045.html" target="_blank" onclick="clickRecomItmem(undefined,&#39;undefined&#39;)">ConcurrentHashMap实现原理及源码分析</a><br>·  <a href="https://www.cnblogs.com/apanda009/p/7255980.html" target="_blank" onclick="clickRecomItmem(undefined,&#39;undefined&#39;)">HashMap实现原理及源码分析</a><br>·  <a href="https://www.cnblogs.com/softwareofjava/p/7280591.html" target="_blank" onclick="clickRecomItmem(undefined,&#39;undefined&#39;)">HashMap实现原理及源码分析</a><br></div></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="COL-wq6x2-ACFY27lgodXhYKTA"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none; display: inline-block; width: 468px; height: 60px;"><iframe frameborder="0" src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/container(1).html" id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="" scrolling="no" marginwidth="0" marginheight="0" width="468" height="60" data-is-safeframe="true" sandbox="allow-forms allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" data-google-container-id="2" style="border: 0px; vertical-align: bottom;" data-load-complete="true"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/620477/" target="_blank">腾讯成长守护平台“星星守护”启动测试 老师可了解学生游戏习惯</a><br> ·  <a href="https://news.cnblogs.com/n/620476/" target="_blank">欧洲航天局最新火星图像现干涸河谷：火星表面或曾存在河流</a><br> ·  <a href="https://news.cnblogs.com/n/620475/" target="_blank">松鼠AI栗浩洋：去年营收近10亿 今年还会有3倍增长</a><br> ·  <a href="https://news.cnblogs.com/n/620474/" target="_blank">李国庆二次创业转身区块链 CRYSTO项目暗藏合规风险</a><br> ·  <a href="https://news.cnblogs.com/n/620473/" target="_blank">苏宁：收购万达百货不存在资本层面的考虑</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><!--侧边栏公告栏-->
+<!--访问量统计 -->
+访问量:
+<div align="left"><a href="http://www.amazingcounters.com/"><img border="0" src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/counter.php" alt="AmazingCounters.com"></a></div>
+<!--人形时钟
+<div id="myTime">
+    <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" width="160" height="70" id="honehoneclock" align="middle">
+        <param name="allowScriptAccess" value="always">
+        <param name="movie" value="http://chabudai.sakura.ne.jp/blogparts/honehoneclock/honehone_clock_wh.swf">
+        <param name="quality" value="high">
+        <param name="bgcolor" value="#ffffff">
+        <param name="wmode" value="transparent">
+        <embed wmode="transparent" src="http://chabudai.sakura.ne.jp/blogparts/honehoneclock/honehone_clock_wh.swf" quality="high" bgcolor="#ffffff" width="160" height="70" name="honehoneclock" align="middle" allowscriptaccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
+    </object>
+</div>
+-->
+
+
+
+
+<!--站点访问量统计
+<a href="https://info.flagcounter.com/09YB">
+<img src="https://s09.flagcounter.com/count2/09YB/bg_FFFFFF/txt_000000/border_CCCCCC/columns_2/maxflags_6/viewers_0/labels_0/pageviews_1/flags_0/percent_0/" alt="Flag Counter" border="0">
+</a>
+-->
+<!--
+<a href="https://s07.flagcounter.com/more/pk"><img src="https://s07.flagcounter.com/count2/pk/bg_FFFFFF/txt_000000/border_CCCCCC/columns_2/maxflags_10/viewers_0/labels_0/pageviews_1/flags_0/percent_0/" alt="Flag Counter" border="0"></a> --><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/chengxiao/">dreamcatcher-cx</a><br>园龄：<a href="https://home.cnblogs.com/u/chengxiao/" title="入园时间：2016-09-10">2年5个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/chengxiao/followers/">578</a><br>关注：<a href="https://home.cnblogs.com/u/chengxiao/followees/">29</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow(&#39;8319750a-5977-e611-9fc1-ac853d9f53cc&#39;)">+加关注</a></div><script>getFollowStatus('8319750a-5977-e611-9fc1-ac853d9f53cc')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" cellspacing="0" cellpadding="0" title="Calendar">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2019/01/01&#39;);return false;">&lt;</a></td><td align="center">2019年2月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2019/03/01&#39;);return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" align="center" abbr="日" scope="col">日</th><th class="CalDayHeader" align="center" abbr="一" scope="col">一</th><th class="CalDayHeader" align="center" abbr="二" scope="col">二</th><th class="CalDayHeader" align="center" abbr="三" scope="col">三</th><th class="CalDayHeader" align="center" abbr="四" scope="col">四</th><th class="CalDayHeader" align="center" abbr="五" scope="col">五</th><th class="CalDayHeader" align="center" abbr="六" scope="col">六</th></tr><tr><td class="CalOtherMonthDay" align="center">27</td><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td class="CalOtherMonthDay" align="center">31</td><td align="center">1</td><td class="CalWeekendDay" align="center">2</td></tr><tr><td class="CalWeekendDay" align="center">3</td><td align="center">4</td><td align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td class="CalWeekendDay" align="center">9</td></tr><tr><td class="CalWeekendDay" align="center">10</td><td align="center">11</td><td align="center">12</td><td align="center">13</td><td align="center">14</td><td align="center">15</td><td class="CalWeekendDay" align="center">16</td></tr><tr><td class="CalWeekendDay" align="center">17</td><td align="center">18</td><td align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td class="CalWeekendDay" align="center">23</td></tr><tr><td class="CalWeekendDay" align="center">24</td><td align="center">25</td><td align="center">26</td><td class="CalTodayDay" align="center">27</td><td align="center">28</td><td class="CalOtherMonthDay" align="center">1</td><td class="CalOtherMonthDay" align="center">2</td></tr><tr><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td><td class="CalOtherMonthDay" align="center">9</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input type="text" id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk">&nbsp;<input onclick="zzk_go()" type="button" value="找找看" id="btnZzk" class="btn_my_zzk"></div>
+<div id="widget_my_google" class="div_my_zzk"><input type="text" name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk">&nbsp;<input onclick="google_go()" type="button" value="谷歌搜索" class="btn_my_zzk"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/chengxiao/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/chengxiao/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/chengxiao/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/chengxiao/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/chengxiao/tag/" title="我的博客的标签列表">我的标签</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+<h3 class="catListTitle">我的标签</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/chengxiao/tag/Oracle/">Oracle</a>(3)</li><li><a href="https://www.cnblogs.com/chengxiao/tag/hashmap/">hashmap</a>(1)</li>
+</ul>
+</div></div><div id="sidebar_categories">
+<div id="sidebar_postcategory" class="catListPostCategory sidebar-block">
+<h3 class="catListTitle">随笔分类<span style="font-size:11px;font-weight:normal">(20)</span></h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/chengxiao/category/880743.html">java 基础</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/chengxiao/category/909714.html">java集合框架(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/chengxiao/category/880744.html">jvm</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/chengxiao/category/880742.html">mysql</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/chengxiao/category/880741.html">Oracle(4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/chengxiao/category/921614.html">并发编程(8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/chengxiao/category/880745.html">分布式系统</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/chengxiao/category/880909.html">数据结构(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="https://www.cnblogs.com/chengxiao/category/880910.html">算法(5)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_postarchive" class="catListPostArchive sidebar-block">
+<h3 class="catListTitle">随笔档案<span style="font-size:11px;font-weight:normal">(20)</span></h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="https://www.cnblogs.com/chengxiao/archive/2017/07.html">2017年7月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="https://www.cnblogs.com/chengxiao/archive/2017/06.html">2017年6月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="https://www.cnblogs.com/chengxiao/archive/2017/05.html">2017年5月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="https://www.cnblogs.com/chengxiao/archive/2017/04.html">2017年4月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="https://www.cnblogs.com/chengxiao/archive/2017/03.html">2017年3月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_5" href="https://www.cnblogs.com/chengxiao/archive/2017/02.html">2017年2月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_6" href="https://www.cnblogs.com/chengxiao/archive/2017/01.html">2017年1月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_7" href="https://www.cnblogs.com/chengxiao/archive/2016/12.html">2016年12月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_8" href="https://www.cnblogs.com/chengxiao/archive/2016/11.html">2016年11月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_9" href="https://www.cnblogs.com/chengxiao/archive/2016/10.html">2016年10月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_10" href="https://www.cnblogs.com/chengxiao/archive/2016/09.html">2016年9月 (2)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_scorerank" class="sidebar-block">
+<div class="catListBlogRank">
+<h3 class="catListTitle">积分与排名</h3>
+<ul>
+	<li class="liScore">
+		积分 -	56938
+	</li>
+	<li class="liRank">
+		排名 -	8916
+	</li>
+</ul>
+</div>
+
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chengxiao/p/6881974.html#4188552">1. Re:CopyOnWriteArrayList实现原理及源码分析</a></li>
+        <li class="recent_comment_body">@cornerStone引用@光与热读操作是没有加锁的，当A线程在写数据的时候，B线程是可以读的，A线程在完成写操作之前B线程读到的都是老数据。读和写是一个复合操作，是非原子的，volatile只能保......</li>
+        <li class="recent_comment_author">--那天ws</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chengxiao/p/6059914.html#4183188">2. Re:HashMap实现原理及源码分析</a></li>
+        <li class="recent_comment_body">推荐阅读：<a href="http://www.cnblogs.com/chengxiao/p/6059914.html" target="_blank"></a></li>
+        <li class="recent_comment_author">--限量版爱</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chengxiao/p/6842045.html#4182351">3. Re:ConcurrentHashMap实现原理及源码分析</a></li>
+        <li class="recent_comment_body">推荐一个从java基础到项目实战的全栈一站式学习网站<a href="http://www.cnblogs.com/chengxiao/p/6059914.html" target="_blank"></a>=14216</li>
+        <li class="recent_comment_author">--独_夜行</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chengxiao/p/6059914.html#4181597">4. Re:HashMap实现原理及源码分析</a></li>
+        <li class="recent_comment_body">我看1.8版本的结构是Node</li>
+        <li class="recent_comment_author">--V仔</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chengxiao/p/6129630.html#4178983">5. Re:图解排序算法(三)之堆排序</a></li>
+        <li class="recent_comment_body">k=k*2+1不是很懂~。。。能解答下么？</li>
+        <li class="recent_comment_author">--大一新生</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/chengxiao/p/6059914.html">1. HashMap实现原理及源码分析(205347)</a></li><li><a href="https://www.cnblogs.com/chengxiao/p/6103002.html">2. 图解排序算法(一)之3种简单排序(选择，冒泡，直接插入)(187044)</a></li><li><a href="https://www.cnblogs.com/chengxiao/p/6129630.html">3. 图解排序算法(三)之堆排序(181663)</a></li><li><a href="https://www.cnblogs.com/chengxiao/p/6194356.html">4. 图解排序算法(四)之归并排序(125559)</a></li><li><a href="https://www.cnblogs.com/chengxiao/p/6104371.html">5. 图解排序算法(二)之希尔排序(95212)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/chengxiao/p/6059914.html">1. HashMap实现原理及源码分析(47)</a></li><li><a href="https://www.cnblogs.com/chengxiao/p/6129630.html">2. 图解排序算法(三)之堆排序(33)</a></li><li><a href="https://www.cnblogs.com/chengxiao/p/6194356.html">3. 图解排序算法(四)之归并排序(22)</a></li><li><a href="https://www.cnblogs.com/chengxiao/p/6104371.html">4. 图解排序算法(二)之希尔排序(17)</a></li><li><a href="https://www.cnblogs.com/chengxiao/p/6103002.html">5. 图解排序算法(一)之3种简单排序(选择，冒泡，直接插入)(15)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/chengxiao/p/6059914.html">1. HashMap实现原理及源码分析(98)</a></li><li><a href="https://www.cnblogs.com/chengxiao/p/6129630.html">2. 图解排序算法(三)之堆排序(67)</a></li><li><a href="https://www.cnblogs.com/chengxiao/p/6194356.html">3. 图解排序算法(四)之归并排序(52)</a></li><li><a href="https://www.cnblogs.com/chengxiao/p/6842045.html">4. ConcurrentHashMap实现原理及源码分析(23)</a></li><li><a href="https://www.cnblogs.com/chengxiao/p/6103002.html">5. 图解排序算法(一)之3种简单排序(选择，冒泡，直接插入)(21)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 dreamcatcher-cx
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+<iframe id="google_osd_static_frame_6678024630601" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;" src="./HashMap实现原理及源码分析 - dreamcatcher-cx - 博客园_files/saved_resource.html"></iframe></body></html>

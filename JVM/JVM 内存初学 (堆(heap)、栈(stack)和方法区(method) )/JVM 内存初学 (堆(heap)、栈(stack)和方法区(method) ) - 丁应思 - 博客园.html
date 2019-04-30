@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<!-- saved from url=(0049)https://www.cnblogs.com/dingyingsi/p/3760730.html -->
+<html lang="zh-cn"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园</title>
+<meta property="og:description" content="这两天看了一下深入浅出JVM这本书，推荐给高级的java程序员去看，对你了解JAVA的底层和运行机制有比较大的帮助。废话不想讲了.入主题：先了解具体的概念：JAVA的JVM的内存可分为3个区：堆(he">
+    <link type="text/css" rel="stylesheet" href="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/bundle-coffee.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/bundle-coffee-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/dingyingsi/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/dingyingsi/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/dingyingsi/wlwmanifest.xml">
+    <script src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/osd.js.下载"></script><script src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/amp4ads-host-v0.js.下载"></script><script src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/pubads_impl_rendering_307.js.下载"></script><script async="" src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/analytics.js.下载"></script><script src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/jquery-2.2.0.min.js.下载"></script>
+    <script>var currentBlogId=140865;var currentBlogApp='dingyingsi',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/blog-common.js.下载" type="text/javascript"></script>
+<link rel="preload" href="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/f.txt" as="script"><script type="text/javascript" src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/f.txt"></script><script src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/pubads_impl_307.js.下载" async=""></script><link rel="prefetch" href="https://tpc.googlesyndication.com/safeframe/1-0-32/html/container.html"></head>
+<body>
+<a name="top"></a>
+
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="https://www.cnblogs.com/dingyingsi/"><img id="blogLogo" src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/dingyingsi/">丁应思</a></h1>
+<h2><a href="http://www.cnblogs.com/yingsi">dingyingsi</a>
+<br>QQ交流群:256924514</h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="navigator">
+			
+<ul id="navList">
+	<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+	<li><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/dingyingsi/">首页</a></li>
+	<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+	<li><a id="blog_nav_contact" accesskey="9" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/%E4%B8%81%E5%BA%94%E6%80%9D">联系</a></li>
+	<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+	<li><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/dingyingsi/rss">订阅</a>
+	<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/dingyingsi/rss"><img src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/xml.gif" alt="订阅"></a></li>
+</ul>
+
+
+			<div class="blogStats">
+				
+				<div id="blog_stats">
+<!--done-->
+随笔- 333&nbsp;
+文章- 0&nbsp;
+评论- 49&nbsp;
+</div>
+				
+			</div><!--end: blogStats -->
+		</div><!--end: navigator 博客导航栏 -->
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/dingyingsi/p/3760730.html">JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) )</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body"><p align="left">这两天看了一下深入浅出JVM这本书，推荐给高级的java程序员去看，对你了解JAVA的底层和运行机制有<br>比较大的帮助。<br>废话不想讲了.入主题：<br>先了解具体的概念：<br>JAVA的JVM的内存可分为3个区：堆(heap)、栈(stack)和方法区(method)</p>
+<p align="left">堆区:<br>1.存储的全部是对象，每个对象都包含一个与之对应的class的信息。(class的目的是得到操作指令)<br>2.jvm只有一个堆区(heap)被所有线程共享，堆中不存放基本类型和对象引用，只存放对象本身<br>栈区:<br>1.每个线程包含一个栈区，栈中只保存基础数据类型的对象和自定义对象的引用(不是对象)，对象都存放在堆区中<br>2.每个栈中的数据(原始类型和对象引用)都是私有的，其他栈不能访问。<br>3.栈分为3个部分：基本类型变量区、执行环境上下文、操作指令区(存放操作指令)。<br>方法区:<br>1.又叫静态区，跟堆一样，被所有的线程共享。方法区包含所有的class和static变量。<br>2.方法区中包含的都是在整个程序中永远唯一的元素，如class，static变量。<br>为了更清楚地搞明白发生在运行时数据区里的黑幕，我们来准备2个小道具（2个非常简单的小程序）。<br>AppMain.java</p>
+<p align="left">&nbsp;public&nbsp;&nbsp; class&nbsp; AppMain&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+<p align="left">//运行时, jvm 把appmain的信息都放入方法区</p>
+<p align="left">{</p>
+<p align="left">public&nbsp;&nbsp; static&nbsp;&nbsp; void&nbsp; main(String[] args)&nbsp; //main 方法本身放入方法区。</p>
+<p align="left">{</p>
+<p align="left">Sample test1 = new&nbsp; Sample( " 测试1 " );&nbsp;&nbsp; //test1是引用，所以放到栈区里， Sample是自定义对象应该放到堆里面</p>
+<p align="left">Sample test2 = new&nbsp; Sample( " 测试2 " );</p>
+<p align="left">test1.printName();</p>
+<p align="left">test2.printName();</p>
+<p align="left">} </p>
+<p align="left">} <br>Sample.java</p>
+<p align="left">&nbsp;public&nbsp;&nbsp; class&nbsp; Sample&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //运行时, jvm 把appmain的信息都放入方法区</p>
+<p align="left">{</p>
+<p align="left">/** 范例名称 */ </p>
+<p align="left">private&nbsp; name;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //new Sample实例后， name 引用放入栈区里，&nbsp; name 对象放入堆里</p>
+<p align="left">/** 构造方法 */ </p>
+<p align="left">public&nbsp; Sample(String name)</p>
+<p align="left">{</p>
+<p align="left">this .name = name;</p>
+<p align="left">}</p>
+<p align="left">/** 输出 */ </p>
+<p align="left">public&nbsp;&nbsp; void&nbsp; printName()&nbsp;&nbsp; //print方法本身放入 方法区里。</p>
+<p align="left">{</p>
+<p align="left">System.out.println(name);</p>
+<p align="left">} </p>
+<p align="left">} <br>OK，让我们开始行动吧，出发指令就是：“java AppMain”，包包里带好我们的行动向导图，Let’s GO！<br><img src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/301120189168918.bmp" alt=""><br>系统收到了我们发出的指令，启动了一个Java虚拟机进程，这个进程首先从classpath中找到AppMain.class文件，读取这个文件中的二进制数据，然后把Appmain类的类信息存放到运行时数据区的方法区中。这一过程称为AppMain类的加载过程。<br>接着，Java虚拟机定位到方法区中AppMain类的Main()方法的字节码，开始执行它的指令。这个main()方法的第一条语句就是：<br>Sample test1=new Sample("测试1");<br>语句很简单啦，就是让java虚拟机创建一个Sample实例，并且呢，使引用变量test1引用这个实例。貌似小case一桩哦，就让我们来跟踪一下Java虚拟机，看看它究竟是怎么来执行这个任务的：<br>1、 Java虚拟机一看，不就是建立一个Sample实例吗，简单，于是就直奔方法区而去，先找到Sample类的类型信息再说。结果呢，嘿嘿，没找到@@，这会儿的方法区里还没有Sample类呢。可Java虚拟机也不是一根筋的笨蛋，于是，它发扬“自己动手，丰衣足食”的作风，立马加载了Sample类，把Sample类的类型信息存放在方法区里。<br>2、 好啦，资料找到了，下面就开始干活啦。Java虚拟机做的第一件事情就是在堆区中为一个新的Sample实例分配内存, 这个Sample实例持有着指向方法区的Sample类的类型信息的引用。这里所说的引用，实际上指的是Sample类的类型信息在方法区中的内存地址，其实，就是有点类似于C语言里的指针啦~~，而这个地址呢，就存放了在Sample实例的数据区里。<br>3、 在JAVA虚拟机进程中，每个线程都会拥有一个方法调用栈，用来跟踪线程运行中一系列的方法调用过程，栈中的每一个元素就被称为栈帧，每当线程调用一个方法的时候就会向方法栈压入一个新帧。这里的帧用来存储方法的参数、局部变量和运算过程中的临时数据。OK，原理讲完了，就让我们来继续我们的跟踪行动！位于“=”前的Test1是一个在main()方法中定义的变量，可见，它是一个局部变量，因此，它被会添加到了执行main()方法的主线程的JAVA方法调用栈中。而“=”将把这个test1变量指向堆区中的Sample实例，也就是说，它持有指向Sample实例的引用。<br>OK，到这里为止呢，JAVA虚拟机就完成了这个简单语句的执行任务。参考我们的行动向导图，我们终于初步摸清了JAVA虚拟机的一点点底细了，COOL！<br>接下来，JAVA虚拟机将继续执行后续指令，在堆区里继续创建另一个Sample实例，然后依次执行它们的printName()方法。当JAVA虚拟机执行test1.printName()方法时，JAVA虚拟机根据局部变量test1持有的引用，定位到堆区中的Sample实例，再根据Sample实例持有的引用，定位到方法去中Sample类的类型信息，从而获得printName()方法的字节码，接着执行printName()方法包含的指令。</p>
+<p>&nbsp;</p></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/dingyingsi/category/584016.html" target="_blank">JVM</a></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(3760730,cb_blogId,1);green_channel_success(this,&#39;谢谢推荐！&#39;);">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow(&#39;08450fa7-2b53-e211-aa8f-842b2b196315&#39;);" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/dingyingsi/" target="_blank"><img src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/sample_face.gif" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/dingyingsi/">丁应思</a><br>
+            <a href="http://home.cnblogs.com/u/dingyingsi/followees">关注 - 0</a><br>
+            <a href="http://home.cnblogs.com/u/dingyingsi/followers">粉丝 - 214</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow(&#39;08450fa7-2b53-e211-aa8f-842b2b196315&#39;);return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(3760730,&#39;Digg&#39;)">
+        <span class="diggnum" id="digg_count">13</span>
+    </div>
+    <div class="buryit" onclick="votePost(3760730,&#39;Bury&#39;)">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/dingyingsi/p/3760447.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/dingyingsi/p/3760447.html" title="发布于2014-05-30 08:58">深入理解JVM—JVM内存模型</a><br><a href="https://www.cnblogs.com/dingyingsi/p/3761635.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/dingyingsi/p/3761635.html" title="发布于2014-05-30 18:26">Java 泛型</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2014-05-30 11:17</span> <a href="https://www.cnblogs.com/dingyingsi/">丁应思</a> 阅读(<span id="post_view_count">25333</span>) 评论(<span id="post_comment_count">8</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=3760730" rel="nofollow">编辑</a> <a href="https://www.cnblogs.com/dingyingsi/p/3760730.html#" onclick="AddToWz(3760730);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=140865,cb_entryId=3760730,cb_blogApp=currentBlogApp,cb_blogUserGuid='08450fa7-2b53-e211-aa8f-842b2b196315',cb_entryCreatedDate='2014/5/30 11:17:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"><div id="comments_pager_top"></div>
+<!--done-->
+<br>
+<div class="feedback_area_title">评论</div>
+<div class="feedbackNoItems"></div>
+	
+
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/dingyingsi/p/3760730.html#3438289" class="layer">#1楼</a><a name="3438289" id="comment_anchor_3438289"></a> <span class="comment_date">2016-05-24 15:56</span> | <a id="a_comment_author_3438289" href="http://home.cnblogs.com/u/717060/" target="_blank">FLY_宇光十色</a> <a href="http://msg.cnblogs.com/send/FLY_%E5%AE%87%E5%85%89%E5%8D%81%E8%89%B2" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3438289" class="blog_comment_body">写的很好</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3438289,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3438289,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/dingyingsi/p/3760730.html#3494133" class="layer">#2楼</a><a name="3494133" id="comment_anchor_3494133"></a> <span class="comment_date">2016-08-22 19:43</span> | <a id="a_comment_author_3494133" href="https://www.cnblogs.com/Mustr/" target="_blank">Mustr</a> <a href="http://msg.cnblogs.com/send/Mustr" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3494133" class="blog_comment_body">挺不错</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3494133,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3494133,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3494133_avatar" style="display:none;">http://pic.cnblogs.com/face/994617/20171115100527.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/dingyingsi/p/3760730.html#3588082" class="layer">#3楼</a><a name="3588082" id="comment_anchor_3588082"></a> <span class="comment_date">2016-12-23 15:54</span> | <a id="a_comment_author_3588082" href="https://www.cnblogs.com/luxiaobin/" target="_blank">一日一进</a> <a href="http://msg.cnblogs.com/send/%E4%B8%80%E6%97%A5%E4%B8%80%E8%BF%9B" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3588082" class="blog_comment_body">很好的文章，深入浅出。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3588082,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3588082,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/dingyingsi/p/3760730.html#3667839" class="layer">#4楼</a><a name="3667839" id="comment_anchor_3667839"></a> <span class="comment_date">2017-04-14 10:51</span> | <a id="a_comment_author_3667839" href="https://www.cnblogs.com/Lxiaojiang/" target="_blank">日月心诚</a> <a href="http://msg.cnblogs.com/send/%E6%97%A5%E6%9C%88%E5%BF%83%E8%AF%9A" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3667839" class="blog_comment_body">作者是个用心的人~挺好</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3667839,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3667839,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3667839_avatar" style="display:none;">http://pic.cnblogs.com/face/607160/20161201140301.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/dingyingsi/p/3760730.html#3861107" class="layer">#5楼</a><a name="3861107" id="comment_anchor_3861107"></a> <span class="comment_date">2017-12-08 14:15</span> | <a id="a_comment_author_3861107" href="http://home.cnblogs.com/u/1245698/" target="_blank">清风扰民丶</a> <a href="http://msg.cnblogs.com/send/%E6%B8%85%E9%A3%8E%E6%89%B0%E6%B0%91%E4%B8%B6" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3861107" class="blog_comment_body">很棒</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3861107,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3861107,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/dingyingsi/p/3760730.html#4024910" class="layer">#6楼</a><a name="4024910" id="comment_anchor_4024910"></a> <span class="comment_date">2018-07-20 14:41</span> | <a id="a_comment_author_4024910" href="http://home.cnblogs.com/u/1153336/" target="_blank">范特斯剃可</a> <a href="http://msg.cnblogs.com/send/%E8%8C%83%E7%89%B9%E6%96%AF%E5%89%83%E5%8F%AF" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4024910" class="blog_comment_body">好文,我爱你</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4024910,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4024910,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/dingyingsi/p/3760730.html#4027799" class="layer">#7楼</a><a name="4027799" id="comment_anchor_4027799"></a> <span class="comment_date">2018-07-24 18:47</span> | <a id="a_comment_author_4027799" href="https://www.cnblogs.com/duyunchao-2261/" target="_blank">duyunchao</a> <a href="http://msg.cnblogs.com/send/duyunchao" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4027799" class="blog_comment_body">厉害厉害，我转载了哈~</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4027799,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4027799,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/dingyingsi/p/3760730.html#4063684" class="layer">#8楼</a><a name="4063684" id="comment_anchor_4063684"></a><span id="comment-maxId" style="display:none;">4063684</span><span id="comment-maxDate" style="display:none;">2018/9/11 14:23:41</span> <span class="comment_date">2018-09-11 14:23</span> | <a id="a_comment_author_4063684" href="http://home.cnblogs.com/u/1431257/" target="_blank">xiao朱</a> <a href="http://msg.cnblogs.com/send/xiao%E6%9C%B1" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4063684" class="blog_comment_body">厉害</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4063684,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4063684,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	<div id="comments_pager_bottom"></div></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="https://www.cnblogs.com/dingyingsi/p/3760730.html#" onclick="return RefreshPage();">刷新页面</a><a href="https://www.cnblogs.com/dingyingsi/p/3760730.html#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login(&#39;commentform&#39;);">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-工控&#39;)">【推荐】超50万C++/C#源码: 大型实时仿真HMI组态CAD\GIS图形源码！</a><br><a href="https://gitee.com/enterprises?from=bky-2" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-gitee&#39;)">【推荐】专业便捷的企业级代码托管服务 - Gitee 码云</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/gpt.js.下载"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CPK5i7SizOACFYl1YAodhVIO_g"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" width="300" height="250" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" style="border: 0px; vertical-align: bottom;" data-google-container-id="1" data-load-complete="true" src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/saved_resource.html"></iframe></div></div>
+</div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>相关博文：</b><br>·  <a href="https://www.cnblogs.com/heyanan/p/6125030.html" target="_blank" onclick="clickRecomItmem(6125030,&#39;FRTuIAkhDmx60jqdE5QKJ2Lb14GxhJ3yFGwj8/kSTGyIUlmasWiCKz11ZIg/OdpPgbhDRGooWO7SiCzJGl6Q6+Si0FOrq7R4l6D6bIh7/Plq9Bm98fzGGIQhNowNCKQc4lZnrIpz2YaDl3+T7g==&#39;)">JVM内存初学 堆、栈、方法区</a><br>·  <a href="https://www.cnblogs.com/john69-/p/5747696.html" target="_blank" onclick="clickRecomItmem(5747696,&#39;duAcdW+uz7p82u/XMyYNls8H3svPYiG0ziQGYftVJTdDSSk9kfNYBz6d99+fKfJXsYlMbEYIFdKqDhMvVBhOErJ63QkBhF8xwfPyulPA0h1iU0fqZd4zlqaPVIHVJJZOAl1O+7wBhZibuiB5TQ==&#39;)">转    方法区(method) )、栈区(stack)和堆区(heap)之JVM 内存初学</a><br>·  <a href="https://www.cnblogs.com/flytogalaxy/p/7920423.html" target="_blank" onclick="clickRecomItmem(7920423,&#39;2rjcqPPsn6vMJFUJ+RBGLn2/C2sySMQz/UXZy+/VebQJREQndSEQ98iMhNhbyC+Gl6N57UYYqU7vU7ODRC39xcny7FR+ULfLAK/7mBPzlU8K9dyPMfmFj8qbfxwGFLIBSo73L+gOQ6hCFK+TWw==&#39;)">JAVA的JVM的内存可分为3个区：堆(heap)、堆栈(stack)和方法区(method)</a><br>·  <a href="https://www.cnblogs.com/baiqiantao/p/5893326.html" target="_blank" onclick="clickRecomItmem(5893326,&#39;iNTcUsKPa2QeEJs7V16Rpo4WzaZo34/csf5Rap1wN4RBEc+LeQw9zvSSxSrhz7uToqUdwaD+9CGTPuOfD2Y4TZv4CMyyO5iGpPmtEZ2tUcVQbsdfIIeZJMg/eQFfh9DCkByCbJhS8+n15mAyzw==&#39;)">堆和栈 内存分配 heap stack</a><br>·  <a href="https://www.cnblogs.com/zhanggui/p/4652759.html" target="_blank" onclick="clickRecomItmem(4652759,&#39;PmvLmKTrJjdBpBRxaSXc/gLP/OFKePaNcd7jpqUJqwWeKu2fDbzE8ZplZNvztOv/GTdb78F0LnN7MzOSNfIoWhL3YA+7zv4mp/UmlkQm5DweC5CwxaLPj50ZC3RZeE/9T23QKX8qFOn3kOG0zQ==&#39;)">栈和堆（Stack  &amp;&amp; Heap）</a><br></div></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="COy5i7SizOACFYxuiwod0R8Ffw"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" width="468" height="60" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" style="border: 0px; vertical-align: bottom;" data-google-container-id="2" data-load-complete="true" src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/saved_resource(1).html"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/620002/" target="_blank">假如美团做社交</a><br> ·  <a href="https://news.cnblogs.com/n/619995/" target="_blank">网易财报电话会议实录：丁磊称教育是网易未来很重要的发展方向</a><br> ·  <a href="https://news.cnblogs.com/n/620001/" target="_blank">计划年内IPO的优必选收购了一家成都足球俱乐部，在想什么？</a><br> ·  <a href="https://news.cnblogs.com/n/620000/" target="_blank">500彩票网第四季净亏3600万美元 同比幅度扩大</a><br> ·  <a href="https://news.cnblogs.com/n/619999/" target="_blank">从EA黑马《Apex英雄》身上，中国游戏厂商能学到什么？</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/dingyingsi/">丁应思</a><br>园龄：<a href="https://home.cnblogs.com/u/dingyingsi/" title="入园时间：2012-12-31">6年1个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/dingyingsi/followers/">214</a><br>关注：<a href="https://home.cnblogs.com/u/dingyingsi/followees/">0</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow(&#39;08450fa7-2b53-e211-aa8f-842b2b196315&#39;)">+加关注</a></div><script>getFollowStatus('08450fa7-2b53-e211-aa8f-842b2b196315')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="calendar"><div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" cellspacing="0" cellpadding="0" title="Calendar">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2019/01/01&#39;);return false;">&lt;</a></td><td align="center">2019年2月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2019/03/01&#39;);return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" align="center" abbr="日" scope="col">日</th><th class="CalDayHeader" align="center" abbr="一" scope="col">一</th><th class="CalDayHeader" align="center" abbr="二" scope="col">二</th><th class="CalDayHeader" align="center" abbr="三" scope="col">三</th><th class="CalDayHeader" align="center" abbr="四" scope="col">四</th><th class="CalDayHeader" align="center" abbr="五" scope="col">五</th><th class="CalDayHeader" align="center" abbr="六" scope="col">六</th></tr><tr><td class="CalOtherMonthDay" align="center">27</td><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td class="CalOtherMonthDay" align="center">31</td><td align="center">1</td><td class="CalWeekendDay" align="center">2</td></tr><tr><td class="CalWeekendDay" align="center">3</td><td align="center">4</td><td align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td class="CalWeekendDay" align="center">9</td></tr><tr><td class="CalWeekendDay" align="center">10</td><td align="center">11</td><td align="center">12</td><td align="center">13</td><td align="center">14</td><td align="center">15</td><td class="CalWeekendDay" align="center">16</td></tr><tr><td class="CalWeekendDay" align="center">17</td><td align="center">18</td><td align="center">19</td><td align="center">20</td><td class="CalTodayDay" align="center">21</td><td align="center">22</td><td class="CalWeekendDay" align="center">23</td></tr><tr><td class="CalWeekendDay" align="center">24</td><td align="center">25</td><td align="center">26</td><td align="center">27</td><td align="center">28</td><td class="CalOtherMonthDay" align="center">1</td><td class="CalOtherMonthDay" align="center">2</td></tr><tr><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td><td class="CalOtherMonthDay" align="center">9</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script></div>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input type="text" id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk">&nbsp;<input onclick="zzk_go()" type="button" value="找找看" id="btnZzk" class="btn_my_zzk"></div>
+<div id="widget_my_google" class="div_my_zzk"><input type="text" name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk">&nbsp;<input onclick="google_go()" type="button" value="谷歌搜索" class="btn_my_zzk"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/dingyingsi/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/dingyingsi/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/dingyingsi/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/dingyingsi/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/dingyingsi/tag/" title="我的博客的标签列表">我的标签</a></li>
+<li><a id="itemListLink" onclick="this.blur();WarpClass(&#39;itemListLink&#39;, &#39;itemListLin_con&#39;);return false;" href="https://www.cnblogs.com/dingyingsi/p/3760730.html#">更多链接</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_toptags" class="sidebar-block"></div><div id="sidebar_categories">
+<div class="catListPostCategory">
+<h3 class="catListTitle">随笔分类</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/dingyingsi/category/485386.html">AJAX(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/dingyingsi/category/718054.html">Android</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/dingyingsi/category/454868.html">Ant(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/dingyingsi/category/473910.html">Apache(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/dingyingsi/category/469647.html">C++(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/dingyingsi/category/473765.html">CSS</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/dingyingsi/category/1290033.html">Docker(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/dingyingsi/category/454817.html">Eclipse(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="https://www.cnblogs.com/dingyingsi/category/454873.html">Flex(17)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_9" href="https://www.cnblogs.com/dingyingsi/category/621951.html">git(8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_10" href="https://www.cnblogs.com/dingyingsi/category/1192406.html">Gradle(4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_11" href="https://www.cnblogs.com/dingyingsi/category/1263708.html">Hadoop(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_12" href="https://www.cnblogs.com/dingyingsi/category/452826.html">Hibernate(15)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_13" href="https://www.cnblogs.com/dingyingsi/category/473364.html">HTML(4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_14" href="https://www.cnblogs.com/dingyingsi/category/741726.html">HttpClient(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_15" href="https://www.cnblogs.com/dingyingsi/category/449335.html">JavaScript(12)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_16" href="https://www.cnblogs.com/dingyingsi/category/452824.html">JavaSE(34)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_17" href="https://www.cnblogs.com/dingyingsi/category/473766.html">JQuery(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_18" href="https://www.cnblogs.com/dingyingsi/category/899240.html">JSON(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_19" href="https://www.cnblogs.com/dingyingsi/category/452831.html">JSP(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_20" href="https://www.cnblogs.com/dingyingsi/category/584016.html">JVM(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_21" href="https://www.cnblogs.com/dingyingsi/category/454785.html">Linux(46)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_22" href="https://www.cnblogs.com/dingyingsi/category/454820.html">Linux C(7)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_23" href="https://www.cnblogs.com/dingyingsi/category/473764.html">Lucene(5)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_24" href="https://www.cnblogs.com/dingyingsi/category/555967.html">Maven(25)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_25" href="https://www.cnblogs.com/dingyingsi/category/843955.html">MongoDB(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_26" href="https://www.cnblogs.com/dingyingsi/category/611286.html">mybatis(4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_27" href="https://www.cnblogs.com/dingyingsi/category/454816.html">MySQL(13)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_28" href="https://www.cnblogs.com/dingyingsi/category/1267542.html">nexus(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_29" href="https://www.cnblogs.com/dingyingsi/category/803691.html">Nginx(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_30" href="https://www.cnblogs.com/dingyingsi/category/452825.html">Oracle(39)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_31" href="https://www.cnblogs.com/dingyingsi/category/646392.html">Pro * c(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_32" href="https://www.cnblogs.com/dingyingsi/category/828247.html">quartz(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_33" href="https://www.cnblogs.com/dingyingsi/category/473763.html">Servlet(5)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_34" href="https://www.cnblogs.com/dingyingsi/category/452828.html">Spring(7)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_35" href="https://www.cnblogs.com/dingyingsi/category/485385.html">SQL Server(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_36" href="https://www.cnblogs.com/dingyingsi/category/472247.html">SQLite(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_37" href="https://www.cnblogs.com/dingyingsi/category/452827.html">Struts(12)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_38" href="https://www.cnblogs.com/dingyingsi/category/574472.html">SVN(6)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_39" href="https://www.cnblogs.com/dingyingsi/category/700705.html">tomcat(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_40" href="https://www.cnblogs.com/dingyingsi/category/452829.html">WebLogic(24)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_41" href="https://www.cnblogs.com/dingyingsi/category/474841.html">WebService(7)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_42" href="https://www.cnblogs.com/dingyingsi/category/601720.html">XML(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_43" href="https://www.cnblogs.com/dingyingsi/category/458094.html">其他(7)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_44" href="https://www.cnblogs.com/dingyingsi/category/486227.html">正则表达式(2)</a> </li>
+
+</ul>
+
+</div>
+
+<div class="catListPostArchive">
+<h3 class="catListTitle">随笔档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="https://www.cnblogs.com/dingyingsi/archive/2018/08.html">2018年8月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="https://www.cnblogs.com/dingyingsi/archive/2018/07.html">2018年7月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="https://www.cnblogs.com/dingyingsi/archive/2018/04.html">2018年4月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="https://www.cnblogs.com/dingyingsi/archive/2018/03.html">2018年3月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="https://www.cnblogs.com/dingyingsi/archive/2017/11.html">2017年11月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_5" href="https://www.cnblogs.com/dingyingsi/archive/2017/08.html">2017年8月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_6" href="https://www.cnblogs.com/dingyingsi/archive/2017/02.html">2017年2月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_7" href="https://www.cnblogs.com/dingyingsi/archive/2017/01.html">2017年1月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_8" href="https://www.cnblogs.com/dingyingsi/archive/2016/12.html">2016年12月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_9" href="https://www.cnblogs.com/dingyingsi/archive/2016/11.html">2016年11月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_10" href="https://www.cnblogs.com/dingyingsi/archive/2016/10.html">2016年10月 (6)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_11" href="https://www.cnblogs.com/dingyingsi/archive/2016/09.html">2016年9月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_12" href="https://www.cnblogs.com/dingyingsi/archive/2016/08.html">2016年8月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_13" href="https://www.cnblogs.com/dingyingsi/archive/2016/07.html">2016年7月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_14" href="https://www.cnblogs.com/dingyingsi/archive/2016/06.html">2016年6月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_15" href="https://www.cnblogs.com/dingyingsi/archive/2016/05.html">2016年5月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_16" href="https://www.cnblogs.com/dingyingsi/archive/2016/03.html">2016年3月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_17" href="https://www.cnblogs.com/dingyingsi/archive/2016/02.html">2016年2月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_18" href="https://www.cnblogs.com/dingyingsi/archive/2016/01.html">2016年1月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_19" href="https://www.cnblogs.com/dingyingsi/archive/2015/12.html">2015年12月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_20" href="https://www.cnblogs.com/dingyingsi/archive/2015/10.html">2015年10月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_21" href="https://www.cnblogs.com/dingyingsi/archive/2015/09.html">2015年9月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_22" href="https://www.cnblogs.com/dingyingsi/archive/2015/08.html">2015年8月 (10)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_23" href="https://www.cnblogs.com/dingyingsi/archive/2015/07.html">2015年7月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_24" href="https://www.cnblogs.com/dingyingsi/archive/2015/06.html">2015年6月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_25" href="https://www.cnblogs.com/dingyingsi/archive/2015/05.html">2015年5月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_26" href="https://www.cnblogs.com/dingyingsi/archive/2015/04.html">2015年4月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_27" href="https://www.cnblogs.com/dingyingsi/archive/2015/03.html">2015年3月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_28" href="https://www.cnblogs.com/dingyingsi/archive/2015/01.html">2015年1月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_29" href="https://www.cnblogs.com/dingyingsi/archive/2014/12.html">2014年12月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_30" href="https://www.cnblogs.com/dingyingsi/archive/2014/10.html">2014年10月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_31" href="https://www.cnblogs.com/dingyingsi/archive/2014/08.html">2014年8月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_32" href="https://www.cnblogs.com/dingyingsi/archive/2014/07.html">2014年7月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_33" href="https://www.cnblogs.com/dingyingsi/archive/2014/06.html">2014年6月 (10)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_34" href="https://www.cnblogs.com/dingyingsi/archive/2014/05.html">2014年5月 (17)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_35" href="https://www.cnblogs.com/dingyingsi/archive/2014/04.html">2014年4月 (9)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_36" href="https://www.cnblogs.com/dingyingsi/archive/2014/03.html">2014年3月 (10)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_37" href="https://www.cnblogs.com/dingyingsi/archive/2014/02.html">2014年2月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_38" href="https://www.cnblogs.com/dingyingsi/archive/2014/01.html">2014年1月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_39" href="https://www.cnblogs.com/dingyingsi/archive/2013/12.html">2013年12月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_40" href="https://www.cnblogs.com/dingyingsi/archive/2013/11.html">2013年11月 (9)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_41" href="https://www.cnblogs.com/dingyingsi/archive/2013/10.html">2013年10月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_42" href="https://www.cnblogs.com/dingyingsi/archive/2013/09.html">2013年9月 (9)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_43" href="https://www.cnblogs.com/dingyingsi/archive/2013/08.html">2013年8月 (16)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_44" href="https://www.cnblogs.com/dingyingsi/archive/2013/07.html">2013年7月 (20)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_45" href="https://www.cnblogs.com/dingyingsi/archive/2013/06.html">2013年6月 (19)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_46" href="https://www.cnblogs.com/dingyingsi/archive/2013/05.html">2013年5月 (20)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_47" href="https://www.cnblogs.com/dingyingsi/archive/2013/04.html">2013年4月 (24)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_48" href="https://www.cnblogs.com/dingyingsi/archive/2013/03.html">2013年3月 (12)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_49" href="https://www.cnblogs.com/dingyingsi/archive/2013/02.html">2013年2月 (48)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_50" href="https://www.cnblogs.com/dingyingsi/archive/2013/01.html">2013年1月 (1)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/dingyingsi/p/3760447.html#4162521">1. Re:深入理解JVM—JVM内存模型</a></li>
+        <li class="recent_comment_body">说的很好</li>
+        <li class="recent_comment_author">--LISHIKAI</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/dingyingsi/p/3760447.html#4097104">2. Re:深入理解JVM—JVM内存模型</a></li>
+        <li class="recent_comment_body">学习啦，谢谢楼主</li>
+        <li class="recent_comment_author">--活着就上进</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/dingyingsi/p/3760447.html#4072397">3. Re:深入理解JVM—JVM内存模型</a></li>
+        <li class="recent_comment_body">相当好</li>
+        <li class="recent_comment_author">--Leo C.W</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/dingyingsi/p/3760730.html#4063684">4. Re:JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) )</a></li>
+        <li class="recent_comment_body">厉害</li>
+        <li class="recent_comment_author">--xiao朱</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/dingyingsi/p/3760730.html#4027799">5. Re:JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) )</a></li>
+        <li class="recent_comment_body">厉害厉害，我转载了哈~</li>
+        <li class="recent_comment_author">--梦想，遥不可及</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/dingyingsi/p/3760447.html">1. 深入理解JVM—JVM内存模型(261758)</a></li><li><a href="https://www.cnblogs.com/dingyingsi/archive/2013/02/26/2933239.html">2. CentOS修改系统时间(44186)</a></li><li><a href="https://www.cnblogs.com/dingyingsi/p/3337813.html">3. JQuery Div scrollTop ScrollHeight(30516)</a></li><li><a href="https://www.cnblogs.com/dingyingsi/archive/2013/04/16/3023392.html">4. Linux 与 Linux  Windows 文件共享(30355)</a></li><li><a href="https://www.cnblogs.com/dingyingsi/p/3760730.html">5. JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) )(25333)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/dingyingsi/p/3760447.html">1. 深入理解JVM—JVM内存模型(24)</a></li><li><a href="https://www.cnblogs.com/dingyingsi/p/3760730.html">2. JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) )(8)</a></li><li><a href="https://www.cnblogs.com/dingyingsi/p/3337813.html">3. JQuery Div scrollTop ScrollHeight(6)</a></li><li><a href="https://www.cnblogs.com/dingyingsi/p/3699870.html">4. Java List 生成 树(2)</a></li><li><a href="https://www.cnblogs.com/dingyingsi/p/3856456.html">5. Maven 映像(2)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/dingyingsi/p/3760447.html">1. 深入理解JVM—JVM内存模型(32)</a></li><li><a href="https://www.cnblogs.com/dingyingsi/p/3760730.html">2. JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) )(13)</a></li><li><a href="https://www.cnblogs.com/dingyingsi/archive/2013/04/16/3023392.html">3. Linux 与 Linux  Windows 文件共享(4)</a></li><li><a href="https://www.cnblogs.com/dingyingsi/p/3687077.html">4. Maven Nexus(2)</a></li><li><a href="https://www.cnblogs.com/dingyingsi/p/3337813.html">5. JQuery Div scrollTop ScrollHeight(2)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 丁应思
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+<iframe id="google_osd_static_frame_17479666292" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;" src="./JVM 内存初学 (堆(heap)、栈(stack)和方法区(method) ) - 丁应思 - 博客园_files/saved_resource(2).html"></iframe></body></html>

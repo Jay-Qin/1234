@@ -1,0 +1,663 @@
+.topicListFooter {
+	text-align: right; margin-top: 10px; margin-right: 10px;
+}
+* {
+	margin: 0px; padding: 0px;
+}
+html {
+	height: 100%;
+}
+body {
+	background: url("images/body_bg.png") repeat-x 0px 0px rgb(240, 238, 245); color: rgb(125, 139, 141); line-height: 25px; font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 14px; min-height: 101%;
+}
+table {
+	border-collapse: collapse; max-width: 850px; border-spacing: 0;
+}
+#sideBar ul {
+	list-style: none; word-break: break-all;
+}
+#sideBar li {
+	list-style: none;
+}
+h1 {
+	font-size: 100%; font-weight: normal;
+}
+h2 {
+	font-size: 100%; font-weight: normal;
+}
+h3 {
+	font-size: 100%; font-weight: normal;
+}
+a:link {
+	color: rgb(0, 0, 0); text-decoration: none;
+}
+a:hover {
+	color: rgb(255, 102, 0); text-decoration: underline;
+}
+.clear {
+	clear: both;
+}
+#blogTitle {
+	background: url("images/title-yellow.png") no-repeat center 21px; margin: 0px auto; width: 1200px; height: 314px; clear: both; position: relative;
+}
+#blogTitle h1 {
+	left: 17px; top: 80px; width: 310px; height: 100px; text-align: center; line-height: 100px; font-size: 30px; font-weight: normal; position: relative;
+}
+#blogTitle h2 {
+	left: 5px; top: 107px; width: 550px; height: 75px; line-height: 180%; font-size: 16px; font-weight: normal; position: relative;
+}
+#blogTitle h1 a {
+	color: rgb(255, 255, 255);
+}
+#blogTitle h2 {
+	color: rgb(255, 255, 255);
+}
+#blogLogo {
+	float: right;
+}
+#navigator {
+	border-width: 1px medium; border-style: solid none; border-color: rgb(19, 140, 202) currentColor; height: 60px; clear: both; position: relative; background-color: rgb(22, 159, 230);
+}
+#navList {
+	margin: 0px auto; width: 1200px; height: 60px;
+}
+#navList li {
+	height: 60px; line-height: 60px; float: left; list-style-type: none;
+}
+#navList a {
+	padding: 0px 20px; color: rgb(255, 255, 255); font-size: 16px; display: block;
+}
+#navList a:link {
+	color: rgb(255, 255, 255); text-shadow: 3px 3px 3px #000;
+}
+#navList a:hover {
+	color: rgb(22, 159, 230); text-decoration: none; background-color: rgb(255, 255, 255);
+}
+.blogStats {
+	display: none;
+}
+#main {
+	margin: 20px auto 0px; width: 1200px; clear: both;
+}
+.postDesc a:hover {
+	color: rgb(154, 178, 107); text-decoration: none;
+}
+.postSeparator {
+	margin: 20px 0px; clear: both; border-top-color: silver; border-top-width: 1px; border-top-style: dashed;
+}
+.topicListFooter {
+	height: 68px; line-height: 68px; font-size: 16px; margin-top: 15px;
+}
+#nav_next_page {
+	line-height: 40px;
+}
+#nav_next_page a {
+	padding: 0px 15px; border-radius: 3px; height: 40px; color: rgb(255, 255, 255); line-height: 40px; text-decoration: none; display: inline-block; box-shadow: 0px 0px 1px rgba(0,0,0,0.1), 0px 1px 1px rgba(0,0,0,0.09); background-color: rgb(153, 177, 107); -moz-border-radius: 3px; -webkit-border-radius: 3px; -moz-box-shadow: 0 0 1px rgba(0, 0, 0, .1), 0 1px 1px rgba(0, 0, 0, .09); -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, .1), 0 1px 1px rgba(0, 0, 0, .09);
+}
+#calendar table a:hover {
+	color: rgb(255, 255, 255); text-decoration: none; background-color: rgb(255, 102, 0);
+}
+.divRecentComment {
+	margin-top: 0.5em;
+}
+#EntryTag a:hover {
+	color: rgb(255, 102, 0);
+}
+.feedbackListSubtitle {
+	padding: 0px 5px;
+}
+.feedbackListSubtitle a:hover {
+	color: rgb(154, 178, 107); text-decoration: none;
+}
+#divRefreshComments {
+	text-align: right; margin-bottom: 10px;
+}
+.entrylistItemPostDesc a:hover {
+	color: rgb(255, 102, 0);
+}
+.topicListFooter .pager a:hover {
+	background: rgb(154, 178, 107); padding: 0px 15px; border-radius: 3px; border: currentColor; height: 40px; color: rgb(255, 255, 255); line-height: 40px; text-decoration: none; margin-top: 14px; display: inline-block; box-shadow: 0px 0px 1px rgba(0,0,0,0.1), 0px 1px 1px rgba(0,0,0,0.09); -moz-border-radius: 3px; -webkit-border-radius: 3px; -moz-box-shadow: 0 0 1px rgba(0, 0, 0, .1), 0 1px 1px rgba(0, 0, 0, .09); -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, .1), 0 1px 1px rgba(0, 0, 0, .09);
+}
+.topicListFooter .pager span {
+	background: rgb(154, 178, 107); padding: 0px 15px; border-radius: 3px; border: currentColor; height: 40px; color: rgb(255, 255, 255); line-height: 40px; text-decoration: none; margin-top: 14px; display: inline-block; box-shadow: 0px 0px 1px rgba(0,0,0,0.1), 0px 1px 1px rgba(0,0,0,0.09); -moz-border-radius: 3px; -webkit-border-radius: 3px; -moz-box-shadow: 0 0 1px rgba(0, 0, 0, .1), 0 1px 1px rgba(0, 0, 0, .09); -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, .1), 0 1px 1px rgba(0, 0, 0, .09);
+}
+.divPhoto:hover {
+	border-color: rgb(0, 136, 204); box-shadow: 3px 3px 3px rgba(0,0,0,0.3);
+}
+#footer {
+	text-align: center; color: rgb(51, 51, 51); padding-top: 10px; padding-bottom: 10px; margin-top: 10px; margin-bottom: 10px; min-height: 15px; _height: 15px;
+}
+.pfl_feedback_area_title {
+	margin-bottom: 1em;
+}
+.pfl_feedbackCon {
+	margin: 0.5em;
+}
+.postCon p {
+	
+}
+body {
+	margin: 0px; padding: 0px;
+}
+div {
+	margin: 0px; padding: 0px;
+}
+h1 {
+	margin: 0px; padding: 0px;
+}
+h2 {
+	margin: 0px; padding: 0px;
+}
+h3 {
+	margin: 0px; padding: 0px;
+}
+h4 {
+	margin: 0px; padding: 0px;
+}
+h5 {
+	margin: 0px; padding: 0px;
+}
+h6 {
+	margin: 0px; padding: 0px;
+}
+ul {
+	margin: 0px; padding: 0px;
+}
+li {
+	margin: 0px; padding: 0px;
+}
+img {
+	margin: 0px; padding: 0px;
+}
+img {
+	border: currentColor;
+}
+#home {
+	margin: 0px auto;
+}
+#user .user_info a:hover {
+	color: rgba(255, 255, 255, 1);
+}
+#mynav li:hover {
+	color: rgb(255, 255, 255); background-color: rgb(153, 177, 107);
+}
+#mynav li {
+	-webkit-transition: all .2s ease-in; transition: all .1s ease-out; -o-transition: all .1s ease-out; -ms-transition: all .1s ease-out;
+}
+#profile_block a {
+	-webkit-transition: all .2s ease-in; transition: all .1s ease-out; -o-transition: all .1s ease-out; -ms-transition: all .1s ease-out;
+}
+.catListTag ul li {
+	-webkit-transition: all .2s ease-in; transition: all .1s ease-out; -o-transition: all .1s ease-out; -ms-transition: all .1s ease-out;
+}
+.catListTag ul li::before {
+	-webkit-transition: all .2s ease-in; transition: all .1s ease-out; -o-transition: all .1s ease-out; -ms-transition: all .1s ease-out;
+}
+.catListPostCategory ul li a {
+	-webkit-transition: all .2s ease-in; transition: all .1s ease-out; -o-transition: all .1s ease-out; -ms-transition: all .1s ease-out;
+}
+.catListPostArchive ul li a {
+	-webkit-transition: all .2s ease-in; transition: all .1s ease-out; -o-transition: all .1s ease-out; -ms-transition: all .1s ease-out;
+}
+.recent_comment_title a {
+	-webkit-transition: all .2s ease-in; transition: all .1s ease-out; -o-transition: all .1s ease-out; -ms-transition: all .1s ease-out;
+}
+.catListView ul li a {
+	-webkit-transition: all .2s ease-in; transition: all .1s ease-out; -o-transition: all .1s ease-out; -ms-transition: all .1s ease-out;
+}
+.catListFeedback ul li a {
+	-webkit-transition: all .2s ease-in; transition: all .1s ease-out; -o-transition: all .1s ease-out; -ms-transition: all .1s ease-out;
+}
+#mainContent {
+	width: 890px; overflow: visible; float: left; word-break: break-all; text-overflow: ellipsis;
+}
+#mainContent .forFlow {
+	width: 100%; float: none;
+}
+.day {
+	background: rgb(255, 255, 255); padding: 20px; border: 1px solid rgb(222, 222, 222); margin-bottom: -1px;
+}
+.day:hover {
+	border: 1px solid rgb(22, 159, 230); position: relative; z-index: 10;
+}
+.day:hover .postSeparator {
+	border-top-color: rgb(22, 159, 230); border-top-width: 1px; border-top-style: dashed;
+}
+.dayTitle {
+	padding: 3px 6px; color: rgb(255, 255, 255); font-size: 12px; margin-right: 10px; float: left; display: block; background-color: rgb(69, 188, 249);
+}
+.dayTitle:hover {
+	background-color: rgb(255, 94, 82);
+}
+.dayTitle a {
+	color: rgb(255, 255, 255);
+}
+.day .postTitle2 {
+	color: rgb(85, 85, 85);
+}
+.day .postTitle {
+	line-height: 1.5em; clear: right; font-size: 21px; float: left;
+}
+.postCon {
+	padding: 15px 0px; clear: both;
+}
+.postDesc {
+	text-align: left; color: rgb(188, 188, 188); line-height: 200%; clear: both; font-size: 12px; float: none;
+}
+.postDesc a {
+	color: rgb(153, 153, 153);
+}
+#topics {
+	background: rgb(255, 255, 255); padding: 20px; border: 1px solid rgb(222, 222, 222); overflow: hidden;
+}
+#topics .postTitle {
+	color: rgb(51, 51, 51); line-height: 1.8; font-size: 28px; font-weight: 400; margin-bottom: 20px;
+}
+#topics .postTitle a {
+	color: rgb(51, 51, 51);
+}
+#topics .postBody blockquote {
+	border-width: medium medium medium 5px; border-style: none none none solid; border-color: currentColor currentColor currentColor rgb(221, 221, 221); margin: 0px; padding-left: 10px;
+}
+#topics .postBody blockquote p {
+	margin: 0px; padding: 0px; color: rgb(119, 119, 119);
+}
+.postTitle a:hover {
+	color: rgb(14, 144, 210); text-decoration: none;
+}
+#cnblogs_post_body {
+	color: rgb(51, 51, 51); line-height: 1.8;
+}
+#cnblogs_post_body h2 {
+	margin: 20px 0px;
+}
+#cnblogs_post_body p a:hover {
+	border-bottom-color: rgb(154, 178, 107); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+#cnblogs_post_body ol li a:hover {
+	border-bottom-color: rgb(154, 178, 107); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+#cnblogs_post_body ul li a:hover {
+	border-bottom-color: rgb(154, 178, 107); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+#cnblogs_post_body ol {
+	margin: 0px 0px 1em 40px; padding: 0px;
+}
+#cnblogs_post_body ul {
+	margin: 0px 0px 1em 40px; padding: 0px;
+}
+#EntryTag {
+	color: rgb(126, 140, 141); font-size: 14px; font-weight: bold;
+}
+#EntryTag a {
+	color: rgb(159, 164, 164); font-weight: normal; text-decoration: none; margin-left: 10px;
+}
+#BlogPostCategory a {
+	margin-left: 10px;
+}
+#BlogPostCategory a:hover {
+	color: rgb(255, 94, 82); border-bottom-color: rgb(255, 94, 82); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+#post_next_prev {
+	margin: 10px 0px; line-height: 200%; font-size: 14px;
+}
+#post_next_prev a {
+	color: rgb(51, 51, 51);
+}
+#post_next_prev a:hover {
+	color: rgb(255, 94, 82); border-bottom-color: rgb(255, 94, 82); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+#topics .postDesc {
+	margin: 10px 0px; color: rgb(119, 119, 119); line-height: 200%; font-size: 14px;
+}
+#topics .postDesc a:hover {
+	color: rgb(154, 178, 107);
+}
+#mystart ul li a.a {
+	text-decoration: none; margin-right: 12px; float: left;
+}
+#mystart ul li a.b {
+	text-decoration: none; margin-right: 12px; float: left;
+}
+#myinfo a:hover {
+	border-bottom-color: rgb(154, 178, 107); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+.feedbackManage {
+	line-height: 26px; float: right;
+}
+.comment_actions a:hover {
+	color: rgb(154, 178, 107);
+}
+.login_tips a:hover {
+	color: rgb(255, 255, 255);
+}
+.login_tips_login {
+	background: rgb(154, 178, 107);
+}
+.login_tips_regist {
+	background: rgb(73, 200, 245);
+}
+.login_tips_home {
+	background: rgb(43, 102, 149);
+}
+.entrylistItem {
+	background: rgb(255, 255, 255); margin-bottom: 20px; position: relative; z-index: 2; min-height: 20px;
+}
+.entrylistPosttitle a.desc_img_wrap {
+	margin: 0px 0px 10px; height: 320px; display: block; position: relative;
+}
+.entrylistPosttitle a:hover {
+	color: rgb(153, 177, 107); text-decoration: none;
+}
+.c_b_p_desc {
+	color: rgb(51, 51, 51); line-height: 200%; font-size: 14px;
+}
+a.c_b_p_desc_readmore {
+	color: rgb(154, 178, 107);
+}
+.entrylistItemPostDesc a:hover {
+	color: rgb(154, 178, 107);
+}
+#sideBar {
+	width: 290px; overflow: visible; margin-left: 20px; float: left; word-break: break-all; text-overflow: ellipsis; -o-text-overflow: ellipsis;
+}
+#sideBarMain {
+	
+}
+#blog-news {
+	overflow: visible; margin-bottom: 20px;
+}
+#blog-news .share {
+	background: rgb(255, 255, 255); width: 290px; height: 118px;
+}
+#blog-news .share li:hover {
+	box-shadow: 0px 0px 3px rgba(0,0,0,0.3);
+}
+#profile_block {
+	background: rgb(255, 255, 255); padding: 20px; border: 1px solid rgb(222, 222, 222); color: rgb(126, 140, 141); line-height: 1.8; font-size: 13px; margin-top: 0px !important;
+}
+#profile_block:hover {
+	border: 1px solid rgb(255, 94, 82);
+}
+#profile_block a {
+	color: rgb(159, 164, 164); font-size: 13px; text-decoration: none;
+}
+#profile_block a:hover {
+	color: rgb(153, 177, 107); border-bottom-color: rgb(153, 177, 107); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+#blog-news .social .social_weibo {
+	background: rgb(208, 67, 65); width: 63px; height: 58px; text-align: center; color: rgb(255, 255, 255); line-height: 58px; overflow: hidden; font-size: 30px; display: block;
+}
+#blog-news .social .social_github {
+	background: rgb(208, 67, 65); width: 63px; height: 58px; text-align: center; color: rgb(255, 255, 255); line-height: 58px; overflow: hidden; font-size: 30px; display: block;
+}
+#blog-news .social .social_envelope {
+	background: rgb(208, 67, 65); width: 63px; height: 58px; text-align: center; color: rgb(255, 255, 255); line-height: 58px; overflow: hidden; font-size: 30px; display: block;
+}
+#blog-news .social .social_weibo {
+	text-shadow: #b13937 1px 1px, #b13937 2px 2px, #b13937 3px 3px, #b13937 4px 4px, #b13937 5px 5px, #b13937 6px 6px, #b13937 7px 7px, #b13937 8px 8px, #b13937 9px 9px, #b13937 10px 10px, #b13937 11px 11px, #b13937 12px 12px, #b13937 13px 13px, #b13937 14px 14px, #b13937 15px 15px, #b13937 16px 16px, #b13937 17px 17px, #b13937 18px 18px, #b13937 19px 19px, #b13937 20px 20px, #b13937 21px 21px, #b43a38 22px 22px, #b73b39 23px 23px, #bb3c3a 24px 24px, #be3d3b 25px 25px, #c23e3c 26px 26px, #c53f3d 27px 27px, #c9403e 28px 28px, #cc413f 29px 29px, #d04341 30px 30px;
+}
+#blog-news .social .social_github {
+	background: rgb(52, 200, 244); text-shadow: #2fb4dc 1px 1px, #2fb4dc 2px 2px, #2fb4dc 3px 3px, #2fb4dc 4px 4px, #2fb4dc 5px 5px, #2fb4dc 6px 6px, #2fb4dc 7px 7px, #2fb4dc 8px 8px, #2fb4dc 9px 9px, #2fb4dc 10px 10px, #2fb4dc 11px 11px, #2fb4dc 12px 12px, #2fb4dc 13px 13px, #2fb4dc 14px 14px, #2fb4dc 15px 15px, #2fb4dc 16px 16px, #2fb4dc 17px 17px, #2fb4dc 18px 18px, #2fb4dc 19px 19px, #2fb4dc 20px 20px, #2fb4dc 21px 21px, #2fb6de 22px 22px, #30b8e1 23px 23px, #30bae4 24px 24px, #31bce6 25px 25px, #31bfe9 26px 26px, #32c1ec 27px 27px, #32c3ee 28px 28px, #33c5f1 29px 29px, #34c8f4 30px 30px;
+}
+#blog-news .social .social_envelope {
+	background: rgb(248, 188, 46); text-shadow: #d3a027 1px 1px, #d3a027 2px 2px, #d3a027 3px 3px, #d3a027 4px 4px, #d3a027 5px 5px, #d3a027 6px 6px, #d3a027 7px 7px, #d3a027 8px 8px, #d3a027 9px 9px, #d3a027 10px 10px, #d3a027 11px 11px, #d3a027 12px 12px, #d3a027 13px 13px, #d3a027 14px 14px, #d3a027 15px 15px, #d3a027 16px 16px, #d3a027 17px 17px, #d3a027 18px 18px, #d3a027 19px 19px, #d3a027 20px 20px, #d3a027 21px 21px, #d7a327 22px 22px, #dba628 23px 23px, #dfa929 24px 24px, #e3ac2a 25px 25px, #e7af2a 26px 26px, #ebb22b 27px 27px, #efb52c 28px 28px, #f3b82d 29px 29px, #f8bc2e 30px 30px;
+}
+#blog-news .social .social_weibo:hover {
+	text-shadow: none;
+}
+#blog-news .social .social_github:hover {
+	text-shadow: none;
+}
+#blog-news .social .social_envelope:hover {
+	text-shadow: none;
+}
+#leftcontentcontainer {
+	margin-top: 20px;
+}
+.myad {
+	background: rgb(255, 255, 255); padding: 20px; margin-top: 20px;
+}
+.mySearch {
+	background: rgb(255, 255, 255);
+}
+.catListTitle {
+	padding: 10px 20px; border: 1px solid rgb(22, 159, 230); color: rgb(255, 255, 255); font-size: 18px; font-weight: normal; background-color: rgb(22, 159, 230);
+}
+#widget_my_zzk {
+	margin: 0px !important; padding: 15px 0px 0px 15px; border-right-color: rgb(222, 222, 222); border-left-color: rgb(222, 222, 222); border-right-width: 1px; border-left-width: 1px; border-right-style: solid; border-left-style: solid;
+}
+#widget_my_google {
+	border-width: medium 1px 1px; border-style: none solid solid; border-color: currentColor rgb(222, 222, 222) rgb(222, 222, 222); margin: 0px !important; padding: 10px 0px 15px 15px;
+}
+.input_my_zzk {
+	padding: 0px 12px; border: 1px solid rgb(221, 221, 221); width: 160px; height: 35px; line-height: 35px; font-size: 13px;
+}
+input.btn_my_zzk {
+	background: rgb(255, 94, 82); border: currentColor; width: 70px; height: 37px; text-align: center; color: rgb(255, 255, 255); line-height: 37px; font-family: "Microsoft Yahei","Simsun",Arial; font-size: 14px;
+}
+input.btn_my_zzk:hover {
+	cursor: pointer;
+}
+.catListTag ul li:hover {
+	background: rgb(255, 94, 82); color: rgb(255, 255, 255); cursor: pointer;
+}
+.catListTag ul li:hover a {
+	color: rgb(255, 255, 255);
+}
+.catListTag ul li a:hover {
+	color: rgb(255, 255, 255); text-decoration: none;
+}
+.catListPostCategory {
+	background: rgb(255, 255, 255);
+}
+.catListPostCategory ul {
+	border-width: medium 1px 1px; border-style: none solid solid; border-color: currentColor rgb(222, 222, 222) rgb(222, 222, 222);
+}
+.catListPostCategory ul li {
+	color: rgb(119, 119, 119); line-height: 44px; padding-left: 25px; font-size: 15px; border-bottom-color: rgb(233, 233, 233); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.catListPostCategory ul li a {
+	color: rgb(119, 119, 119); text-decoration: none;
+}
+.catListPostArchive ul li a {
+	color: rgb(119, 119, 119); text-decoration: none;
+}
+.catListArticleCategory ul li a {
+	color: rgb(119, 119, 119); text-decoration: none;
+}
+.recent_comment_title a {
+	color: rgb(119, 119, 119); text-decoration: none;
+}
+.catListView ul li a {
+	color: rgb(119, 119, 119); text-decoration: none;
+}
+.catListFeedback ul li a {
+	color: rgb(119, 119, 119); text-decoration: none;
+}
+.catListPostCategory ul li a:hover {
+	color: rgb(255, 94, 82); border-bottom-color: rgb(255, 94, 82); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+.catListPostArchive ul li a:hover {
+	color: rgb(255, 94, 82); border-bottom-color: rgb(255, 94, 82); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+.catListArticleCategory ul li a:hover {
+	color: rgb(255, 94, 82); border-bottom-color: rgb(255, 94, 82); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+.recent_comment_title a:hover {
+	color: rgb(255, 94, 82); border-bottom-color: rgb(255, 94, 82); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+.catListView ul li a:hover {
+	color: rgb(255, 94, 82); border-bottom-color: rgb(255, 94, 82); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+.catListFeedback ul li a:hover {
+	color: rgb(255, 94, 82); border-bottom-color: rgb(255, 94, 82); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+.catListPostArchive {
+	background: rgb(255, 255, 255);
+}
+.catListPostArchive ul {
+	border-width: medium 1px 1px; border-style: none solid solid; border-color: currentColor rgb(222, 222, 222) rgb(222, 222, 222);
+}
+.catListPostArchive ul li {
+	color: rgb(126, 140, 141); line-height: 44px; padding-left: 25px; font-size: 15px; border-bottom-color: rgb(233, 233, 233); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.catListArticleCategory {
+	background: rgb(255, 255, 255); width: 290px; padding-top: 20px;
+}
+.catListImageCategory {
+	background: rgb(255, 255, 255); width: 290px; padding-top: 20px;
+}
+.catListComment {
+	background: rgb(255, 255, 255);
+}
+.recent_comment_title {
+	border: currentColor !important; color: rgb(126, 140, 141);
+}
+.recent_comment_body {
+	color: rgb(159, 164, 164); padding-top: 0px !important;
+}
+.recent_comment_author {
+	color: rgb(159, 164, 164); padding-top: 0px !important;
+}
+.recent_comment_body {
+	border-bottom-color: currentColor !important; border-bottom-width: medium !important; border-bottom-style: none !important;
+}
+.recent_comment_author {
+	border-bottom-color: rgb(233, 233, 233); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.catListView {
+	background: rgb(255, 255, 255); margin-top: 20px;
+}
+.catListFeedback {
+	background: rgb(255, 255, 255); margin-top: 20px;
+}
+.catListFeedback ul li {
+	padding: 8px 0px; border-bottom-color: rgb(233, 233, 233); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.catListLink {
+	display: none;
+}
+.clearFix::after {
+	height: 0px; line-height: 0; clear: both; display: block; visibility: hidden; content: "";
+}
+#myding {
+	background: rgb(153, 177, 107); display: none;
+}
+#myadd:hover {
+	opacity: 1;
+}
+#goto-top:hover {
+	background: url("//images.cnblogs.com/cnblogs_com/Li-Cheng/554829/o_goto-top.png") no-repeat 0px -36px;
+}
+#blog-comments-placeholder {
+	background: rgb(255, 255, 255); padding: 0px 20px 20px; border: 1px solid rgb(222, 222, 222); margin-top: 20px;
+}
+.feedbackItem {
+	margin-top: 10px;
+}
+.feedbackCon {
+	margin: 10px 0px; padding: 10px; border: 1px dashed rgb(222, 222, 222);
+}
+#comment_nav {
+	margin: 10px 0px;
+}
+#comment_nav a:hover {
+	color: rgb(154, 178, 107);
+}
+#comment_form_container {
+	padding: 20px; border: 1px solid rgb(222, 222, 222); background-color: rgb(255, 255, 255);
+}
+#site_nav_under {
+	padding: 20px; border: 1px solid rgb(222, 222, 222); background-color: rgb(255, 255, 255);
+}
+#ad_under_post_holder {
+	width: 300px; margin-bottom: 10px; float: left;
+}
+#under_post_news {
+	padding: 10px 20px; border: 1px solid rgb(222, 222, 222); width: 528px; height: 160px; margin-top: 10px; margin-left: 0px; background-color: rgb(255, 255, 255);
+}
+#google_ad_c2 {
+	width: 570px; clear: right; margin-bottom: 10px; margin-left: 0px; float: left;
+}
+#under_post_kb {
+	padding: 10px 20px; border: 1px solid rgb(222, 222, 222); clear: left; margin-top: 10px; background-color: rgb(255, 255, 255);
+}
+.entrylist h1 {
+	height: 50px; line-height: 50px; margin-bottom: 10px;
+}
+.entrylistItem {
+	background: rgb(255, 255, 255); padding: 20px; border: 1px solid rgb(222, 222, 222); margin-bottom: -1px;
+}
+.entrylistItem:hover {
+	border: 1px solid rgb(22, 159, 230); position: relative; z-index: 10;
+}
+.entrylist .postSeparator {
+	display: none;
+}
+.entrylistItemTitle {
+	color: rgb(85, 85, 85);
+}
+.entrylistPosttitle {
+	line-height: 1.5em; clear: right; font-size: 21px; float: left;
+}
+.entrylistPostSummary {
+	padding: 15px 0px; clear: both;
+}
+.entrylistItemPostDesc {
+	text-align: left; color: rgb(188, 188, 188); line-height: 200%; clear: both; font-size: 12px; float: none;
+}
+.entrylistItemPostDesc a {
+	color: rgb(153, 153, 153); float: right;
+}
+#myposts h3 {
+	height: 50px; line-height: 50px; font-size: 28px !important; margin-bottom: 10px;
+}
+#myposts .PostList {
+	background: rgb(255, 255, 255); margin: 0px 0px -1px !important; padding: 20px; border: 1px solid rgb(222, 222, 222);
+}
+#myposts .PostList:hover {
+	border: 1px solid rgb(22, 159, 230); position: relative; z-index: 10;
+}
+#myposts .PostList a {
+	color: rgb(51, 51, 51); font-size: 16px; display: block;
+}
+#myposts .PostList a:hover {
+	color: rgb(255, 94, 82);
+}
+.cnblogs-post-body {
+	color: rgb(51, 51, 51);
+}
+.sidebar-block {
+	margin-bottom: 20px; background-color: rgb(255, 255, 255);
+}
+.sidebar-block h3 {
+	padding: 10px 20px; border: 1px solid rgb(22, 159, 230); color: rgb(255, 255, 255); font-size: 18px; font-weight: normal; background-color: rgb(22, 159, 230);
+}
+.sidebar-block ul {
+	border-width: medium 1px 1px; border-style: none solid solid; border-color: currentColor rgb(222, 222, 222) rgb(222, 222, 222);
+}
+.sidebar-block ul li {
+	padding: 15px 10px 15px 20px; color: rgb(119, 119, 119); line-height: 2; font-size: 14px; border-bottom-color: rgb(233, 233, 233); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.sidebar-block ul li a {
+	color: rgb(119, 119, 119); text-decoration: none;
+}
+.sidebar-block ul li a:hover {
+	color: rgb(255, 94, 82); border-bottom-color: rgb(255, 94, 82); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+#cnblogs_post_body img {
+	max-width: 800px;
+}
+#cnblogs_post_body a:link {
+	text-decoration: underline;
+}
+#ad_t2 a:link {
+	color: rgb(0, 0, 0);
+}
+#ad_t2 a:active {
+	color: rgb(0, 0, 0);
+}
+#ad_t2 a:visited {
+	color: rgb(0, 0, 0);
+}

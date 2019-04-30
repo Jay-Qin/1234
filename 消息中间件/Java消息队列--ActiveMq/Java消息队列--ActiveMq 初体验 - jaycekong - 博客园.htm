@@ -1,0 +1,504 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0047)https://www.cnblogs.com/jaycekon/p/6225058.html -->
+<!DOCTYPE html><HTML lang="zh-cn"><HEAD><META content="IE=9.0000" 
+http-equiv="X-UA-Compatible">
+
+<META charset="utf-8">
+<META name="viewport" content="width=device-width, initial-scale=1">
+<META name="referrer" content="origin"><TITLE>Java消息队列--ActiveMq 初体验 - jaycekong 
+- 博客园</TITLE>
+<META content="ActiveMQ是由Apache出品的，一款最流行的，能力强劲的开源消息总线。ActiveMQ是一个完全支持JMS1.1和J2EE 1.4规范的 JMS Provider实现，它非常快速，支持多种语言" 
+property="og:description"><LINK rel="stylesheet" type="text/css" href="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/blog-common.css">
+<LINK id="MainCss" rel="stylesheet" type="text/css" href="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/bundle-coffee.css">
+<LINK id="mobile-style" rel="stylesheet" type="text/css" href="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/bundle-coffee-mobile.css" 
+media="only screen and (max-width: 767px)"><LINK title="RSS" rel="alternate" 
+type="application/rss+xml" href="https://www.cnblogs.com/jaycekon/rss"><LINK 
+title="RSD" rel="EditURI" type="application/rsd+xml" href="https://www.cnblogs.com/jaycekon/rsd.xml">
+<LINK rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://www.cnblogs.com/jaycekon/wlwmanifest.xml">
+<SCRIPT src="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/jquery-2.2.0.min.js"></SCRIPT>
+
+<SCRIPT>var currentBlogId=314064;var currentBlogApp='jaycekon',cb_enable_mathjax=false;var isLogined=false;</SCRIPT>
+
+<SCRIPT type="text/javascript" src="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/blog-common.js"></SCRIPT>
+
+<META name="GENERATOR" content="MSHTML 9.00.8112.16553"></HEAD>
+<BODY><A name="top"></A><!--done-->
+<DIV id="home">
+<DIV id="header">
+<DIV id="blogTitle"><A id="lnkBlogLogo" 
+href="https://www.cnblogs.com/jaycekon/"><IMG id="blogLogo" alt="返回主页" src="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/logo.gif"></A><!--done-->
+<H1><A id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/jaycekon/">jaycekon</A></H1>
+<H2></H2></DIV><!--end: blogTitle 博客的标题和副标题 --></DIV><!--end: header 头部 -->
+<DIV id="main">
+<DIV id="mainContent">
+<DIV class="forFlow">
+<DIV id="navigator">
+<UL id="navList">
+  <LI><A id="blog_nav_sitehome" class="menu" 
+  href="https://www.cnblogs.com/">博客园</A></LI>
+  <LI><A id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/jaycekon/">首页</A></LI>
+  <LI><A id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1" 
+  rel="nofollow">新随笔</A></LI>
+  <LI><A accessKey="9" id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/jaycekong" 
+  rel="nofollow">联系</A></LI>
+  <LI><A id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/" rel="nofollow">管理</A></LI>
+  <LI><A id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/jaycekon/rss">订阅</A><A 
+  id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/jaycekon/rss"><IMG 
+  alt="订阅" src="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/xml.gif"></A></LI>
+</UL>
+<DIV class="blogStats">
+<DIV id="blog_stats"><!--done-->随笔- 26&nbsp;文章- 0&nbsp;评论- 76&nbsp;</DIV></DIV><!--end: blogStats --></DIV><!--end: navigator 博客导航栏 -->
+<DIV id="post_detail"><!--done-->
+<DIV id="topics">
+<DIV class="post">
+<H1 class="postTitle"><A id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/jaycekon/p/6225058.html">Java消息队列--ActiveMq 
+初体验</A></H1>
+<DIV class="clear"></DIV>
+<DIV class="postBody">
+<DIV id="cnblogs_post_body" class="blogpost-body">
+<H2>1、下载安装ActiveMQ</H2>
+<HR>
+
+<P>&nbsp;</P>
+<P>　　ActiveMQ官网下载地址：<A title="ActiveMQ下载地址" href="http://activemq.apache.org/download.html" 
+target="_blank">http://activemq.apache.org/download.html</A></P>
+<P>　　ActiveMQ 提供了Windows 和Linux、Unix 等几个版本，楼主这里选择了Linux 版本下进行开发。</P>
+<P><IMG alt="" src="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/1053081-20161227103246726-1875003213.png" 
+width="983" height="286"></P>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<P>　　下载完安装包，解压之后的目录：</P>
+<P><IMG alt="" src="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/1053081-20161227103523476-91483767.png"></P>
+<P>　</P>
+<P>&nbsp;　　从它的目录来说，还是很简单的：&nbsp;</P>
+<UL>
+  <UL>
+    <LI>bin存放的是脚本文件</LI>
+    <LI>conf存放的是基本配置文件</LI>
+    <LI>data存放的是日志文件</LI>
+    <LI>docs存放的是说明文档</LI>
+    <LI>examples存放的是简单的实例</LI>
+    <LI>lib存放的是activemq所需jar包</LI>
+    <LI>webapps用于存放项目的目录</LI></UL></UL>
+<P>&nbsp;</P>
+<H2>2、启动ActiveMQ　</H2>
+<HR>
+
+<P>&nbsp;　　进入到ActiveMQ 安装目录的Bin 目录，linux 下输入 ./activemq start 启动activeMQ 服务。</P>
+<P>　　 输入命令之后，会提示我们创建了一个进程IP 号，这时候说明服务已经成功启动了。</P>
+<H2>　　<IMG alt="" src="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/1053081-20161227103654976-1314454812.png"></H2>
+<P>　　ActiveMQ默认启动时，启动了内置的jetty服务器，提供一个用于监控ActiveMQ的admin应用。&nbsp;<BR>　　admin：<A 
+href="http://127.0.0.1:8161/admin/">http://127.0.0.1:8161/admin/</A></P>
+<P>&nbsp;</P>
+<P>　　我们在浏览器打开链接之后输入账号密码（这里和tomcat 服务器类似）</P>
+<P>　　默认账号：admin</P>
+<P>　　密码：admin</P>
+<P>　　<IMG alt="" src="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/1053081-20161227104137367-106919239.png" 
+width="1113" height="479"></P>
+<P>　　　到这里为止，ActiveMQ 服务端就启动完毕了。</P>
+<P>　　　ActiveMQ 在linux 下的终止命令是 <SPAN style="color: rgb(255, 0, 0);">./activemq 
+stop</SPAN></P>
+<P>&nbsp;</P>
+<H2>3、创建一个ActiveMQ工程</H2>
+<HR>
+
+<P>&nbsp;</P>
+<P>&nbsp;　　项目目录结构：</P>
+<P>　　<IMG alt="" src="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/1053081-20161227104624773-2036740471.png" 
+width="321" height="391"></P>
+<P>　　上述在官网下载ActiveMq 的时候，我们可以在目录下看到一个jar包：</P>
+<P>　　<IMG alt="" src="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/1053081-20161227104728929-1804077232.png"></P>
+<P>　　这个jar 包就是我们需要在项目中进行开发中使用到的相关依赖。</P>
+<P>&nbsp;</P>
+<H3>　　3.1 创建生产者</H3>
+<DIV class="cnblogs_code"><PRE><SPAN style="color: rgb(0, 0, 255);">public</SPAN> <SPAN style="color: rgb(0, 0, 255);">class</SPAN><SPAN style="color: rgb(0, 0, 0);"> Producter {
+
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">ActiveMq 的默认用户名</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">private</SPAN> <SPAN style="color: rgb(0, 0, 255);">static</SPAN> <SPAN style="color: rgb(0, 0, 255);">final</SPAN> String USERNAME =<SPAN style="color: rgb(0, 0, 0);"> ActiveMQConnection.DEFAULT_USER;
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">ActiveMq 的默认登录密码</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">private</SPAN> <SPAN style="color: rgb(0, 0, 255);">static</SPAN> <SPAN style="color: rgb(0, 0, 255);">final</SPAN> String PASSWORD =<SPAN style="color: rgb(0, 0, 0);"> ActiveMQConnection.DEFAULT_PASSWORD;
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">ActiveMQ 的链接地址</SPAN>
+    <SPAN style="color: rgb(0, 0, 255);">private</SPAN> <SPAN style="color: rgb(0, 0, 255);">static</SPAN> <SPAN style="color: rgb(0, 0, 255);">final</SPAN> String BROKEN_URL =<SPAN style="color: rgb(0, 0, 0);"> ActiveMQConnection.DEFAULT_BROKER_URL;
+
+    AtomicInteger count </SPAN>= <SPAN style="color: rgb(0, 0, 255);">new</SPAN> AtomicInteger(0<SPAN style="color: rgb(0, 0, 0);">);
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">链接工厂</SPAN>
+<SPAN style="color: rgb(0, 0, 0);">    ConnectionFactory connectionFactory;
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">链接对象</SPAN>
+<SPAN style="color: rgb(0, 0, 0);">    Connection connection;
+    </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">事务管理</SPAN>
+<SPAN style="color: rgb(0, 0, 0);">    Session session;
+    ThreadLocal</SPAN>&lt;MessageProducer&gt; threadLocal = <SPAN style="color: rgb(0, 0, 255);">new</SPAN> ThreadLocal&lt;&gt;<SPAN style="color: rgb(0, 0, 0);">();
+
+    </SPAN><SPAN style="color: rgb(0, 0, 255);">public</SPAN> <SPAN style="color: rgb(0, 0, 255);">void</SPAN><SPAN style="color: rgb(0, 0, 0);"> init(){
+        </SPAN><SPAN style="color: rgb(0, 0, 255);">try</SPAN><SPAN style="color: rgb(0, 0, 0);"> {
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">创建一个链接工厂</SPAN>
+            connectionFactory = <SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> ActiveMQConnectionFactory(USERNAME,PASSWORD,BROKEN_URL);
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">从工厂中创建一个链接</SPAN>
+            connection  =<SPAN style="color: rgb(0, 0, 0);"> connectionFactory.createConnection();
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">开启链接</SPAN>
+<SPAN style="color: rgb(0, 0, 0);">            connection.start();
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">创建一个事务（这里通过参数可以设置事务的级别）</SPAN>
+            session = connection.createSession(<SPAN style="color: rgb(0, 0, 255);">true</SPAN><SPAN style="color: rgb(0, 0, 0);">,Session.SESSION_TRANSACTED);
+        } </SPAN><SPAN style="color: rgb(0, 0, 255);">catch</SPAN><SPAN style="color: rgb(0, 0, 0);"> (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
+    </SPAN><SPAN style="color: rgb(0, 0, 255);">public</SPAN> <SPAN style="color: rgb(0, 0, 255);">void</SPAN><SPAN style="color: rgb(0, 0, 0);"> sendMessage(String disname){
+        </SPAN><SPAN style="color: rgb(0, 0, 255);">try</SPAN><SPAN style="color: rgb(0, 0, 0);"> {
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">创建一个消息队列</SPAN>
+            Queue queue =<SPAN style="color: rgb(0, 0, 0);"> session.createQueue(disname);
+            </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">消息生产者</SPAN>
+            MessageProducer messageProducer = <SPAN style="color: rgb(0, 0, 255);">null</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+            </SPAN><SPAN style="color: rgb(0, 0, 255);">if</SPAN>(threadLocal.get()!=<SPAN style="color: rgb(0, 0, 255);">null</SPAN><SPAN style="color: rgb(0, 0, 0);">){
+                messageProducer </SPAN>=<SPAN style="color: rgb(0, 0, 0);"> threadLocal.get();
+            }</SPAN><SPAN style="color: rgb(0, 0, 255);">else</SPAN><SPAN style="color: rgb(0, 0, 0);">{
+                messageProducer </SPAN>=<SPAN style="color: rgb(0, 0, 0);"> session.createProducer(queue);
+                threadLocal.set(messageProducer);
+            }
+           </SPAN><SPAN style="color: rgb(0, 0, 255);">while</SPAN>(<SPAN style="color: rgb(0, 0, 255);">true</SPAN><SPAN style="color: rgb(0, 0, 0);">){
+                Thread.sleep(</SPAN>1000<SPAN style="color: rgb(0, 0, 0);">);
+                </SPAN><SPAN style="color: rgb(0, 0, 255);">int</SPAN> num =<SPAN style="color: rgb(0, 0, 0);"> count.getAndIncrement();
+                </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">创建一条消息</SPAN>
+                TextMessage msg = session.createTextMessage(Thread.currentThread().getName()+
+                        "productor:我是大帅哥，我现在正在生产东西！,count:"+<SPAN style="color: rgb(0, 0, 0);">num);
+                System.out.println(Thread.currentThread().getName()</SPAN>+
+                        "productor:我是大帅哥，我现在正在生产东西！,count:"+<SPAN style="color: rgb(0, 0, 0);">num);
+                </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">发送消息</SPAN>
+<SPAN style="color: rgb(0, 0, 0);">                messageProducer.send(msg);
+                </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">提交事务</SPAN>
+<SPAN style="color: rgb(0, 0, 0);">                session.commit();
+            }
+        } </SPAN><SPAN style="color: rgb(0, 0, 255);">catch</SPAN><SPAN style="color: rgb(0, 0, 0);"> (JMSException e) {
+            e.printStackTrace();
+        } </SPAN><SPAN style="color: rgb(0, 0, 255);">catch</SPAN><SPAN style="color: rgb(0, 0, 0);"> (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}</SPAN></PRE>
+</DIV>
+<P>　　　　&nbsp;</P>
+<H3>　　3.2 创建消费者</H3>
+<DIV class="cnblogs_code"><PRE><SPAN style="color: rgb(0, 0, 255);">public</SPAN> <SPAN style="color: rgb(0, 0, 255);">class</SPAN><SPAN style="color: rgb(0, 0, 0);"> Comsumer {
+
+    </SPAN><SPAN style="color: rgb(0, 0, 255);">private</SPAN> <SPAN style="color: rgb(0, 0, 255);">static</SPAN> <SPAN style="color: rgb(0, 0, 255);">final</SPAN> String USERNAME =<SPAN style="color: rgb(0, 0, 0);"> ActiveMQConnection.DEFAULT_USER;
+
+    </SPAN><SPAN style="color: rgb(0, 0, 255);">private</SPAN> <SPAN style="color: rgb(0, 0, 255);">static</SPAN> <SPAN style="color: rgb(0, 0, 255);">final</SPAN> String PASSWORD =<SPAN style="color: rgb(0, 0, 0);"> ActiveMQConnection.DEFAULT_PASSWORD;
+
+    </SPAN><SPAN style="color: rgb(0, 0, 255);">private</SPAN> <SPAN style="color: rgb(0, 0, 255);">static</SPAN> <SPAN style="color: rgb(0, 0, 255);">final</SPAN> String BROKEN_URL =<SPAN style="color: rgb(0, 0, 0);"> ActiveMQConnection.DEFAULT_BROKER_URL;
+
+    ConnectionFactory connectionFactory;
+
+    Connection connection;
+
+    Session session;
+
+    ThreadLocal</SPAN>&lt;MessageConsumer&gt; threadLocal = <SPAN style="color: rgb(0, 0, 255);">new</SPAN> ThreadLocal&lt;&gt;<SPAN style="color: rgb(0, 0, 0);">();
+    AtomicInteger count </SPAN>= <SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> AtomicInteger();
+
+    </SPAN><SPAN style="color: rgb(0, 0, 255);">public</SPAN> <SPAN style="color: rgb(0, 0, 255);">void</SPAN><SPAN style="color: rgb(0, 0, 0);"> init(){
+        </SPAN><SPAN style="color: rgb(0, 0, 255);">try</SPAN><SPAN style="color: rgb(0, 0, 0);"> {
+            connectionFactory </SPAN>= <SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> ActiveMQConnectionFactory(USERNAME,PASSWORD,BROKEN_URL);
+            connection  </SPAN>=<SPAN style="color: rgb(0, 0, 0);"> connectionFactory.createConnection();
+            connection.start();
+            session </SPAN>= connection.createSession(<SPAN style="color: rgb(0, 0, 255);">false</SPAN><SPAN style="color: rgb(0, 0, 0);">,Session.AUTO_ACKNOWLEDGE);
+        } </SPAN><SPAN style="color: rgb(0, 0, 255);">catch</SPAN><SPAN style="color: rgb(0, 0, 0);"> (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    </SPAN><SPAN style="color: rgb(0, 0, 255);">public</SPAN> <SPAN style="color: rgb(0, 0, 255);">void</SPAN><SPAN style="color: rgb(0, 0, 0);"> getMessage(String disname){
+        </SPAN><SPAN style="color: rgb(0, 0, 255);">try</SPAN><SPAN style="color: rgb(0, 0, 0);"> {
+            Queue queue </SPAN>=<SPAN style="color: rgb(0, 0, 0);"> session.createQueue(disname);
+            MessageConsumer consumer </SPAN>= <SPAN style="color: rgb(0, 0, 255);">null</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+
+            </SPAN><SPAN style="color: rgb(0, 0, 255);">if</SPAN>(threadLocal.get()!=<SPAN style="color: rgb(0, 0, 255);">null</SPAN><SPAN style="color: rgb(0, 0, 0);">){
+                consumer </SPAN>=<SPAN style="color: rgb(0, 0, 0);"> threadLocal.get();
+            }</SPAN><SPAN style="color: rgb(0, 0, 255);">else</SPAN><SPAN style="color: rgb(0, 0, 0);">{
+                consumer </SPAN>=<SPAN style="color: rgb(0, 0, 0);"> session.createConsumer(queue);
+                threadLocal.set(consumer);
+            }
+            </SPAN><SPAN style="color: rgb(0, 0, 255);">while</SPAN>(<SPAN style="color: rgb(0, 0, 255);">true</SPAN><SPAN style="color: rgb(0, 0, 0);">){
+                Thread.sleep(</SPAN>1000<SPAN style="color: rgb(0, 0, 0);">);
+                TextMessage msg </SPAN>=<SPAN style="color: rgb(0, 0, 0);"> (TextMessage) consumer.receive();
+                </SPAN><SPAN style="color: rgb(0, 0, 255);">if</SPAN>(msg!=<SPAN style="color: rgb(0, 0, 255);">null</SPAN><SPAN style="color: rgb(0, 0, 0);">) {
+                    msg.acknowledge();
+                    System.out.println(Thread.currentThread().getName()</SPAN>+": Consumer:我是消费者，我正在消费Msg"+msg.getText()+"---&gt;"+<SPAN style="color: rgb(0, 0, 0);">count.getAndIncrement());
+                }</SPAN><SPAN style="color: rgb(0, 0, 255);">else</SPAN><SPAN style="color: rgb(0, 0, 0);"> {
+                    </SPAN><SPAN style="color: rgb(0, 0, 255);">break</SPAN><SPAN style="color: rgb(0, 0, 0);">;
+                }
+            }
+        } </SPAN><SPAN style="color: rgb(0, 0, 255);">catch</SPAN><SPAN style="color: rgb(0, 0, 0);"> (JMSException e) {
+            e.printStackTrace();
+        } </SPAN><SPAN style="color: rgb(0, 0, 255);">catch</SPAN><SPAN style="color: rgb(0, 0, 0);"> (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}</SPAN></PRE>
+</DIV>
+<P>&nbsp;</P>
+<P>&nbsp;</P>
+<H2>4、运行ActiveMQ项目</H2>
+<HR>
+
+<P>&nbsp;</P>
+<H3>　　4.1 生产者开始生产消息</H3>
+<DIV class="cnblogs_code"><PRE><SPAN style="color: rgb(0, 0, 255);">public</SPAN> <SPAN style="color: rgb(0, 0, 255);">class</SPAN><SPAN style="color: rgb(0, 0, 0);"> TestMq {
+    </SPAN><SPAN style="color: rgb(0, 0, 255);">public</SPAN> <SPAN style="color: rgb(0, 0, 255);">static</SPAN> <SPAN style="color: rgb(0, 0, 255);">void</SPAN><SPAN style="color: rgb(0, 0, 0);"> main(String[] args){
+        Producter producter </SPAN>= <SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> Producter();
+        producter.init();
+        TestMq testMq </SPAN>= <SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> TestMq();
+        </SPAN><SPAN style="color: rgb(0, 0, 255);">try</SPAN><SPAN style="color: rgb(0, 0, 0);"> {
+            Thread.sleep(</SPAN>1000<SPAN style="color: rgb(0, 0, 0);">);
+
+        } </SPAN><SPAN style="color: rgb(0, 0, 255);">catch</SPAN><SPAN style="color: rgb(0, 0, 0);"> (InterruptedException e) {
+            e.printStackTrace();
+        }
+        </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">Thread 1</SPAN>
+        <SPAN style="color: rgb(0, 0, 255);">new</SPAN> Thread(testMq.<SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> ProductorMq(producter)).start();
+        </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">Thread 2</SPAN>
+        <SPAN style="color: rgb(0, 0, 255);">new</SPAN> Thread(testMq.<SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> ProductorMq(producter)).start();
+        </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">Thread 3</SPAN>
+        <SPAN style="color: rgb(0, 0, 255);">new</SPAN> Thread(testMq.<SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> ProductorMq(producter)).start();
+        </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">Thread 4</SPAN>
+        <SPAN style="color: rgb(0, 0, 255);">new</SPAN> Thread(testMq.<SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> ProductorMq(producter)).start();
+        </SPAN><SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">Thread 5</SPAN>
+        <SPAN style="color: rgb(0, 0, 255);">new</SPAN> Thread(testMq.<SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> ProductorMq(producter)).start();
+    }
+
+    </SPAN><SPAN style="color: rgb(0, 0, 255);">private</SPAN> <SPAN style="color: rgb(0, 0, 255);">class</SPAN> ProductorMq <SPAN style="color: rgb(0, 0, 255);">implements</SPAN><SPAN style="color: rgb(0, 0, 0);"> Runnable{
+        Producter producter;
+        </SPAN><SPAN style="color: rgb(0, 0, 255);">public</SPAN><SPAN style="color: rgb(0, 0, 0);"> ProductorMq(Producter producter){
+            </SPAN><SPAN style="color: rgb(0, 0, 255);">this</SPAN>.producter =<SPAN style="color: rgb(0, 0, 0);"> producter;
+        }
+
+        @Override
+        </SPAN><SPAN style="color: rgb(0, 0, 255);">public</SPAN> <SPAN style="color: rgb(0, 0, 255);">void</SPAN><SPAN style="color: rgb(0, 0, 0);"> run() {
+            </SPAN><SPAN style="color: rgb(0, 0, 255);">while</SPAN>(<SPAN style="color: rgb(0, 0, 255);">true</SPAN><SPAN style="color: rgb(0, 0, 0);">){
+                </SPAN><SPAN style="color: rgb(0, 0, 255);">try</SPAN><SPAN style="color: rgb(0, 0, 0);"> {
+                    producter.sendMessage(</SPAN>"Jaycekon-MQ"<SPAN style="color: rgb(0, 0, 0);">);
+                    Thread.sleep(</SPAN>10000<SPAN style="color: rgb(0, 0, 0);">);
+                } </SPAN><SPAN style="color: rgb(0, 0, 255);">catch</SPAN><SPAN style="color: rgb(0, 0, 0);"> (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}</SPAN></PRE>
+</DIV>
+<P>　　　运行结果：</P>
+<DIV class="cnblogs_code"><PRE> INFO | Successfully connected to tcp:<SPAN style="color: rgb(0, 128, 0);">//</SPAN><SPAN style="color: rgb(0, 128, 0);">localhost:61616</SPAN>
+Thread-6productor:我是大帅哥，我现在正在生产东西！,count:0<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-4productor:我是大帅哥，我现在正在生产东西！,count:1<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-2productor:我是大帅哥，我现在正在生产东西！,count:3<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-5productor:我是大帅哥，我现在正在生产东西！,count:2<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-3productor:我是大帅哥，我现在正在生产东西！,count:4<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-6productor:我是大帅哥，我现在正在生产东西！,count:5<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-3productor:我是大帅哥，我现在正在生产东西！,count:6<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-5productor:我是大帅哥，我现在正在生产东西！,count:7<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-2productor:我是大帅哥，我现在正在生产东西！,count:8<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-4productor:我是大帅哥，我现在正在生产东西！,count:9<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-6productor:我是大帅哥，我现在正在生产东西！,count:10<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-3productor:我是大帅哥，我现在正在生产东西！,count:11<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-5productor:我是大帅哥，我现在正在生产东西！,count:12<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-2productor:我是大帅哥，我现在正在生产东西！,count:13<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-4productor:我是大帅哥，我现在正在生产东西！,count:14<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-6productor:我是大帅哥，我现在正在生产东西！,count:15<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-3productor:我是大帅哥，我现在正在生产东西！,count:16<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-5productor:我是大帅哥，我现在正在生产东西！,count:17<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-2productor:我是大帅哥，我现在正在生产东西！,count:18<SPAN style="color: rgb(0, 0, 0);">
+Thread</SPAN>-4productor:我是大帅哥，我现在正在生产东西！,count:19</PRE>
+</DIV>
+<P>　　<IMG alt="" src="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/1053081-20161227110629867-1203253571.png"></P>
+<P>&nbsp;</P>
+<H3>　　4.2 消费者开始消费消息</H3>
+<DIV class="cnblogs_code"><PRE><SPAN style="color: rgb(0, 0, 255);">public</SPAN> <SPAN style="color: rgb(0, 0, 255);">class</SPAN><SPAN style="color: rgb(0, 0, 0);"> TestConsumer {
+    </SPAN><SPAN style="color: rgb(0, 0, 255);">public</SPAN> <SPAN style="color: rgb(0, 0, 255);">static</SPAN> <SPAN style="color: rgb(0, 0, 255);">void</SPAN><SPAN style="color: rgb(0, 0, 0);"> main(String[] args){
+        Comsumer comsumer </SPAN>= <SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> Comsumer();
+        comsumer.init();
+        TestConsumer testConsumer </SPAN>= <SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> TestConsumer();
+        </SPAN><SPAN style="color: rgb(0, 0, 255);">new</SPAN> Thread(testConsumer.<SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> ConsumerMq(comsumer)).start();
+        </SPAN><SPAN style="color: rgb(0, 0, 255);">new</SPAN> Thread(testConsumer.<SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> ConsumerMq(comsumer)).start();
+        </SPAN><SPAN style="color: rgb(0, 0, 255);">new</SPAN> Thread(testConsumer.<SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> ConsumerMq(comsumer)).start();
+        </SPAN><SPAN style="color: rgb(0, 0, 255);">new</SPAN> Thread(testConsumer.<SPAN style="color: rgb(0, 0, 255);">new</SPAN><SPAN style="color: rgb(0, 0, 0);"> ConsumerMq(comsumer)).start();
+    }
+
+    </SPAN><SPAN style="color: rgb(0, 0, 255);">private</SPAN> <SPAN style="color: rgb(0, 0, 255);">class</SPAN> ConsumerMq <SPAN style="color: rgb(0, 0, 255);">implements</SPAN><SPAN style="color: rgb(0, 0, 0);"> Runnable{
+        Comsumer comsumer;
+        </SPAN><SPAN style="color: rgb(0, 0, 255);">public</SPAN><SPAN style="color: rgb(0, 0, 0);"> ConsumerMq(Comsumer comsumer){
+            </SPAN><SPAN style="color: rgb(0, 0, 255);">this</SPAN>.comsumer =<SPAN style="color: rgb(0, 0, 0);"> comsumer;
+        }
+
+        @Override
+        </SPAN><SPAN style="color: rgb(0, 0, 255);">public</SPAN> <SPAN style="color: rgb(0, 0, 255);">void</SPAN><SPAN style="color: rgb(0, 0, 0);"> run() {
+            </SPAN><SPAN style="color: rgb(0, 0, 255);">while</SPAN>(<SPAN style="color: rgb(0, 0, 255);">true</SPAN><SPAN style="color: rgb(0, 0, 0);">){
+                </SPAN><SPAN style="color: rgb(0, 0, 255);">try</SPAN><SPAN style="color: rgb(0, 0, 0);"> {
+                    comsumer.getMessage(</SPAN>"Jaycekon-MQ"<SPAN style="color: rgb(0, 0, 0);">);
+                    Thread.sleep(</SPAN>10000<SPAN style="color: rgb(0, 0, 0);">);
+                } </SPAN><SPAN style="color: rgb(0, 0, 255);">catch</SPAN><SPAN style="color: rgb(0, 0, 0);"> (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}</SPAN></PRE>
+</DIV>
+<P>　　运行结果：</P>
+<DIV class="cnblogs_Highlighter"><PRE class="brush:csharp;gutter:true;"> INFO | Successfully connected to tcp://localhost:61616
+Thread-2: Consumer:我是消费者，我正在消费MsgThread-5productor:我是大帅哥，我现在正在生产东西！,count:4---&gt;0
+Thread-3: Consumer:我是消费者，我正在消费MsgThread-4productor:我是大帅哥，我现在正在生产东西！,count:36---&gt;1
+Thread-4: Consumer:我是消费者，我正在消费MsgThread-3productor:我是大帅哥，我现在正在生产东西！,count:38---&gt;2
+Thread-5: Consumer:我是消费者，我正在消费MsgThread-6productor:我是大帅哥，我现在正在生产东西！,count:37---&gt;3
+Thread-2: Consumer:我是消费者，我正在消费MsgThread-6productor:我是大帅哥，我现在正在生产东西！,count:2---&gt;4
+Thread-3: Consumer:我是消费者，我正在消费MsgThread-5productor:我是大帅哥，我现在正在生产东西！,count:40---&gt;5
+Thread-4: Consumer:我是消费者，我正在消费MsgThread-6productor:我是大帅哥，我现在正在生产东西！,count:42---&gt;6
+Thread-5: Consumer:我是消费者，我正在消费MsgThread-4productor:我是大帅哥，我现在正在生产东西！,count:41---&gt;7
+Thread-2: Consumer:我是消费者，我正在消费MsgThread-3productor:我是大帅哥，我现在正在生产东西！,count:1---&gt;8
+Thread-3: Consumer:我是消费者，我正在消费MsgThread-2productor:我是大帅哥，我现在正在生产东西！,count:44---&gt;9
+Thread-4: Consumer:我是消费者，我正在消费MsgThread-4productor:我是大帅哥，我现在正在生产东西！,count:46---&gt;10
+Thread-5: Consumer:我是消费者，我正在消费MsgThread-5productor:我是大帅哥，我现在正在生产东西！,count:45---&gt;11
+Thread-2: Consumer:我是消费者，我正在消费MsgThread-2productor:我是大帅哥，我现在正在生产东西！,count:3---&gt;12
+Thread-3: Consumer:我是消费者，我正在消费MsgThread-3productor:我是大帅哥，我现在正在生产东西！,count:48---&gt;13
+Thread-4: Consumer:我是消费者，我正在消费MsgThread-5productor:我是大帅哥，我现在正在生产东西！,count:50---&gt;14
+Thread-5: Consumer:我是消费者，我正在消费MsgThread-2productor:我是大帅哥，我现在正在生产东西！,count:49---&gt;15
+Thread-4: Consumer:我是消费者，我正在消费MsgThread-2productor:我是大帅哥，我现在正在生产东西！,count:54---&gt;16
+Thread-2: Consumer:我是消费者，我正在消费MsgThread-5productor:我是大帅哥，我现在正在生产东西！,count:6---&gt;17
+Thread-3: Consumer:我是消费者，我正在消费MsgThread-6productor:我是大帅哥，我现在正在生产东西！,count:52---&gt;18
+Thread-5: Consumer:我是消费者，我正在消费MsgThread-3productor:我是大帅哥，我现在正在生产东西！,count:53---&gt;19
+Thread-4: Consumer:我是消费者，我正在消费MsgThread-3productor:我是大帅哥，我现在正在生产东西！,count:58---&gt;20
+</PRE>
+</DIV>
+<P>　　</P>
+<P>　　查看运行结果，我们可以做ActiveMQ 服务端：<A 
+href="http://127.0.0.1:8161/admin/">http://127.0.0.1:8161/admin/</A>&nbsp;里面的Queues 
+中查看我们生产的消息。</P>
+<P>&nbsp;<IMG alt="" src="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/1053081-20161227110749617-1764303285.png" 
+width="976" height="200"></P>
+<P>&nbsp;</P>
+<H2>5、ActiveMQ的特性</H2>
+<HR>
+
+<H3>　5.1 ActiveMq 的特性　</H3>
+<OL>
+  <LI><SPAN style='font-family: "Microsoft YaHei";'>多种语言和协议编写客户端。语言: Java, C, 
+  C++, C#, Ruby, Perl, Python, PHP。应用协议: OpenWire,Stomp REST,WS 
+  Notification,XMPP,AMQP</SPAN></LI>
+  <LI><SPAN style='font-family: "Microsoft YaHei";'>完全支持JMS1.1和J2EE 1.4规范 
+  (持久化,XA消息,事务)</SPAN></LI>
+  <LI><SPAN 
+  style='font-family: "Microsoft YaHei";'>对Spring的支持,ActiveMQ可以很容易内嵌到使用Spring的系统里面去,而且也支持Spring2.0的特性</SPAN></LI>
+  <LI><SPAN style='font-family: "Microsoft YaHei";'>通过了常见J2EE服务器(如 
+  Geronimo,JBoss 4, GlassFish,WebLogic)的测试,其中通过JCA 1.5 resource 
+  adaptors的配置,可以让ActiveMQ可以自动的部署到任何兼容J2EE 1.4 商业服务器上</SPAN></LI>
+  <LI><SPAN 
+  style='font-family: "Microsoft YaHei";'>支持多种传送协议:in-VM,TCP,SSL,NIO,UDP,JGroups,JXTA</SPAN></LI>
+  <LI><SPAN 
+  style='font-family: "Microsoft YaHei";'>支持通过JDBC和journal提供高速的消息持久化</SPAN></LI>
+  <LI><SPAN 
+  style='font-family: "Microsoft YaHei";'>从设计上保证了高性能的集群,客户端-服务器,点对点</SPAN></LI>
+  <LI><SPAN style='font-family: "Microsoft YaHei";'>支持Ajax</SPAN></LI>
+  <LI><SPAN style='font-family: "Microsoft YaHei";'>支持与Axis的整合</SPAN></LI>
+  <LI><SPAN style='font-family: "Microsoft YaHei";'>可以很容易得调用内嵌JMS 
+  provider,进行测试</SPAN></LI></OL>
+<H3><SPAN style='font-family: "Microsoft YaHei";'>　</SPAN></H3>
+<H3><SPAN 
+style='font-family: "Microsoft YaHei";'>　5.2&nbsp;</SPAN>什么情况下使用ActiveMQ?</H3>
+<OL>
+  <LI>多个项目之间集成&nbsp;<BR>(1) 跨平台&nbsp;<BR>(2) 多语言&nbsp;<BR>(3) 多项目</LI>
+  <LI>降低系统间模块的耦合度，解耦&nbsp;<BR>(1) 软件扩展性</LI>
+  <LI>系统前后端隔离&nbsp;<BR>(1) 前后端隔离，屏蔽高安全区</LI></OL>
+<P>&nbsp;</P>
+<HR>
+
+<P>&nbsp;</P>
+<P>关于JMS（Java 消息服务） 的一些概述可以参考我的上一篇博客：<A title="JMS概述" href="http://www.cnblogs.com/jaycekon/p/6220200.html" 
+target="_blank">http://www.cnblogs.com/jaycekon/p/6220200.html</A></P></DIV>
+<DIV id="MySignature"></DIV>
+<DIV class="clear"></DIV>
+<DIV id="blog_post_info_block">
+<DIV id="BlogPostCategory"></DIV>
+<DIV id="EntryTag"></DIV>
+<DIV id="blog_post_info"></DIV>
+<DIV class="clear"></DIV>
+<DIV id="post_next_prev"></DIV></DIV></DIV>
+<DIV class="postDesc">posted @ <SPAN id="post-date">2016-12-27 11:18</SPAN> <A 
+href="https://www.cnblogs.com/jaycekon/">jaycekong</A> 阅读(<SPAN id="post_view_count">...</SPAN>) 
+评论(<SPAN id="post_comment_count">...</SPAN>)  <A href="https://i.cnblogs.com/EditPosts.aspx?postid=6225058" 
+rel="nofollow">编辑</A> <A onclick="AddToWz(6225058);return false;" href="https://www.cnblogs.com/jaycekon/p/6225058.html#">收藏</A></DIV></DIV>
+<SCRIPT type="text/javascript">var allowComments=true,cb_blogId=314064,cb_entryId=6225058,cb_blogApp=currentBlogApp,cb_blogUserGuid='7c6f81f8-079d-e611-845c-ac853d9f53ac',cb_entryCreatedDate='2016/12/27 11:18:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</SCRIPT>
+</DIV><!--end: topics 文章、评论容器--></DIV><A name="!comments"></A>
+<DIV id="blog-comments-placeholder"></DIV>
+<SCRIPT type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</SCRIPT>
+
+<DIV id="comment_form" class="commentform"><A name="commentform"></A>
+<DIV id="divCommentShow"></DIV>
+<DIV id="comment_nav"><SPAN id="span_refresh_tips"></SPAN><A id="lnk_RefreshComments" 
+onclick="return RefreshCommentList();" href="javascript:void(0);" clientidmode="Static" 
+runat="server">刷新评论</A><A onclick="return RefreshPage();" href="https://www.cnblogs.com/jaycekon/p/6225058.html#">刷新页面</A><A 
+href="https://www.cnblogs.com/jaycekon/p/6225058.html#top">返回顶部</A></DIV>
+<DIV id="comment_form_container"></DIV>
+<DIV id="ad_text_under_commentbox" class="ad_text_commentbox"></DIV>
+<DIV id="ad_t2"></DIV>
+<DIV id="opt_under_post"></DIV>
+<SCRIPT src="Java消息队列--ActiveMq%20初体验%20-%20jaycekong%20-%20博客园_files/gpt.js" async="async"></SCRIPT>
+
+<SCRIPT>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</SCRIPT>
+
+<SCRIPT>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</SCRIPT>
+
+<DIV id="cnblogs_c1" class="c_ad_block">
+<DIV style="width: 300px; height: 250px;" id="div-gpt-ad-1546353474406-0"></DIV>
+</DIV>
+<DIV id="under_post_news"></DIV>
+<DIV id="cnblogs_c2" class="c_ad_block">
+<DIV style="width: 468px; height: 60px;" id="div-gpt-ad-1539008685004-0"></DIV>
+</DIV>
+<DIV id="under_post_kb"></DIV>
+<DIV id="HistoryToday" class="c_ad_block"></DIV>
+<SCRIPT type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</SCRIPT>
+</DIV></DIV><!--end: forFlow --></DIV><!--end: mainContent 主体内容容器-->
+<DIV id="sideBar">
+<DIV id="sideBarMain"><!--done-->
+<DIV class="newsItem">
+<H3 class="catListTitle">公告</H3>
+<DIV id="blog-news"></DIV>
+<SCRIPT type="text/javascript">loadBlogNews();</SCRIPT>
+</DIV>
+<DIV id="calendar">
+<DIV style="display: none;" id="blog-calendar"></DIV>
+<SCRIPT type="text/javascript">loadBlogDefaultCalendar();</SCRIPT>
+</DIV>
+<DIV id="leftcontentcontainer">
+<DIV id="blog-sidecolumn"></DIV>
+<SCRIPT type="text/javascript">loadBlogSideColumn();</SCRIPT>
+</DIV></DIV><!--end: sideBarMain --></DIV><!--end: sideBar 侧边栏容器 -->
+<DIV class="clear"></DIV></DIV><!--end: main -->
+<DIV class="clear"></DIV>
+<DIV id="footer"><!--done-->Copyright ©2019 jaycekong	</DIV><!--end: footer -->
+</DIV><!--end: home 自定义的最大容器 --></BODY></HTML>
